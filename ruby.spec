@@ -4,7 +4,7 @@
 
 Name:		ruby
 Version:	1.8.1
-Release: 3
+Release: 4
 License:	Distributable
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
@@ -14,7 +14,7 @@ BuildPreReq:	emacs
 Source0:	ftp://ftp.ruby-lang.org/pub/%{name}/%{name}-%{version}.tar.gz
 ##Source1:	ftp://ftp.ruby-lang.org/pub/%{name}/doc/%{name}-man-%{manver}.tar.gz
 Source1:	%{name}-man-%{manver}.tar.bz2
-Source2:	http://www7.tok2.com/home/misc/files/%{name}/%{name}-refm-rdp-1.6.8-ja-html.zip
+Source2:	http://www7.tok2.com/home/misc/files/%{name}/%{name}-refm-rdp-1.8.1-ja-html.tar.gz
 ##Source3:	ftp://ftp.ruby-lang.org/pub/%{name}/doc/rubyfaq-990927.tar.gz
 Source3:	rubyfaq-990927.tar.bz2
 ##Source4:	ftp://ftp.ruby-lang.org/pub/%{name}/doc/rubyfaq-jp-990927.tar.gz
@@ -96,7 +96,7 @@ Emacs Lisp ruby-mode for the object-oriented scripting language Ruby.
 %setup -q -c -a 1 -a 3 -a 4
 mkdir -p ruby-refm-ja
 pushd ruby-refm-ja
-unzip %{SOURCE2}
+tar fxz %{SOURCE2}
 popd
 pushd %{name}-%{version}
 %patch1 -p1
@@ -363,6 +363,9 @@ rm -rf tmp-ruby-docs
 %dir %{_datadir}/emacs/site-lisp/ruby-mode
 
 %changelog
+* Wed Jun 23 2004 Akira TAGOH <tagoh@redhat.com> 1.8.1-4
+- updated the documentation.
+
 * Tue Jun 15 2004 Elliot Lee <sopwith@redhat.com>
 - rebuilt
 
