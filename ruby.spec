@@ -4,7 +4,7 @@
 
 Name:		ruby
 Version:	1.8.2
-Release: 3
+Release: 4
 License:	Distributable
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
@@ -274,11 +274,7 @@ install -m 644 %{SOURCE10} \
 cd ..
 
 # listing all files in ruby-all.files
-(find $RPM_BUILD_ROOT%{_bindir} \
-      $RPM_BUILD_ROOT%{_datadir} \
-      $RPM_BUILD_ROOT%{_libdir} \
-      $RPM_BUILD_ROOT%{_mandir} \
-      -type f -o -type l) | 
+(find $RPM_BUILD_ROOT -type f -o -type l) |
  sort | uniq | sed -e "s,^$RPM_BUILD_ROOT,," \
                    -e "s,\(/man/man./.*\)$,\1*," > ruby-all.files
 egrep '(\.[ah]|libruby\.so)$' ruby-all.files > ruby-devel.files
@@ -287,11 +283,11 @@ egrep '(\.[ah]|libruby\.so)$' ruby-all.files > ruby-devel.files
 cp /dev/null ruby-tcltk.files
 for f in `find %{name}-%{version}/ext/tk/lib -type f; find %{name}-%{version}/ext/tk -type f -name '*.so'`
 do
-  grep "/`basename $f`$" ruby-all.files >> ruby-tcltk.files || :
+  egrep "tcl|tk" ruby-all.files | grep "/`basename $f`$" >> ruby-tcltk.files || :
 done
 for f in `find %{name}-%{version}/ext/tcltklib/lib -type f; find %{name}-%{version}/ext/tcltklib -type f -name '*.so'`
 do
-  grep "/`basename $f`$" ruby-all.files >> ruby-tcltk.files || :
+  egrep "tcl|tk" ruby-all.files | grep "/`basename $f`$" >> ruby-tcltk.files || :
 done
 
 # for irb.rpm
@@ -383,8 +379,6 @@ rm -rf tmp-ruby-docs
 %defattr(-, root, root)
 %dir %{_libdir}/ruby
 %dir %{_libdir}/ruby/%{rubyxver}
-%{_libdir}/ruby/%{rubyxver}/rdoc
-%{_bindir}/rdoc
 
 %files -n irb -f irb.files
 %defattr(-, root, root)
@@ -407,6 +401,10 @@ rm -rf tmp-ruby-docs
 %dir %{_datadir}/emacs/site-lisp/ruby-mode
 
 %changelog
+* Tue Jan 25 2005 Akira TAGOH <tagoh@redhat.com> - 1.8.2-4
+- fixed the wrong generation of file manifest. (#146055)
+- spec file clean up.
+
 * Mon Jan 24 2005 Akira TAGOH <tagoh@redhat.com> - 1.8.2-3
 - separated out to rdoc package.
 - make the dependency of irb for rdoc. (#144708)
