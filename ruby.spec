@@ -4,11 +4,11 @@
 
 Name:		ruby
 Version:	1.8.1
-Release: 7
+Release: 8
 License:	Distributable
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
-BuildRequires:	readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl tk XFree86-devel autoconf gcc unzip
+BuildRequires:	readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl tk XFree86-devel autoconf gcc unzip openssl-devel db4-devel
 BuildPreReq:	emacs
 
 Source0:	ftp://ftp.ruby-lang.org/pub/%{name}/%{name}-%{version}.tar.gz
@@ -363,6 +363,9 @@ rm -rf tmp-ruby-docs
 %dir %{_datadir}/emacs/site-lisp/ruby-mode
 
 %changelog
+* Fri Oct 29 2004 Akira TAGOH <tagoh@redhat.com> - 1.8.1-8
+- added openssl-devel and db4-devel into BuildRequires (#137479)
+
 * Wed Oct  6 2004 Akira TAGOH <tagoh@redhat.com> - 1.8.1-7
 - require emacs-common instead of emacs.
 
