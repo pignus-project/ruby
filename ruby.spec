@@ -125,6 +125,7 @@ tar fxz %{SOURCE2}
 popd
 pushd %{name}-%{version}
 %patch1 -p1
+%patch2 -p1
 popd
 
 %build
