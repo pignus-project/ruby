@@ -4,7 +4,7 @@
 
 Name:		ruby
 Version:	1.8.2
-Release: 2
+Release: 3
 License:	Distributable
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
@@ -74,6 +74,17 @@ The irb is acronym for Interactive Ruby.  It evaluates ruby expression
 from the terminal.
 
 
+%package -n rdoc
+Summary:	A tool to generate documentation from Ruby source files
+Group:		Development/Languages
+Requires:	%{name} = %{version}-%{release}
+Requires:	irb = %{version}-%{release}
+
+%description -n rdoc
+The rdoc is a tool to generate the documentation from Ruby source files.
+It supports some output formats, like HTML, Ruby interactive reference (ri),
+XML and Windows Help file (chm).
+
 %package docs
 Summary:	Manuals and FAQs for scripting language Ruby.
 Group:		Documentation
@@ -95,6 +106,7 @@ Emacs Lisp ruby-mode for the object-oriented scripting language Ruby.
 Summary:	Ruby interactive reference
 Group:		Documentation
 Requires:	%{name} = %{version}-%{release}
+Requires:	rdoc = %{version}-%{release}
 
 %description -n ri
 ri is a command line tool that displays descriptions of built-in
@@ -285,24 +297,28 @@ done
 # for irb.rpm
 fgrep 'irb' ruby-all.files > irb.files
 
+# for ri
+cp /dev/null ri.files
+fgrep '%{_datadir}/ri' ruby-all.files >> ri.files
+fgrep '%{_bindir}/ri' ruby-all.files >> ri.files
+
+# for rdoc
+cp /dev/null rdoc.files
+fgrep rdoc ruby-all.files >> rdoc.files
+
 # for ruby-libs
 cp /dev/null ruby-libs.files
 (fgrep    '%{_libdir}' ruby-all.files; 
- fgrep -h '%{_libdir}' ruby-devel.files ruby-tcltk.files irb.files) | egrep -v "elc?$" | \
+ fgrep -h '%{_libdir}' ruby-devel.files ruby-tcltk.files irb.files ri.files rdoc.files) | egrep -v "elc?$" | \
  sort | uniq -u > ruby-libs.files
 
 # for ruby-mode
 cp /dev/null ruby-mode.files
 fgrep '.el' ruby-all.files >> ruby-mode.files
 
-# for ri
-cp /dev/null ri.files
-fgrep '%{_datadir}/ri' ruby-all.files >> ri.files
-fgrep '%{_bindir}/ri' ruby-all.files >> ri.files
-
 # for ruby.rpm
 sort ruby-all.files \
- ruby-libs.files ruby-devel.files ruby-tcltk.files irb.files ruby-mode.files ri.files | 
+ ruby-libs.files ruby-devel.files ruby-tcltk.files irb.files ruby-mode.files ri.files rdoc.files | 
  uniq -u > ruby.files
 
 # for arch-dependent dir
@@ -363,6 +379,13 @@ rm -rf tmp-ruby-docs
 %defattr(-, root, root)
 %doc tmp-ruby-docs/ruby-tcltk/ext/*
 
+%files -n rdoc -f rdoc.files
+%defattr(-, root, root)
+%dir %{_libdir}/ruby
+%dir %{_libdir}/ruby/%{rubyxver}
+%{_libdir}/ruby/%{rubyxver}/rdoc
+%{_bindir}/rdoc
+
 %files -n irb -f irb.files
 %defattr(-, root, root)
 %doc tmp-ruby-docs/irb/*
@@ -384,6 +407,10 @@ rm -rf tmp-ruby-docs
 %dir %{_datadir}/emacs/site-lisp/ruby-mode
 
 %changelog
+* Mon Jan 24 2005 Akira TAGOH <tagoh@redhat.com> - 1.8.2-3
+- separated out to rdoc package.
+- make the dependency of irb for rdoc. (#144708)
+
 * Wed Jan 12 2005 Tim Waugh <twaugh@redhat.com> - 1.8.2-2
 - Rebuilt for new readline.
 
