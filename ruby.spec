@@ -4,7 +4,7 @@
 
 Name:		ruby
 Version:	1.8.2
-Release: 5
+Release: 6
 License:	Distributable
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
@@ -23,6 +23,7 @@ Source5:	irb.1
 Source10:	ruby-mode-init.el
 
 Patch1:		ruby-1.8.0-multilib.patch
+Patch2:		ruby-1.8.2-strscan-memset.patch
 
 Summary:	An interpreter of object-oriented scripting language
 Group:		Development/Languages
@@ -402,6 +403,9 @@ rm -rf tmp-ruby-docs
 %dir %{_datadir}/emacs/site-lisp/ruby-mode
 
 %changelog
+* Tue Mar 22 2005 Akira TAGOH <tagoh@redhat.com> - 1.8.2-6
+- ruby-1.8.2-strscan-memset.patch: fixed an wrong usage of memset(3).
+
 * Tue Mar 15 2005 Akira TAGOH <tagoh@redhat.com> - 1.8.2-5
 - rebuilt
 
