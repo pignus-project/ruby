@@ -1,10 +1,10 @@
 %define manver		1.4.6
-%define	rubyxver	1.6
+%define	rubyxver	1.8
 %define	sitedir		%{_libdir}/site_ruby
 
 Name:		ruby
-Version:	1.6.8
-Release: 	5
+Version:	1.8.0
+Release: 1
 License:	Distributable
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
@@ -14,7 +14,7 @@ BuildPreReq:	emacs
 Source0:	ftp://ftp.ruby-lang.org/pub/%{name}/%{name}-%{version}.tar.gz
 ##Source1:	ftp://ftp.ruby-lang.org/pub/%{name}/doc/%{name}-man-%{manver}.tar.gz
 Source1:	%{name}-man-%{manver}.tar.bz2
-Source2:	http://www7.tok2.com/home/misc/files/%{name}/%{name}-refm-rdp-%{version}-ja-html.zip
+Source2:	http://www7.tok2.com/home/misc/files/%{name}/%{name}-refm-rdp-1.6.8-ja-html.zip
 ##Source3:	ftp://ftp.ruby-lang.org/pub/%{name}/doc/rubyfaq-990927.tar.gz
 Source3:	rubyfaq-990927.tar.bz2
 ##Source4:	ftp://ftp.ruby-lang.org/pub/%{name}/doc/rubyfaq-jp-990927.tar.gz
@@ -22,13 +22,7 @@ Source4:	rubyfaq-jp-990927.tar.bz2
 Source5:	irb.1
 Source10:	ruby-mode-init.el
 
-Patch100:	ruby-1.6.8-require.patch
-Patch110:	ruby-1.6.7-resolv1.patch
-Patch111:	ruby-1.6.7-resolv2.patch
-Patch802:	803_sample-fix-shbang.patch
-Patch901:	ruby-1.6.7-long2int.patch
-Patch902:	ruby-1.6.7-rubylibdir.patch
-Patch903:	ruby-1.6.8-multilib.patch
+Patch903:	ruby-1.8.0-multilib.patch
 
 Summary:	An interpreter of object-oriented scripting language
 Group:		Development/Languages
@@ -104,16 +98,6 @@ pushd ruby-refm-ja
 unzip %{SOURCE2}
 popd
 pushd %{name}-%{version}
-%patch100 -p1
-pushd lib
-%patch110 -p0
-%patch111 -p0
-popd
-%patch802 -p1
-%ifnarch s390 s390x
-%patch901 -p1
-%endif
-%patch902 -p2
 %patch903 -p1
 popd
 
@@ -126,6 +110,8 @@ autoconf
 
 rb_cv_func_strtod=no
 export rb_cv_func_strtod
+CFLAGS="$RPM_OPT_FLAGS -Wall"
+export CFLAGS
 %configure \
   --with-sitedir='%{sitedir}' \
   --with-default-kcode=none \
@@ -139,7 +125,9 @@ make RUBY_INSTALL_NAME=ruby %{?_smp_mflags}
 rm -f parse.o
 make OPT=-O0 RUBY_INSTALL_NAME=ruby %{?_smp_mflags}
 %endif
+%ifnarch ppc64
 make test
+%endif
 
 popd
 
@@ -368,6 +356,28 @@ rm -rf tmp-ruby-docs
 %dir %{_datadir}/emacs/site-lisp/ruby-mode
 
 %changelog
+* Tue Aug  5 2003 Akira TAGOH <tagoh@redhat.com> 1.8.0-1
+- New upstream release.
+
+* Thu Jul 24 2003 Akira TAGOH <tagoh@redhat.com> 1.6.8-9.1
+- rebuilt
+
+* Thu Jul 24 2003 Akira TAGOH <tagoh@redhat.com> 1.6.8-9
+- ruby-1.6.8-castnode.patch: handling the nodes with correct cast.
+  use this patch now instead of ruby-1.6.8-fix-x86_64.patch.
+
+* Fri Jul 04 2003 Akira TAGOH <tagoh@redhat.com> 1.6.8-8
+- rebuilt
+
+* Fri Jul 04 2003 Akira TAGOH <tagoh@redhat.com> 1.6.8-7
+- fix the gcc warnings. (#82192)
+- ruby-1.6.8-fix-x86_64.patch: correct a patch.
+  NOTE: DON'T USE THIS PATCH FOR BIG ENDIAN ARCHITECTURE.
+- ruby-1.6.7-long2int.patch: removed.
+
+* Wed Jun 04 2003 Elliot Lee <sopwith@redhat.com>
+- rebuilt
+
 * Fri Feb  7 2003 Jens Petersen <petersen@redhat.com> - 1.6.8-5
 - rebuild against ucs4 tcltk
 
