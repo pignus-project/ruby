@@ -1,10 +1,10 @@
 %define manver		1.4.6
 %define	rubyxver	1.6
-%define	sitedir		%{_prefix}/local/lib/site_ruby/%{rubyxver}
+%define	sitedir		%{_libdir}/site_ruby
 
 Name:		ruby
 Version:	1.6.7
-Release:	9
+Release:	10
 License:	Distributable
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
@@ -31,6 +31,8 @@ Patch100:	ruby-1.6.7-100.patch
 Patch101:	ruby-1.6.7-101.patch
 Patch102:	ruby-1.6.7-102.patch
 Patch103:	ruby-1.6.7-103.patch
+Patch110:	ruby-1.6.7-resolv1.patch
+Patch111:	ruby-1.6.7-resolv2.patch
 Patch900:	ruby-1.6.6-900-XXX-strtod.patch
 
 
@@ -296,22 +298,9 @@ rm -rf tmp-ruby-docs
 
 %post libs
 /sbin/ldconfig
-if [ -w %{_prefix}/local/lib -a ! -e %{sitedir} ]; then
-	mkdir -p %{sitedir} %{sitedir}/%{_target_cpu}-%{_target_os}
-	chown root.root %{sitedir} %{sitedir}/%{_target_cpu}-%{_target_os}
-	chmod 2775 %{sitedir} %{sitedir}/%{_target_cpu}-%{_target_os}
-fi
 
 %postun libs
 /sbin/ldconfig
-if [ "$1" = 0 ]; then
-	if [ -w %{sitedir} -a -e %{sitedir}/%{_target_cpu}-%{_target_os} ]; then
-		rmdir %{sitedir}/%{_target_cpu}-%{_target_os} 2>/dev/null || true
-	fi
-	if [ -w %{_prefix}/local/lib -a -e %{sitedir} ]; then
-		rmdir %{sitedir} 2>/dev/null || true
-	fi
-fi
 
 %files -f ruby.files
 %defattr(-, root, root)
@@ -345,6 +334,9 @@ fi
 %dir %{_libdir}/ruby/%{rubyxver}/net
 %dir %{_libdir}/ruby/%{rubyxver}/shell
 %dir %{_libdir}/ruby/%{rubyxver}/uri
+%dir %{sitedir}
+%dir %{sitedir}/%{rubyxver}
+%dir %{sitedir}/%{rubyxver}/%{_target_cpu}-%{_target_os}
 
 %files tcltk -f ruby-tcltk.files
 %defattr(-, root, root)
@@ -367,6 +359,12 @@ fi
 %dir %{_datadir}/emacs/site-lisp/ruby-mode
 
 %changelog
+* Tue Aug 27 2002 Akira TAGOH <tagoh@redhat.com> 1.6.7-10
+- moved sitedir to /usr/lib/ruby/site_ruby again according as our perl and
+  python.
+- ruby-1.6.7-resolv1.patch, ruby-1.6.7-resolv2.patch: applied to fix 'Too many
+  open files - "/etc/resolv.conf"' issue. (Bug#64830)
+
 * Thu Jul 18 2002 Akira TAGOH <tagoh@redhat.com> 1.6.7-9
 - add the owned directory.
 
