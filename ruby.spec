@@ -4,7 +4,7 @@
 
 Name:		ruby
 Version:	1.8.1
-Release: 9
+Release: 10
 License:	Distributable
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
@@ -367,6 +367,9 @@ rm -rf tmp-ruby-docs
 %dir %{_datadir}/emacs/site-lisp/ruby-mode
 
 %changelog
+* Thu Nov 11 2004 Jeff Johnson <jbj@jbj.org> 1.8.1-10
+- rebuild against db-4.3.21.
+
 * Wed Nov 10 2004 Akira TAGOH <tagoh@redhat.com> - 1.8.1-9
 - ruby-1.8.1-cgi-dos.patch: security fix [CAN-2004-0983]
 - ruby-1.8.1-cgi_session_perms.patch: security fix [CAN-2004-0755]
