@@ -4,7 +4,7 @@
 
 Name:		ruby
 Version:	1.8.2
-Release: 6
+Release: 7
 License:	Distributable
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
@@ -24,6 +24,7 @@ Source10:	ruby-mode-init.el
 
 Patch1:		ruby-1.8.0-multilib.patch
 Patch2:		ruby-1.8.2-strscan-memset.patch
+Patch3:		ruby-1.8.2-deadcode.patch
 
 Summary:	An interpreter of object-oriented scripting language
 Group:		Development/Languages
@@ -126,6 +127,7 @@ popd
 pushd %{name}-%{version}
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 popd
 
 %build
@@ -229,6 +231,8 @@ mkdir doc-en refm-ja faq-en faq-ja
    < $f > `echo $f | sed -e's/-jp//'`
   rm -f $f; \
  done)
+# make sure that all doc files are the world-readable
+find -type f | xargs chmod 0644
 
 cd ..
 
@@ -404,6 +408,11 @@ rm -rf tmp-ruby-docs
 %dir %{_datadir}/emacs/site-lisp/ruby-mode
 
 %changelog
+* Thu Apr  7 2005 Akira TAGOH <tagoh@redhat.com> - 1.8.2-7
+- ruby-1.8.2-deadcode.patch: removed the dead code from the source. (#146108)
+- make sure that all documentation files in ruby-docs are the world-
+  readable. (#147279)
+
 * Tue Mar 22 2005 Akira TAGOH <tagoh@redhat.com> - 1.8.2-6
 - ruby-1.8.2-strscan-memset.patch: fixed an wrong usage of memset(3).
 
