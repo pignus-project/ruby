@@ -4,7 +4,7 @@
 
 Name:		ruby
 Version:	1.8.1
-Release: 5
+Release: 7
 License:	Distributable
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
@@ -363,7 +363,7 @@ rm -rf tmp-ruby-docs
 %dir %{_datadir}/emacs/site-lisp/ruby-mode
 
 %changelog
-* Wed Oct  6 2004 Akira TAGOH <tagoh@redhat.com> - 1.8.1-5
+* Wed Oct  6 2004 Akira TAGOH <tagoh@redhat.com> - 1.8.1-7
 - require emacs-common instead of emacs.
 
 * Wed Jun 23 2004 Akira TAGOH <tagoh@redhat.com> 1.8.1-4
