@@ -8,8 +8,7 @@ Release: 7
 License:	Distributable
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
-BuildRequires:	readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl tk XFree86-devel autoconf gcc unzip openssl-devel db4-devel
-BuildPreReq:	emacs
+BuildRequires:	readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl tk XFree86-devel autoconf gcc unzip openssl-devel db4-devel emacs
 
 Source0:	ftp://ftp.ruby-lang.org/pub/%{name}/%{name}-%{version}.tar.gz
 ##Source1:	ftp://ftp.ruby-lang.org/pub/%{name}/doc/%{name}-man-%{manver}.tar.gz
