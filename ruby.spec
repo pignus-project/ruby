@@ -4,7 +4,7 @@
 
 Name:		ruby
 Version:	1.6.7
-Release:	10
+Release:	10.1p
 License:	Distributable
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
@@ -27,6 +27,7 @@ Source5:	irb.1
 Source10:	ruby-mode-init.el
 
 Patch1:		ruby-1.6.7-libobj.patch
+Patch2:		ruby-1.6.7-10.ppc.patch
 Patch100:	ruby-1.6.7-100.patch
 Patch101:	ruby-1.6.7-101.patch
 Patch102:	ruby-1.6.7-102.patch
@@ -113,6 +114,7 @@ pushd %{name}-%{version}
 %patch900 -p1
 popd
 %patch1 -p1
+%patch2 -p1
 
 %build
 pushd %{name}-%{version}
