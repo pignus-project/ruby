@@ -1,8 +1,12 @@
+%ifarch alpha
+%define optflags -O2 -mieee -g -Wall -pipe -D_GNU_SOURCE
+%endif
+
 %define manver		1.4.6
-Summary: An interpreter of object-oriented scripting language
+Summary: An interpreter of object-oriented scripting language.
 Name: ruby
 Version: 1.6.4
-Release: 2
+Release: 4
 License: Dual-licensed GPL/Artistic-like
 Group: Development/Languages
 Source0: ftp://ftp.ruby-lang.org/pub/lang/%{name}/%{name}-%{version}.tar.bz2
@@ -15,12 +19,14 @@ URL: http://www.ruby-lang.org/
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildRequires: readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl tk autoconf gcc
 Requires: %{name}-libs = %{version}-%{release}
-ExcludeArch: alpha ia64
+Patch: ruby-1.6.4-warnings.patch
+Patch1: ruby-1.6.4-mowarnings.patch
+Patch2: ruby-1.6.4-stacklevel.patch
 
 %description
 Ruby is the interpreted scripting language for quick and easy
-object-oriented programming.  It has many features to process text
-files and to do system management tasks (as in Perl).  It is simple,
+object-oriented programming. It has many features to process text
+files and to do system management tasks (as in Perl). It is simple,
 straight-forward, and extensible.
 
 %package libs
@@ -32,6 +38,7 @@ Obsoletes: libruby
 
 %description libs
 This package includes the libruby, necessary to run Ruby.
+
 
 %package devel
 Summary: A Ruby development environment.
@@ -52,6 +59,7 @@ URL: http://www.ruby-lang.org/
 %description tcltk
 Tcl/Tk interface for the object-oriented scripting language Ruby.
 
+
 %package -n irb
 Summary: The Intaractive Ruby.
 Group: Development/Languages
@@ -59,8 +67,8 @@ Requires: %{name}-libs = %{version}-%{release}
 URL: http://www.ruby-lang.org/
 
 %description -n irb
-The irb is acronym for Interactive RuBy.  It evaluates ruby expression
-from the terminal.
+IRB, Interactive RuBy, evaluates ruby expressions from the terminal.
+
 
 %package docs
 Summary: Manuals and FAQs for scripting language Ruby.
@@ -70,25 +78,24 @@ URL: http://www.ruby-lang.org/
 %description docs
 Manuals and FAQs for the object-oriented scripting language Ruby.
 
+
 %prep
 %setup -q -c -a 1 -a 2 -a 3 -a 4
+%patch -p1
+%patch1 -p1
+%patch2 -p1
 
 %build
 cd %{name}-%{version}
-%ifarch alpha
-autoconf
-CFLAGS="-O0" CXXFLAGS="-O0" ./configure \
-%else
 %configure \
-%endif
   --with-default-kcode=none \
   --with-dbm-include=/usr/include/db1 \
   --enable-shared \
   --enable-ipv6 \
   --with-lookup-order-hack=INET
 
-make
-make test
+make %{?_smp_mflags}
+make %{?_smp_mflags} test
 
 %install
 rm -rf ${RPM_BUILD_ROOT}
@@ -243,6 +250,9 @@ rm -rf tmp-ruby-docs
 %doc tmp-ruby-docs/ruby-docs/*
 
 %changelog
+* Thu Dec 06 2001 Elliot Lee <sopwith@redhat.com> 1.6.4-4
+- Added some patches to make it build on alpha
+
 * Thu Jul 19 2001 Bernhard Rosenkraenzer <bero@redhat.com> 1.6.4-2
 - Remove Japanese description and summaries; they belong in specspo and
   break rpm
