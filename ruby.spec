@@ -4,7 +4,7 @@
 
 Name:		ruby
 Version:	1.8.2
-Release: 4
+Release: 5
 License:	Distributable
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
@@ -84,6 +84,7 @@ Requires:	irb = %{version}-%{release}
 The rdoc is a tool to generate the documentation from Ruby source files.
 It supports some output formats, like HTML, Ruby interactive reference (ri),
 XML and Windows Help file (chm).
+
 
 %package docs
 Summary:	Manuals and FAQs for scripting language Ruby.
@@ -401,6 +402,9 @@ rm -rf tmp-ruby-docs
 %dir %{_datadir}/emacs/site-lisp/ruby-mode
 
 %changelog
+* Tue Mar 15 2005 Akira TAGOH <tagoh@redhat.com> - 1.8.2-5
+- rebuilt
+
 * Tue Jan 25 2005 Akira TAGOH <tagoh@redhat.com> - 1.8.2-4
 - fixed the wrong generation of file manifest. (#146055)
 - spec file clean up.
