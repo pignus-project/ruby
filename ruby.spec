@@ -3,22 +3,18 @@
 %define	sitedir		%{_libdir}/site_ruby
 
 Name:		ruby
-Version:	1.6.7
-Release:	10.1p
+Version:	1.6.8
+Release: 	5
 License:	Distributable
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
-BuildRequires:	readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl tk XFree86-devel autoconf gcc
+BuildRequires:	readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl tk XFree86-devel autoconf gcc unzip
 BuildPreReq:	emacs
 
-
-## all archives are re-compressed with bzip2 instead of gzip
-##Source0:	ftp://ftp.ruby-lang.org/pub/%{name}/%{name}-%{version}.tar.gz
-Source0:	%{name}-%{version}.tar.bz2
+Source0:	ftp://ftp.ruby-lang.org/pub/%{name}/%{name}-%{version}.tar.gz
 ##Source1:	ftp://ftp.ruby-lang.org/pub/%{name}/doc/%{name}-man-%{manver}.tar.gz
 Source1:	%{name}-man-%{manver}.tar.bz2
-##Source2:	http://www7.tok2.com/home/misc/files/%{name}/%{name}-refm-rdp-1.4.7-ja-html.zip
-Source2:	%{name}-man-%{version}-ja-html.tar.bz2
+Source2:	http://www7.tok2.com/home/misc/files/%{name}/%{name}-refm-rdp-%{version}-ja-html.zip
 ##Source3:	ftp://ftp.ruby-lang.org/pub/%{name}/doc/rubyfaq-990927.tar.gz
 Source3:	rubyfaq-990927.tar.bz2
 ##Source4:	ftp://ftp.ruby-lang.org/pub/%{name}/doc/rubyfaq-jp-990927.tar.gz
@@ -26,16 +22,13 @@ Source4:	rubyfaq-jp-990927.tar.bz2
 Source5:	irb.1
 Source10:	ruby-mode-init.el
 
-Patch1:		ruby-1.6.7-libobj.patch
-Patch2:		ruby-1.6.7-10.ppc.patch
-Patch100:	ruby-1.6.7-100.patch
-Patch101:	ruby-1.6.7-101.patch
-Patch102:	ruby-1.6.7-102.patch
-Patch103:	ruby-1.6.7-103.patch
+Patch100:	ruby-1.6.8-require.patch
 Patch110:	ruby-1.6.7-resolv1.patch
 Patch111:	ruby-1.6.7-resolv2.patch
-Patch900:	ruby-1.6.6-900-XXX-strtod.patch
-
+Patch802:	803_sample-fix-shbang.patch
+Patch901:	ruby-1.6.7-long2int.patch
+Patch902:	ruby-1.6.7-rubylibdir.patch
+Patch903:	ruby-1.6.8-multilib.patch
 
 Summary:	An interpreter of object-oriented scripting language
 Group:		Development/Languages
@@ -105,40 +98,47 @@ Emacs Lisp ruby-mode for the object-oriented scripting language Ruby.
 
 
 %prep
-%setup -q -c -a 1 -a 2 -a 3 -a 4
+%setup -q -c -a 1 -a 3 -a 4
+mkdir -p ruby-refm-ja
+pushd ruby-refm-ja
+unzip %{SOURCE2}
+popd
 pushd %{name}-%{version}
 %patch100 -p1
-%patch101 -p1
-%patch102 -p1
-%patch103 -p1
-%patch900 -p1
+pushd lib
+%patch110 -p0
+%patch111 -p0
 popd
-%patch1 -p1
-%patch2 -p1
+%patch802 -p1
+%ifnarch s390 s390x
+%patch901 -p1
+%endif
+%patch902 -p2
+%patch903 -p1
+popd
 
 %build
 pushd %{name}-%{version}
+for i in config.sub config.guess; do
+	test -f %{_datadir}/libtool/$i && cp %{_datadir}/libtool/$i .
+done
 autoconf
 
-%ifarch alpha ia64
-rb_cv_func_strtod=no CFLAGS="-O0" CXXFLAGS="-O0" ./configure \
-%else
-rb_cv_func_strtod=no ./configure \
-%endif
-  --prefix=%{_prefix} \
-  --mandir='%{_mandir}' \
-  --sysconfdir=%{_sysconfdir} \
-  --localstatedir=%{_localstatedir} \
+rb_cv_func_strtod=no
+export rb_cv_func_strtod
+%configure \
   --with-sitedir='%{sitedir}' \
   --with-default-kcode=none \
-  --with-dbm-include=/usr/include/db1 \
   --enable-shared \
   --enable-ipv6 \
-  --with-lookup-order-hack=INET \
-  --host=%{_target_cpu}-%{_target_os} \
-  --build=%{_target_cpu}-%{_target_os}
+  --with-lookup-order-hack=INET
 
-make RUBY_INSTALL_NAME=ruby
+make RUBY_INSTALL_NAME=ruby %{?_smp_mflags}
+%ifarch ia64
+# Miscompilation? Buggy code?
+rm -f parse.o
+make OPT=-O0 RUBY_INSTALL_NAME=ruby %{?_smp_mflags}
+%endif
 make test
 
 popd
@@ -268,11 +268,11 @@ egrep '(\.[ah]|libruby\.so)$' ruby-all.files > ruby-devel.files
 cp /dev/null ruby-tcltk.files
 for f in `find %{name}-%{version}/ext/tk/lib -type f; echo %{name}-%{version}/ext/tk/*.so`
 do
-  grep "/`basename $f`$" ruby-all.files >> ruby-tcltk.files
+  grep "/`basename $f`$" ruby-all.files >> ruby-tcltk.files || :
 done
 for f in `find %{name}-%{version}/ext/tcltklib/lib -type f; echo %{name}-%{version}/ext/tcltklib/*.so`
 do
-  grep "/`basename $f`$" ruby-all.files >> ruby-tcltk.files
+  grep "/`basename $f`$" ruby-all.files >> ruby-tcltk.files || :
 done
 
 # for irb.rpm
@@ -292,6 +292,16 @@ fgrep '.el' ruby-all.files >> ruby-mode.files
 sort ruby-all.files \
  ruby-libs.files ruby-devel.files ruby-tcltk.files irb.files ruby-mode.files | 
  uniq -u > ruby.files
+
+# for arch-dependent dir
+rbconfig=`find $RPM_BUILD_ROOT -name rbconfig.rb`
+export LD_LIBRARY_PATH=$RPM_BUILD_ROOT%{_libdir}
+arch=`$RPM_BUILD_ROOT%{_bindir}/ruby -r $rbconfig -e 'printf ("%s\n", Config::CONFIG["arch"])'`
+cat <<__EOF__ >> ruby-libs.files
+%%dir %%{_libdir}/ruby/%%{rubyxver}/$arch
+%%dir %%{_libdir}/ruby/%%{rubyxver}/$arch/digest
+%%dir %%{sitedir}/%%{rubyxver}/$arch
+__EOF__
 
 %clean
 [ -n "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != / ] && rm -rf $RPM_BUILD_ROOT
@@ -331,14 +341,11 @@ rm -rf tmp-ruby-docs
 %dir %{_libdir}/ruby
 %dir %{_libdir}/ruby/%{rubyxver}
 %dir %{_libdir}/ruby/%{rubyxver}/cgi
-%dir %{_libdir}/ruby/%{rubyxver}/%{_target_cpu}-%{_target_os}
-%dir %{_libdir}/ruby/%{rubyxver}/%{_target_cpu}-%{_target_os}/digest
 %dir %{_libdir}/ruby/%{rubyxver}/net
 %dir %{_libdir}/ruby/%{rubyxver}/shell
 %dir %{_libdir}/ruby/%{rubyxver}/uri
 %dir %{sitedir}
 %dir %{sitedir}/%{rubyxver}
-%dir %{sitedir}/%{rubyxver}/%{_target_cpu}-%{_target_os}
 
 %files tcltk -f ruby-tcltk.files
 %defattr(-, root, root)
@@ -361,6 +368,62 @@ rm -rf tmp-ruby-docs
 %dir %{_datadir}/emacs/site-lisp/ruby-mode
 
 %changelog
+* Fri Feb  7 2003 Jens Petersen <petersen@redhat.com> - 1.6.8-5
+- rebuild against ucs4 tcltk
+
+* Wed Jan 22 2003 Tim Powers <timp@redhat.com>
+- rebuilt
+
+* Wed Jan 22 2003 Akira TAGOH <tagoh@redhat.com> 1.6.8-3
+- ruby-1.6.8-multilib.patch: applied to fix the search path issue on x86_64
+
+* Tue Jan 21 2003 Akira TAGOH <tagoh@redhat.com> 1.6.8-2
+- ruby-1.6.8-require.patch: applied to fix the search bug in require.
+- don't apply long2int patch to s390 and s390x. it doesn't work.
+
+* Wed Jan 15 2003 Akira TAGOH <tagoh@redhat.com> 1.6.8-1
+- New upstream release.
+- removed some patches. it's no longer needed.
+  - ruby-1.6.7-100.patch
+  - ruby-1.6.7-101.patch
+  - ruby-1.6.7-102.patch
+  - ruby-1.6.7-103.patch
+  - 801_extmk.rb-shellwords.patch
+  - 801_mkmf.rb-shellwords.patch
+  - 804_parse.y-new-bison.patch
+  - 805_uri-bugfix.patch
+  - ruby-1.6.6-900_XXX_strtod.patch
+  - ruby-1.6.7-sux0rs.patch
+  - ruby-1.6.7-libobj.patch
+
+* Wed Jan 15 2003 Jens Petersen <petersen@redhat.com> 1.6.7-14
+- rebuild to update tcltk deps
+
+* Mon Dec 16 2002 Elliot Lee <sopwith@redhat.com> 1.6.7-13
+- Remove ExcludeArch: x86_64
+- Fix x86_64 ruby with long2int.patch (ruby was assuming that sizeof(long) 
+  == sizeof(int). The patch does not fix the source of the problem, just 
+  makes it a non-issue.)
+- _smp_mflags
+
+* Tue Dec 10 2002 Tim Powers <timp@redhat.com> 1.6.7-12
+- rebuild to fix broken tcltk deps
+
+* Tue Oct 22 2002 Akira TAGOH <tagoh@redhat.com> 1.6.7-11
+- use %%configure macro instead of configure script.
+- use the latest config.{sub,guess}.
+- get archname from rbconfig.rb for %%dir
+- applied some patches from Debian:
+  - 801_extmk.rb-shellwords.patch: use Shellwords
+  - 801_mkmf.rb-shellwords.patch: mkmf.rb creates bad Makefile. the Makefile
+    links libruby.a to the target.
+  - 803_sample-fix-shbang.patch: all sample codes should be
+    s|/usr/local/bin|/usr/bin|g
+  - 804_parse.y-new-bison.patch: fix syntax warning.
+  - 805_uri-bugfix.patch: uri.rb could not handle correctly broken mailto-uri.
+- add ExcludeArch x86_64 temporarily to fix Bug#74581. Right now ruby can't be
+  built on x86_64.
+
 * Tue Aug 27 2002 Akira TAGOH <tagoh@redhat.com> 1.6.7-10
 - moved sitedir to /usr/lib/ruby/site_ruby again according as our perl and
   python.
