@@ -3,8 +3,8 @@
 %define	sitedir		%{_libdir}/site_ruby
 
 Name:		ruby
-Version:	1.8.1
-Release: 10
+Version:	1.8.2
+Release: 1
 License:	Distributable
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
@@ -23,9 +23,6 @@ Source5:	irb.1
 Source10:	ruby-mode-init.el
 
 Patch1:		ruby-1.8.0-multilib.patch
-Patch2:		ruby-1.8.1-ia64-stack-limit.patch
-Patch3:		ruby-1.8.1-cgi_session_perms.patch
-Patch4:		ruby-1.8.1-cgi-dos.patch
 
 Summary:	An interpreter of object-oriented scripting language
 Group:		Development/Languages
@@ -94,6 +91,18 @@ Requires:	emacs-common
 Emacs Lisp ruby-mode for the object-oriented scripting language Ruby.
 
 
+%package -n ri
+Summary:	Ruby interactive reference
+Group:		Documentation
+Requires:	%{name} = %{version}-%{release}
+
+%description -n ri
+ri is a command line tool that displays descriptions of built-in
+Ruby methods, classes and modules. For methods, it shows you the calling
+sequence and a description. For classes and modules, it shows a synopsis
+along with a list of the methods the class or module implements.
+
+
 %prep
 %setup -q -c -a 1 -a 3 -a 4
 mkdir -p ruby-refm-ja
@@ -102,11 +111,6 @@ tar fxz %{SOURCE2}
 popd
 pushd %{name}-%{version}
 %patch1 -p1
-%if ia64
-%patch2 -p1
-%endif
-%patch3 -p1
-%patch4 -p1
 popd
 
 %build
@@ -128,7 +132,8 @@ export CFLAGS
   --with-default-kcode=none \
   --enable-shared \
   --enable-ipv6 \
-  --with-lookup-order-hack=INET
+  --with-lookup-order-hack=INET \
+  --disable-rpath
 
 make RUBY_INSTALL_NAME=ruby %{?_smp_mflags}
 %ifarch ia64
@@ -232,6 +237,9 @@ cd %{name}-%{version}
 make DESTDIR=$RPM_BUILD_ROOT install
 cd ..
 
+# generate ri doc
+DESTDIR=$RPM_BUILD_ROOT LD_LIBRARY_PATH=$RPM_BUILD_ROOT%{_libdir} $RPM_BUILD_ROOT%{_bindir}/ruby -I $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version} -I $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/ext/syck -I $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/lib $RPM_BUILD_ROOT%{_bindir}/rdoc --all --ri-system $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}
+
 # XXX: installing irb
 chmod 555 $RPM_BUILD_ROOT%{_bindir}/irb
 install %{SOURCE5} $RPM_BUILD_ROOT%{_mandir}/man1/
@@ -287,9 +295,14 @@ cp /dev/null ruby-libs.files
 cp /dev/null ruby-mode.files
 fgrep '.el' ruby-all.files >> ruby-mode.files
 
+# for ri
+cp /dev/null ri.files
+fgrep '%{_datadir}/ri' ruby-all.files >> ri.files
+fgrep '%{_bindir}/ri' ruby-all.files >> ri.files
+
 # for ruby.rpm
 sort ruby-all.files \
- ruby-libs.files ruby-devel.files ruby-tcltk.files irb.files ruby-mode.files | 
+ ruby-libs.files ruby-devel.files ruby-tcltk.files irb.files ruby-mode.files ri.files | 
  uniq -u > ruby.files
 
 # for arch-dependent dir
@@ -357,6 +370,10 @@ rm -rf tmp-ruby-docs
 %dir %{_libdir}/ruby/%{rubyxver}/irb/lc
 %dir %{_libdir}/ruby/%{rubyxver}/irb/lc/ja
 
+%files -n ri -f ri.files
+%defattr(-, root, root)
+%dir %{_datadir}/ri
+
 %files docs
 %defattr(-, root, root)
 %doc tmp-ruby-docs/ruby-docs/*
@@ -367,6 +384,14 @@ rm -rf tmp-ruby-docs
 %dir %{_datadir}/emacs/site-lisp/ruby-mode
 
 %changelog
+* Wed Jan  5 2005 Akira TAGOH <tagoh@redhat.com> - 1.8.2-1
+- New upstream release.
+- ruby-1.8.1-ia64-stack-limit.patch: removed - it's no longer needed.
+- ruby-1.8.1-cgi_session_perms.patch: likewise.
+- ruby-1.8.1-cgi-dos.patch: likewise.
+- generated Ruby interactive documentation - senarated package.
+  it's now provided as ri package. (#141806)
+
 * Thu Nov 11 2004 Jeff Johnson <jbj@jbj.org> 1.8.1-10
 - rebuild against db-4.3.21.
 
