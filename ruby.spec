@@ -1,148 +1,200 @@
-%ifarch alpha
-%define optflags -O2 -mieee -g -Wall -pipe -D_GNU_SOURCE
-%endif
-
 %define manver		1.4.6
-Summary: An interpreter of object-oriented scripting language.
-Name: ruby
-Version: 1.6.4
-Release: 4
-License: Dual-licensed GPL/Artistic-like
-Group: Development/Languages
-Source0: ftp://ftp.ruby-lang.org/pub/lang/%{name}/%{name}-%{version}.tar.bz2
-Source1: ftp://ftp.netlab.co.jp/pub/lang/%{name}/doc/%{name}-man-%{manver}.tar.bz2
-Source2: ftp://ftp.netlab.co.jp/pub/lang/%{name}/doc/%{name}-man-%{manver}-jp.tar.bz2
-Source3: ftp://ftp.netlab.co.jp/pub/lang/%{name}/doc/rubyfaq-990927.tar.bz2
-Source4: ftp://ftp.netlab.co.jp/pub/lang/%{name}/doc/rubyfaq-jp-990927.tar.bz2
-Source5: irb.1
-URL: http://www.ruby-lang.org/
-BuildRoot: %{_tmppath}/%{name}-%{version}-root
-BuildRequires: readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl tk autoconf gcc
-Requires: %{name}-libs = %{version}-%{release}
-Patch: ruby-1.6.4-warnings.patch
-Patch1: ruby-1.6.4-mowarnings.patch
-Patch2: ruby-1.6.4-stacklevel.patch
+%define	rubyxver	1.6
+%define	sitedir		%{_prefix}/local/lib/site_ruby/%{rubyxver}
+
+Name:		ruby
+Version:	1.6.7
+Release:	1
+License:	Distributable
+URL:		http://www.ruby-lang.org/
+BuildRoot:	%{_tmppath}/%{name}-%{version}-root
+BuildRequires:	readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl tk XFree86-devel autoconf gcc
+BuildPreReq:	emacs xemacs
+
+
+## all archives are re-compressed with bzip2 instead of gzip
+##Source0:	ftp://ftp.ruby-lang.org/pub/%{name}/%{name}-%{version}.tar.gz
+Source0:	%{name}-%{version}.tar.bz2
+##Source1:	ftp://ftp.ruby-lang.org/pub/%{name}/doc/%{name}-man-%{manver}.tar.gz
+Source1:	%{name}-man-%{manver}.tar.bz2
+##Source2:	ftp://ftp.ruby-lang.org/pub/%{name}/doc/%{name}-man-%{manver}-jp.tar.gz
+Source2:	%{name}-man-%{manver}-jp.tar.bz2
+##Source3:	ftp://ftp.ruby-lang.org/pub/%{name}/doc/rubyfaq-990927.tar.gz
+Source3:	rubyfaq-990927.tar.bz2
+##Source4:	ftp://ftp.ruby-lang.org/pub/%{name}/doc/rubyfaq-jp-990927.tar.gz
+Source4:	rubyfaq-jp-990927.tar.bz2
+Source5:	irb.1
+Source10:	ruby-mode-init.el
+
+Patch500:	ruby-1.6.7-500-marshal-proc.patch
+Patch501:	ruby-1.6.7-501-class-var.patch
+Patch900:	ruby-1.6.6-900-XXX-strtod.patch
+
+
+Summary:	An interpreter of object-oriented scripting language
+Group:		Development/Languages
+Requires:	%{name}-libs = %{version}-%{release}
 
 %description
 Ruby is the interpreted scripting language for quick and easy
-object-oriented programming. It has many features to process text
-files and to do system management tasks (as in Perl). It is simple,
+object-oriented programming.  It has many features to process text
+files and to do system management tasks (as in Perl).  It is simple,
 straight-forward, and extensible.
 
+
 %package libs
-Summary: Libraries necessary to run Ruby.
-Group: Development/Libraries
-URL: http://www.ruby-lang.org/
-Provides: libruby
-Obsoletes: libruby
+Summary:	Libraries necessary to run Ruby.
+Group:		Development/Libraries
+Provides:	libruby
+Obsoletes:	libruby
 
 %description libs
 This package includes the libruby, necessary to run Ruby.
 
 
 %package devel
-Summary: A Ruby development environment.
-Group: Development/Languages
-Requires: %{name} = %{version}-%{release}
-URL: http://www.ruby-lang.org/
+Summary:	A Ruby development environment.
+Group:		Development/Languages
+Requires:	%{name}-libs = %{version}-%{release}
 
 %description devel
 Header files and libraries for building a extension library for the
 Ruby or an application embedded Ruby.
 
+
 %package tcltk
-Summary: Tcl/Tk interface for scripting language Ruby.
-Group: Development/Languages
-Requires: %{name}-libs = %{version}-%{release}
-URL: http://www.ruby-lang.org/
+Summary:	Tcl/Tk interface for scripting language Ruby.
+Group:		Development/Languages
+Requires:	%{name}-libs = %{version}-%{release}
 
 %description tcltk
 Tcl/Tk interface for the object-oriented scripting language Ruby.
 
 
 %package -n irb
-Summary: The Intaractive Ruby.
-Group: Development/Languages
-Requires: %{name}-libs = %{version}-%{release}
-URL: http://www.ruby-lang.org/
+Summary:	The Intaractive Ruby.
+Group:		Development/Languages
+Requires:	%{name} = %{version}-%{release}
 
 %description -n irb
-IRB, Interactive RuBy, evaluates ruby expressions from the terminal.
+The irb is acronym for Interactive RuBy.  It evaluates ruby expression
+from the terminal.
 
 
 %package docs
-Summary: Manuals and FAQs for scripting language Ruby.
-Group: Documentation
-URL: http://www.ruby-lang.org/
+Summary:	Manuals and FAQs for scripting language Ruby.
+Group:		Documentation
 
 %description docs
 Manuals and FAQs for the object-oriented scripting language Ruby.
 
 
+%package mode
+Summary:	Emacs Lisp ruby-mode for the scripting language Ruby
+Group:		Applications/Editors
+Requires:	emacs
+
+%description mode
+Emacs Lisp ruby-mode for the object-oriented scripting language Ruby.
+
+
+%package mode-xemacs
+Summary:	Emacs Lisp ruby-mode for the scripting language Ruby
+Group:		Applications/Editors
+Requires:	xemacs
+ExcludeArch:	alpha
+
+%description mode-xemacs
+Emacs Lisp ruby-mode for the object-oriented scripting language Ruby.
+
+
 %prep
 %setup -q -c -a 1 -a 2 -a 3 -a 4
-%patch -p1
-%patch1 -p1
-%patch2 -p1
+pushd %{name}-%{version}
+%patch500 -p1
+%patch501 -p1
+%patch900 -p1
+popd
 
 %build
-cd %{name}-%{version}
-%configure \
+pushd %{name}-%{version}
+autoconf
+
+%ifarch alpha ia64
+rb_cv_func_strtod=no CFLAGS="-O0" CXXFLAGS="-O0" ./configure \
+%else
+rb_cv_func_strtod=no ./configure \
+%endif
+  --prefix=%{_prefix} \
+  --mandir='${prefix}/share/man' \
+  --sysconfdir=%{_sysconfdir} \
+  --localstatedir=%{_localstatedir} \
+  --with-sitedir='${prefix}/local/lib/site_ruby/%{rubyxver}' \
   --with-default-kcode=none \
   --with-dbm-include=/usr/include/db1 \
   --enable-shared \
   --enable-ipv6 \
-  --with-lookup-order-hack=INET
+  --with-lookup-order-hack=INET \
+  %{_target_cpu}-%{_target_os}
 
-make %{?_smp_mflags}
-make %{?_smp_mflags} test
+make
+make test
+
+popd
 
 %install
-rm -rf ${RPM_BUILD_ROOT}
+[ -n "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != / ] && rm -rf $RPM_BUILD_ROOT
+
+%{__mkdir_p} $RPM_BUILD_ROOT%{_datadir}/emacs/site-lisp/ruby-mode
+%{__mkdir_p} $RPM_BUILD_ROOT%{_datadir}/emacs/site-lisp/site-start.d
+%{__mkdir_p} $RPM_BUILD_ROOT%{_libdir}/xemacs/xemacs-packages/lisp/ruby-mode
+%{__mkdir_p} $RPM_BUILD_ROOT%{_libdir}/xemacs/xemacs-packages/lisp/site-start.d
 
 # installing documents and exapmles...
 mkdir tmp-ruby-docs
 cd tmp-ruby-docs
 
 # for ruby.rpm
-mkdir ruby
+mkdir ruby ruby-libs ruby-devel ruby-tcltk ruby-docs irb
 cd ruby
-(cd ../../%{name}-%{version} && 
- tar cf - misc sample lib/README*) | tar xvf -
-(cd ../../%{name}-%{version} && 
+(cd ../../%{name}-%{version} && tar cf - sample) | tar xvf -
+cd ..
+
+# for ruby-libs
+cd ruby-libs
+(cd ../../%{name}-%{version} && tar cf - lib/README*) | tar xvf -
+(cd ../../%{name}-%{version}/doc && tar cf - .) | tar xvf -
+(cd ../../%{name}-%{version} &&
  tar cf - `find ext \
   -mindepth 1 \
   \( -path '*/sample/*' -o -path '*/demo/*' \) -o \
   \( -name '*.rb' -not -path '*/lib/*' -not -name extconf.rb \) -o \
   \( -name 'README*' -o -name '*.txt*' -o -name 'MANUAL*' \)`) | tar xvf -
-
-# fixing `#!' paths
-for f in `find . -type f`
-do
-  sed -e 's,^#![ 	]*\([^ 	]*\)/\(ruby\|with\|perl\|env\),#!/usr/bin/\2,' < $f > $f.n
-  mv -f $f.n $f
-done
-
 cd ..
-# for ruby-devel.rpm
-mkdir ruby-devel
+
+# for irb
+cd irb
+mv ../ruby-libs/irb/* .
+rmdir ../ruby-libs/irb
+cd ..
+
+# for ruby-devel
 cd ruby-devel
 
 cd ..
-# for ruby-tcltk.rpm
-mkdir ruby-tcltk
+
+# for ruby-tcltk
 cd ruby-tcltk
 for target in tcltklib tk
 do
- (cd ../ruby && 
+ (cd ../ruby-libs &&
   tar cf - `find . -path "*/$target/*"`) | tar xvf -
- (cd ../ruby && 
+ (cd ../ruby-libs &&
   rm -rf `find . -name "$target" -type d`)
 done
-
 cd ..
-# for ruby-docs.rpm
-mkdir ruby-docs
+
+# for ruby-docs
 cd ruby-docs
 mkdir doc-en doc-ja faq-en faq-ja
 (cd ../../ruby-man-`echo %{manver} | sed -e 's/\.[0-9]*$//'` && tar cf - .) | (cd doc-en && tar xvf -)
@@ -158,36 +210,78 @@ mkdir doc-en doc-ja faq-en faq-ja
   rm -f $f; \
  done)
 
+cd ..
+
+# fixing `#!' paths
+for f in `find . -type f`
+do
+  sed -e 's,^#![ 	]*\([^ 	]*\)/\(ruby\|with\|perl\|env\),#!/usr/bin/\2,' < $f > $f.n
+  if ! cmp $f $f.n
+  then
+    mv -f $f.n $f
+  else
+    rm -f $f.n
+  fi
+done
 
 # done
-cd ../..
+cd ..
 
 # installing binaries ...
 cd %{name}-%{version}
-make DESTDIR=${RPM_BUILD_ROOT} install
+make DESTDIR=$RPM_BUILD_ROOT install
 cd ..
 
 # XXX: installing irb
-#mv tmp-ruby-docs/ruby/sample/irb.rb $RPM_BUILD_ROOT%{_bindir}/irb
 chmod 555 $RPM_BUILD_ROOT%{_bindir}/irb
-install ${RPM_SOURCE_DIR}/irb.1 $RPM_BUILD_ROOT%{_mandir}/man1/
+install %{SOURCE5} $RPM_BUILD_ROOT%{_mandir}/man1/
+
+# installing ruby-mode
+cd %{name}-%{version}
+cp misc/*.el $RPM_BUILD_ROOT%{_datadir}/emacs/site-lisp/ruby-mode
+cp misc/*.el $RPM_BUILD_ROOT%{_libdir}/xemacs/xemacs-packages/lisp/ruby-mode
+
+## for ruby-mode
+pushd $RPM_BUILD_ROOT%{_datadir}/emacs/site-lisp/ruby-mode
+cat <<EOF > path.el
+(setq load-path (cons "." load-path) byte-compile-warnings nil)
+EOF
+emacs --no-site-file -q -batch -l path.el -f batch-byte-compile *.el
+rm -f path.el*
+popd
+install -m 644 %{SOURCE10} \
+	$RPM_BUILD_ROOT%{_datadir}/emacs/site-lisp/site-start.d
+
+## for ruby-mode-xemacs
+pushd $RPM_BUILD_ROOT%{_libdir}/xemacs/xemacs-packages/lisp/ruby-mode
+cat <<EOF > path.el
+(setq load-path (cons "." load-path) byte-compile-warnings nil)
+EOF
+xemacs -no-site-file -q -batch -l path.el -f batch-byte-compile *.el
+rm -f path.el*
+popd
+install -m 644 %{SOURCE10} \
+	$RPM_BUILD_ROOT%{_libdir}/xemacs/xemacs-packages/lisp/site-start.d
+
+cd ..
 
 # listing all files in ruby-all.files
 (find $RPM_BUILD_ROOT%{_bindir} \
+      $RPM_BUILD_ROOT%{_datadir} \
       $RPM_BUILD_ROOT%{_libdir} \
       $RPM_BUILD_ROOT%{_mandir} \
       -type f -o -type l) | 
- sort | sed -e "s,^$RPM_BUILD_ROOT,," \
-            -e "s,\(/man/man./.*\)$,\1*," > ruby-all.files
+ sort | uniq | sed -e "s,^$RPM_BUILD_ROOT,," \
+                   -e "s,\(/man/man./.*\)$,\1*," > ruby-all.files
 egrep '(\.[ah]|libruby\.so)$' ruby-all.files > ruby-devel.files
 
 # for ruby-tcltk.rpm
 cp /dev/null ruby-tcltk.files
-for f in `cd %{name}-%{version}/ext/tk && find lib -type f; echo *.so`
+for f in `find %{name}-%{version}/ext/tk/lib -type f; echo %{name}-%{version}/ext/tk/*.so`
 do
   grep "/`basename $f`$" ruby-all.files >> ruby-tcltk.files
 done
-for f in `cd %{name}-%{version}/ext/tcltklib && find lib -type f; echo *.so`
+for f in `find %{name}-%{version}/ext/tcltklib/lib -type f; echo %{name}-%{version}/ext/tcltklib/*.so`
 do
   grep "/`basename $f`$" ruby-all.files >> ruby-tcltk.files
 done
@@ -198,31 +292,55 @@ fgrep 'irb' ruby-all.files > irb.files
 # for ruby-libs
 cp /dev/null ruby-libs.files
 (fgrep    '%{_libdir}' ruby-all.files; 
- fgrep -h '%{_libdir}' ruby-devel.files ruby-tcltk.files irb.files) | 
+ fgrep -h '%{_libdir}' ruby-devel.files ruby-tcltk.files irb.files) | egrep -v "elc?$" | \
  sort | uniq -u > ruby-libs.files
+
+# for ruby-mode
+cp /dev/null ruby-mode.files
+fgrep '.el' ruby-all.files | grep -v xemacs >> ruby-mode.files
+
+# for ruby-mode-xemacs
+cp /dev/null ruby-mode-xemacs.files
+fgrep '.el' ruby-all.files | grep -v share >> ruby-mode-xemacs.files
 
 # for ruby.rpm
 sort ruby-all.files \
- ruby-libs.files ruby-devel.files ruby-tcltk.files irb.files | 
+ ruby-libs.files ruby-devel.files ruby-tcltk.files irb.files ruby-mode.files ruby-mode-xemacs.files | 
  uniq -u > ruby.files
 
-strip ${RPM_BUILD_ROOT}%{_bindir}/%{name}
+strip $RPM_BUILD_ROOT%{_bindir}/%{name}
 
 %clean
-rm -rf ${RPM_BUILD_ROOT}
+[ -n "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != / ] && rm -rf $RPM_BUILD_ROOT
 rm -f *.files
 rm -rf tmp-ruby-docs
 
-%post libs -p /sbin/ldconfig
+%post libs
+/sbin/ldconfig
+if [ -w %{_prefix}/local/lib -a ! -e %{sitedir} ]; then
+	mkdir -p %{sitedir} %{sitedir}/%{_target_cpu}-%{_target_os}
+	chown root.root %{sitedir} %{sitedir}/%{_target_cpu}-%{_target_os}
+	chmod 2775 %{sitedir} %{sitedir}/%{_target_cpu}-%{_target_os}
+fi
 
-%postun libs -p /sbin/ldconfig
+%postun libs
+/sbin/ldconfig
+if [ "$1" = 0 ]; then
+	if [ -w %{sitedir} -a -e %{sitedir}/%{_target_cpu}-%{_target_os} ]; then
+		rmdir %{sitedir}/%{_target_cpu}-%{_target_os} 2>/dev/null || true
+	fi
+	if [ -w %{_prefix}/local/lib -a -e %{sitedir} ]; then
+		rmdir %{sitedir} 2>/dev/null || true
+	fi
+fi
 
 %files -f ruby.files
 %defattr(-, root, root)
 %doc %{name}-%{version}/README
-%lang(ja) %doc %{name}-%{version}/README.jp
+%lang(ja) %doc %{name}-%{version}/README.ja
 %doc %{name}-%{version}/COPYING*
 %doc %{name}-%{version}/ChangeLog
+%doc %{name}-%{version}/LEGAL
 %doc %{name}-%{version}/ToDo 
 %doc %{name}-%{version}/doc/NEWS 
 %doc tmp-ruby-docs/ruby/*
@@ -230,13 +348,16 @@ rm -rf tmp-ruby-docs
 %files devel -f ruby-devel.files
 %defattr(-, root, root)
 %doc %{name}-%{version}/README.EXT
-%lang(ja) %doc %{name}-%{version}/README.EXT.jp
+%lang(ja) %doc %{name}-%{version}/README.EXT.ja
 
 %files libs -f ruby-libs.files
 %defattr(-, root, root)
 %doc %{name}-%{version}/README
-%lang(ja) %doc %{name}-%{version}/README.jp
-%doc %{name}-%{version}/doc/NEWS 
+%lang(ja) %doc %{name}-%{version}/README.ja
+%doc %{name}-%{version}/COPYING*
+%doc %{name}-%{version}/ChangeLog
+%doc %{name}-%{version}/LEGAL
+%doc tmp-ruby-docs/ruby-libs/*
 
 %files tcltk -f ruby-tcltk.files
 %defattr(-, root, root)
@@ -244,14 +365,53 @@ rm -rf tmp-ruby-docs
 
 %files -n irb -f irb.files
 %defattr(-, root, root)
+%doc tmp-ruby-docs/irb/*
 
 %files docs
 %defattr(-, root, root)
 %doc tmp-ruby-docs/ruby-docs/*
 
+%files mode -f ruby-mode.files 
+%defattr(-, root, root)
+%doc %{name}-%{version}/misc/README
+
+%files mode-xemacs -f ruby-mode-xemacs.files
+%defattr(-, root, root)
+%doc %{name}-%{version}/misc/README
+
 %changelog
-* Thu Dec 06 2001 Elliot Lee <sopwith@redhat.com> 1.6.4-4
-- Added some patches to make it build on alpha
+* Fri Mar  8 2002 Akira TAGOH <tagoh@redhat.com> 1.6.7-1
+- New upstream release.
+- ruby-1.6.6-100.patch, ruby-1.6.6-501-ruby-mode.patch:
+  removed. these patches no longer should be needed.
+- ruby-1.6.7-500-marshal-proc.patch: applied a fix patch.
+  (ruby-dev#16178: Marshal::dump should call Proc#call.)
+- ruby-1.6.7-501-class-var.patch: applied a fix patch.
+  (ruby-talk#35157: class vars broken in 1.6.7)
+
+* Wed Feb 27 2002 Akira TAGOH <tagoh@redhat.com> 1.6.6-5
+- Disable alpha because nothing is xemacs for alpha now.
+
+* Tue Feb  5 2002 Akira TAGOH <tagoh@redhat.com> 1.6.6-3
+- Fixed the duplicate files.
+
+* Tue Feb  5 2002 Akira TAGOH <tagoh@redhat.com> 1.6.6-2
+- Fixed the missing %%defattr
+
+* Fri Feb  1 2002 Akira TAGOH <tagoh@redhat.com> 1.6.6-1
+- New upstream release.
+- Applied bug fix patches:
+  - ruby-1.6.6-501-ruby-mode.patch: ruby-talk#30479: disables font-lock
+    coloring.
+  - ruby-1.6.6-100.patch: ruby-talk#30203: Ruby 1.6.6 bug and fix
+                          ruby-list#33047: regex bug
+                          PR#230: problem with -d in 1.6.6
+- Added ruby-mode and ruby-mode-xemacs packages.
+- Ruby works fine for ia64. so re-enable to build with ia64.
+  (probably it should be worked for alpha)
+
+* Wed Jan 09 2002 Tim Powers <timp@redhat.com>
+- automated rebuild
 
 * Thu Jul 19 2001 Bernhard Rosenkraenzer <bero@redhat.com> 1.6.4-2
 - Remove Japanese description and summaries; they belong in specspo and
