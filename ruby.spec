@@ -1,124 +1,86 @@
-%define	rubyver	1.4.6
-%define manver	%{rubyver}
-%define rpmrel	2
-Summary: An interpeter of object-oriented scripting language
+%define manver		1.4.6
+Summary: An interpreter of object-oriented scripting language
 Name: ruby
-Version: %{rubyver}
-Release: %{rpmrel}
-#Distribution: 
-Copyright: distributable
+Version: 1.6.4
+Release: 2
+License: Dual-licensed GPL/Artistic-like
 Group: Development/Languages
-Source0: ftp://ftp.netlab.co.jp/pub/lang/%{name}/%{name}-%{version}.tar.gz
-Source1: ftp://ftp.netlab.co.jp/pub/lang/%{name}/doc/%{name}-man-%{manver}.tar.gz
-Source2: ftp://ftp.netlab.co.jp/pub/lang/%{name}/doc/%{name}-man-%{manver}-jp.tar.gz
-Source3: ftp://ftp.netlab.co.jp/pub/lang/%{name}/doc/rubyfaq-990927.tar.gz
-Source4: ftp://ftp.netlab.co.jp/pub/lang/%{name}/doc/rubyfaq-jp-990927.tar.gz
-Patch1: ruby-jcode.rb-utf8.patch
-Patch2: ruby_cvs.2000082917.patch
+Source0: ftp://ftp.ruby-lang.org/pub/lang/%{name}/%{name}-%{version}.tar.bz2
+Source1: ftp://ftp.netlab.co.jp/pub/lang/%{name}/doc/%{name}-man-%{manver}.tar.bz2
+Source2: ftp://ftp.netlab.co.jp/pub/lang/%{name}/doc/%{name}-man-%{manver}-jp.tar.bz2
+Source3: ftp://ftp.netlab.co.jp/pub/lang/%{name}/doc/rubyfaq-990927.tar.bz2
+Source4: ftp://ftp.netlab.co.jp/pub/lang/%{name}/doc/rubyfaq-jp-990927.tar.bz2
+Source5: irb.1
 URL: http://www.ruby-lang.org/
-Prefix: /usr
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
-BuildRequires: readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl tk
-Vendor: Red Hat, Inc.
-Packager: akira yamada <akira@redhat.com>
-Summary(ja): オブジェクト指向言語Rubyインタプリタ
+BuildRequires: readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl tk autoconf gcc
+Requires: %{name}-libs = %{version}-%{release}
+ExcludeArch: alpha ia64
 
 %description
-Ruby is the interpreted scripting language for quick and
-easy object-oriented programming.  It has many features to
-process text files and to do system management tasks (as in
-Perl).  It is simple, straight-forward, and extensible.
+Ruby is the interpreted scripting language for quick and easy
+object-oriented programming.  It has many features to process text
+files and to do system management tasks (as in Perl).  It is simple,
+straight-forward, and extensible.
 
-%description -l ja
-Rubyはシンプルかつ強力なオブジェクト指向スクリプト言語です．
-Rubyは最初から純粋なオブジェクト指向言語として設計されていま
-すから，オブジェクト指向プログラミングを手軽に行う事が出来ま
-す．もちろん通常の手続き型のプログラミングも可能です．
+%package libs
+Summary: Libraries necessary to run Ruby.
+Group: Development/Libraries
+URL: http://www.ruby-lang.org/
+Provides: libruby
+Obsoletes: libruby
 
-Rubyはテキスト処理関係の能力などに優れ，Perlと同じくらい強力
-です．さらにシンプルな文法と，例外処理やイテレータなどの機構
-によって，より分かりやすいプログラミングが出来ます．
+%description libs
+This package includes the libruby, necessary to run Ruby.
 
-%package -n ruby-devel
+%package devel
 Summary: A Ruby development environment.
 Group: Development/Languages
-Requires: ruby = %{PACKAGE_VERSION}
+Requires: %{name} = %{version}-%{release}
 URL: http://www.ruby-lang.org/
 
-%description -n ruby-devel
+%description devel
 Header files and libraries for building a extension library for the
 Ruby or an application embedded Ruby.
 
-%description -n ruby-devel -l ja
-Rubyのための拡張ライブラリやRubyを組み込んだアプリケーションを作るため
-に必要となるへッダファイルやライブラリです．
-
-%package -n ruby-tcltk
+%package tcltk
 Summary: Tcl/Tk interface for scripting language Ruby.
 Group: Development/Languages
-Requires: ruby = %{PACKAGE_VERSION}
+Requires: %{name}-libs = %{version}-%{release}
 URL: http://www.ruby-lang.org/
 
-%description -n ruby-tcltk
+%description tcltk
 Tcl/Tk interface for the object-oriented scripting language Ruby.
-
-%description -n ruby-tcltk -l ja
-RubyにTcl/Tkライブラリへのインタフェースを提供する拡張ライブラリです．
 
 %package -n irb
 Summary: The Intaractive Ruby.
 Group: Development/Languages
-Requires: ruby = %{PACKAGE_VERSION}
+Requires: %{name}-libs = %{version}-%{release}
 URL: http://www.ruby-lang.org/
 
 %description -n irb
 The irb is acronym for Interactive RuBy.  It evaluates ruby expression
 from the terminal.
 
-%description -n irb -l ja
-irbとはInteractive RuByの略で，対話的にRubyの式を入力し，評価させるこ
-とが可能です．
-
-%package -n ruby-docs
+%package docs
 Summary: Manuals and FAQs for scripting language Ruby.
 Group: Documentation
 URL: http://www.ruby-lang.org/
 
-%description -n ruby-docs
+%description docs
 Manuals and FAQs for the object-oriented scripting language Ruby.
 
-%description -n ruby-docs -l ja
-オブジェクト指向スクリプト言語Rubyについてのマ二ュアルとFAQです．
-
 %prep
-
 %setup -q -c -a 1 -a 2 -a 3 -a 4
 
-cd %{name}-%{version}
-#%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-
-#%patch10 -p1
-
-cd ../../..
-
-
 %build
-
 cd %{name}-%{version}
-#CFLAGS="${RPM_OPT_FLAGS}" ./configure \
-#  --prefix=%{prefix} \
-#  --mandir=%{prefix}/man \
-#  --with-default-kcode=none \
-#  --with-dbm-include=/usr/include/db1 \
-#  --enable-shared \
-#  --enable-ipv6 \
-#  --with-lookup-order-hack=INET
-#  ${RPM_ARCH}-linux
+%ifarch alpha
+autoconf
+CFLAGS="-O0" CXXFLAGS="-O0" ./configure \
+%else
 %configure \
-  --prefix=%{prefix} \
-  --mandir=%{prefix}/share/man \
+%endif
   --with-default-kcode=none \
   --with-dbm-include=/usr/include/db1 \
   --enable-shared \
@@ -128,11 +90,7 @@ cd %{name}-%{version}
 make
 make test
 
-cd ..
-
-
 %install
-
 rm -rf ${RPM_BUILD_ROOT}
 
 # installing documents and exapmles...
@@ -145,10 +103,10 @@ cd ruby
 (cd ../../%{name}-%{version} && 
  tar cf - misc sample lib/README*) | tar xvf -
 (cd ../../%{name}-%{version} && 
- tar cf - `find ext 
-  -mindepth 1 
-  \( -path '*/sample/*' -o -path '*/demo/*' \) -o 
-  \( -name '*.rb' -not -path '*/lib/*' -not -name extconf.rb \) -o 
+ tar cf - `find ext \
+  -mindepth 1 \
+  \( -path '*/sample/*' -o -path '*/demo/*' \) -o \
+  \( -name '*.rb' -not -path '*/lib/*' -not -name extconf.rb \) -o \
   \( -name 'README*' -o -name '*.txt*' -o -name 'MANUAL*' \)`) | tar xvf -
 
 # fixing `#!' paths
@@ -203,15 +161,17 @@ make DESTDIR=${RPM_BUILD_ROOT} install
 cd ..
 
 # XXX: installing irb
-mv tmp-ruby-docs/ruby/sample/irb.rb $RPM_BUILD_ROOT%{prefix}/bin/irb
-chmod 555 $RPM_BUILD_ROOT%{prefix}/bin/irb
+#mv tmp-ruby-docs/ruby/sample/irb.rb $RPM_BUILD_ROOT%{_bindir}/irb
+chmod 555 $RPM_BUILD_ROOT%{_bindir}/irb
+install ${RPM_SOURCE_DIR}/irb.1 $RPM_BUILD_ROOT%{_mandir}/man1/
 
 # listing all files in ruby-all.files
-(find $RPM_BUILD_ROOT%{prefix}/bin \
-      $RPM_BUILD_ROOT%{prefix}/lib \
-      $RPM_BUILD_ROOT%{prefix}/man \
+(find $RPM_BUILD_ROOT%{_bindir} \
+      $RPM_BUILD_ROOT%{_libdir} \
+      $RPM_BUILD_ROOT%{_mandir} \
       -type f -o -type l) | 
- sort | sed -e "s,^$RPM_BUILD_ROOT,," > ruby-all.files
+ sort | sed -e "s,^$RPM_BUILD_ROOT,," \
+            -e "s,\(/man/man./.*\)$,\1*," > ruby-all.files
 egrep '(\.[ah]|libruby\.so)$' ruby-all.files > ruby-devel.files
 
 # for ruby-tcltk.rpm
@@ -226,50 +186,158 @@ do
 done
 
 # for irb.rpm
-egrep 'irb' ruby-all.files > irb.files
+fgrep 'irb' ruby-all.files > irb.files
+
+# for ruby-libs
+cp /dev/null ruby-libs.files
+(fgrep    '%{_libdir}' ruby-all.files; 
+ fgrep -h '%{_libdir}' ruby-devel.files ruby-tcltk.files irb.files) | 
+ sort | uniq -u > ruby-libs.files
 
 # for ruby.rpm
 sort ruby-all.files \
- ruby-devel.files ruby-tcltk.files irb.files | 
+ ruby-libs.files ruby-devel.files ruby-tcltk.files irb.files | 
  uniq -u > ruby.files
 
-strip ${RPM_BUILD_ROOT}%{prefix}/bin/%{name}
+strip ${RPM_BUILD_ROOT}%{_bindir}/%{name}
 
 %clean
 rm -rf ${RPM_BUILD_ROOT}
 rm -f *.files
 rm -rf tmp-ruby-docs
 
-%post -p /sbin/ldconfig -n ruby
+%post libs -p /sbin/ldconfig
 
-%postun -p /sbin/ldconfig -n ruby
+%postun libs -p /sbin/ldconfig
 
-%files -f ruby.files -n ruby
+%files -f ruby.files
 %defattr(-, root, root)
 %doc %{name}-%{version}/README
-%doc %{name}-%{version}/README.jp
+%lang(ja) %doc %{name}-%{version}/README.jp
 %doc %{name}-%{version}/COPYING*
 %doc %{name}-%{version}/ChangeLog
 %doc %{name}-%{version}/ToDo 
+%doc %{name}-%{version}/doc/NEWS 
 %doc tmp-ruby-docs/ruby/*
 
-%files -f ruby-devel.files -n ruby-devel
+%files devel -f ruby-devel.files
 %defattr(-, root, root)
 %doc %{name}-%{version}/README.EXT
-%doc %{name}-%{version}/README.EXT.jp
+%lang(ja) %doc %{name}-%{version}/README.EXT.jp
 
-%files -f ruby-tcltk.files -n ruby-tcltk
+%files libs -f ruby-libs.files
+%defattr(-, root, root)
+%doc %{name}-%{version}/README
+%lang(ja) %doc %{name}-%{version}/README.jp
+%doc %{name}-%{version}/doc/NEWS 
+
+%files tcltk -f ruby-tcltk.files
 %defattr(-, root, root)
 %doc tmp-ruby-docs/ruby-tcltk/ext/*
 
-%files -f irb.files -n irb
+%files -n irb -f irb.files
 %defattr(-, root, root)
 
-%files -n ruby-docs
+%files docs
 %defattr(-, root, root)
 %doc tmp-ruby-docs/ruby-docs/*
 
 %changelog
+* Thu Jul 19 2001 Bernhard Rosenkraenzer <bero@redhat.com> 1.6.4-2
+- Remove Japanese description and summaries; they belong in specspo and
+  break rpm
+- Clean up specfile
+- Mark language specific files (README.jp) as such
+- bzip2 sources
+- rename the libruby package to ruby-libs for consistency
+- Exclude ia64 (doesn't build - the code doesn't seem to be 64-bit clean
+  [has been excluded on alpha forever])
+
+* Tue Jul 17 2001 Akira TAGOH <tagoh@redhat.com> 1.6.4-1
+- rebuild for Red Hat 7.2
+
+* Mon Jun 04 2001 akira yamada <akira@vinelinux.org>
+- upgrade to nwe upstream version 1.6.4.
+
+* Mon Apr 02 2001 akira yamada <akira@vinelinux.org>
+- applied patch:
+  - fixed method cache bug. etc. (Patch103, Patch104)
+
+* Tue Mar 27 2001 akira yamada <akira@vinelinux.org>
+- applied patch:
+  - fixed marshal for bignum bug.
+  - fixed scope of constant variables bug.
+
+* Tue Mar 20 2001 akira yamada <akira@vinelinux.org>
+- upgraded to new upstream version 1.6.3.
+
+* Fri Feb 09 2001 akira yamada <akira@vinelinux.org>
+- fixed bad group for libruby.
+- Applied patch: upgraded to cvs version (2001-02-08):
+  fixed minor bugs.
+
+* Thu Jan 18 2001 akira yamada <akira@vinelinux.org>
+- Applied patch: upgraded to cvs version (2001-01-15):
+  fixed minor bugs(e.g. ruby makes extention librares too large...).
+
+* Wed Jan 10 2001 akira yamada <akira@vinelinux.org>
+- Applied patch: upgraded to cvs version (2001-01-09):
+  fixed minor bugs.
+
+* Sat Dec 30 2000 akira yamada <akira@vinelinux.org>
+- Applied bug fix patch.
+
+* Mon Dec 25 2000 akira yamada <akira@vinelinux.org>
+- Updated to new upstream version 1.6.2.
+
+* Fri Dec 22 2000 akira yamada <akira@vinelinux.org>
+- Removed ruby_cvs.2000122019.patch, added ruby_cvs.2000122215.patch
+  (upgraded ruby to latest cvs version, 1.6.2-preview4).
+
+* Wed Dec 20 2000 akira yamada <akira@vinelinux.org>
+- Removed ruby_cvs.2000121413.patch, added ruby_cvs.2000122019.patch
+  (upgraded ruby to latest cvs version).
+- new package: libruby
+
+* Thu Dec 14 2000 akira yamada <akira@vinelinux.org>
+- Removed ruby_cvs.2000101901.patch, added ruby_cvs.2000121413.patch
+  (upgraded ruby to latest cvs version).
+- Removed ruby-dev.11262.patch, ruby-dev.11265.patch, 
+  and ruby-dev.11268.patch (included into above patch).
+
+* Sun Nov 12 2000 MACHINO, Satoshi <machino@vinelinux.org> 1.6.1-0vl9
+- build on gcc-2.95.3
+
+* Thu Oct 19 2000 akira yamada <akira@vinelinux.org>
+- Added ruby-dev.11268.patch.
+
+* Thu Oct 19 2000 akira yamada <akira@vinelinux.org>
+- Removed ruby_cvs.2000101117.patch and added ruby_cvs.2000101901.patch
+  (upgraded ruby to latest cvs version).
+- Added ruby-dev.11262.patch.
+- Added ruby-dev.11265.patch.
+  
+* Wed Oct 11 2000 akira yamada <akira@vinelinux.org>
+- Removed ruby_cvs.2000100313.patch and added ruby_cvs.2000101117.patch
+  (upgraded ruby to latest cvs version).
+
+* Mon Oct 09 2000 akira yamada <akira@vinelinux.org>
+- Removed ruby_cvs.2000100313.patch and added ruby_cvs.2000100313.patch
+  (upgraded ruby to latest cvs version).
+
+* Tue Oct 03 2000 akira yamada <akira@vinelinux.org>
+- Removed ruby_cvs.2000100218.patch and added ruby_cvs.2000100313.patch
+  (upgraded ruby to latest cvs version).
+
+* Mon Oct 02 2000 akira yamada <akira@vinelinux.org>
+- Removed ruby_cvs.2000092718.patch and added ruby_cvs.2000100218.patch
+  (upgraded ruby to latest cvs version).
+
+* Thu Sep 27 2000 akira yamada <akira@vinelinux.org>
+- Updated to upstream version 1.6.1.
+- Removed ruby_cvs.2000082901.patch and added ruby_cvs.2000092718.patch
+  (upgraded ruby to latest cvs version).
+
 * Tue Aug 29 2000 akira yamada <akira@redhat.com>
 - Updated to version 1.4.6.
 - removed ruby-dev.10123.patch(included into ruby-1.4.6).
