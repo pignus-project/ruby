@@ -4,7 +4,7 @@
 
 Name:		ruby
 Version:	1.6.7
-Release:	1
+Release:	2
 License:	Distributable
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
@@ -17,8 +17,8 @@ BuildPreReq:	emacs xemacs
 Source0:	%{name}-%{version}.tar.bz2
 ##Source1:	ftp://ftp.ruby-lang.org/pub/%{name}/doc/%{name}-man-%{manver}.tar.gz
 Source1:	%{name}-man-%{manver}.tar.bz2
-##Source2:	ftp://ftp.ruby-lang.org/pub/%{name}/doc/%{name}-man-%{manver}-jp.tar.gz
-Source2:	%{name}-man-%{manver}-jp.tar.bz2
+##Source2:	http://www7.tok2.com/home/misc/files/%{name}/%{name}-refm-rdp-1.4.7-ja-html.zip
+Source2:	%{name}-man-%{version}-ja-html.tar.bz2
 ##Source3:	ftp://ftp.ruby-lang.org/pub/%{name}/doc/rubyfaq-990927.tar.gz
 Source3:	rubyfaq-990927.tar.bz2
 ##Source4:	ftp://ftp.ruby-lang.org/pub/%{name}/doc/rubyfaq-jp-990927.tar.gz
@@ -26,8 +26,10 @@ Source4:	rubyfaq-jp-990927.tar.bz2
 Source5:	irb.1
 Source10:	ruby-mode-init.el
 
-Patch500:	ruby-1.6.7-500-marshal-proc.patch
-Patch501:	ruby-1.6.7-501-class-var.patch
+Patch100:	ruby-1.6.7-100.patch
+Patch101:	ruby-1.6.7-101.patch
+Patch102:	ruby-1.6.7-102.patch
+Patch103:	ruby-1.6.7-103.patch
 Patch900:	ruby-1.6.6-900-XXX-strtod.patch
 
 
@@ -111,8 +113,10 @@ Emacs Lisp ruby-mode for the object-oriented scripting language Ruby.
 %prep
 %setup -q -c -a 1 -a 2 -a 3 -a 4
 pushd %{name}-%{version}
-%patch500 -p1
-%patch501 -p1
+%patch100 -p1
+%patch101 -p1
+%patch102 -p1
+%patch103 -p1
 %patch900 -p1
 popd
 
@@ -196,9 +200,9 @@ cd ..
 
 # for ruby-docs
 cd ruby-docs
-mkdir doc-en doc-ja faq-en faq-ja
+mkdir doc-en refm-ja faq-en faq-ja
 (cd ../../ruby-man-`echo %{manver} | sed -e 's/\.[0-9]*$//'` && tar cf - .) | (cd doc-en && tar xvf -)
-(cd ../../ruby-man-`echo %{manver} | sed -e 's/\.[0-9]*$//'`-jp && tar cf - .) | (cd doc-ja && tar xvf -)
+(cd ../../ruby-refm-ja && tar cf - .) | (cd refm-ja && tar xvf -)
 (cd ../../rubyfaq && tar cf - .) | (cd faq-en && tar xvf -)
 (cd ../../rubyfaq-jp && tar cf - .) | (cd faq-ja && tar xvf -)
 
@@ -380,6 +384,22 @@ fi
 %doc %{name}-%{version}/misc/README
 
 %changelog
+* Mon Mar 18 2002 Akira TAGOH <tagoh@redhat.com> 1.6.7-2
+- ruby-man-1.4.6-jp.tar.bz2: removed.
+- ruby-refm-rdp-1.4.7-ja-html.tar.bz2: uses it instead of.
+- ruby-1.6.7-500-marshal-proc.patch, ruby-1.6.7-501-class-var.patch:
+  removed.
+- ruby-1.6.7-100.patch: applied a bug fix patch.
+  (ruby-dev#16274: patch for 'wm state')
+  (PR#206ja: SEGV handle EXIT) 
+- ruby-1.6.7-101.patch: applied a bug fix patch.
+  (ruby-list#34313: singleton should not be Marshal.dump'ed)
+  (ruby-dev#16411: block local var)
+- ruby-1.6.7-102.patch: applied a bug fix patch.
+  (handling multibyte chars is partially broken)
+- ruby-1.6.7-103.patch: applied a bug fix patch.
+  (ruby-dev#16462: preserve reference for GC, but link should be cut)
+
 * Fri Mar  8 2002 Akira TAGOH <tagoh@redhat.com> 1.6.7-1
 - New upstream release.
 - ruby-1.6.6-100.patch, ruby-1.6.6-501-ruby-mode.patch:
