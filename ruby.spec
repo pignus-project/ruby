@@ -4,7 +4,7 @@
 
 Name:		ruby
 Version:	1.6.7
-Release:	8
+Release:	9
 License:	Distributable
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
@@ -337,6 +337,14 @@ fi
 %doc %{name}-%{version}/ChangeLog
 %doc %{name}-%{version}/LEGAL
 %doc tmp-ruby-docs/ruby-libs/*
+%dir %{_libdir}/ruby
+%dir %{_libdir}/ruby/%{rubyxver}
+%dir %{_libdir}/ruby/%{rubyxver}/cgi
+%dir %{_libdir}/ruby/%{rubyxver}/%{_target_cpu}-%{_target_os}
+%dir %{_libdir}/ruby/%{rubyxver}/%{_target_cpu}-%{_target_os}/digest
+%dir %{_libdir}/ruby/%{rubyxver}/net
+%dir %{_libdir}/ruby/%{rubyxver}/shell
+%dir %{_libdir}/ruby/%{rubyxver}/uri
 
 %files tcltk -f ruby-tcltk.files
 %defattr(-, root, root)
@@ -345,6 +353,9 @@ fi
 %files -n irb -f irb.files
 %defattr(-, root, root)
 %doc tmp-ruby-docs/irb/*
+%dir %{_libdir}/ruby/%{rubyxver}/irb
+%dir %{_libdir}/ruby/%{rubyxver}/irb/lc
+%dir %{_libdir}/ruby/%{rubyxver}/irb/lc/ja
 
 %files docs
 %defattr(-, root, root)
@@ -353,8 +364,12 @@ fi
 %files mode -f ruby-mode.files 
 %defattr(-, root, root)
 %doc %{name}-%{version}/misc/README
+%dir %{_datadir}/emacs/site-lisp/ruby-mode
 
 %changelog
+* Thu Jul 18 2002 Akira TAGOH <tagoh@redhat.com> 1.6.7-9
+- add the owned directory.
+
 * Fri Jul 12 2002 Akira TAGOH <tagoh@redhat.com> 1.6.7-8
 - fix typo.
 
