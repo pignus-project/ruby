@@ -4,12 +4,12 @@
 
 Name:		ruby
 Version:	1.6.7
-Release:	2
+Release:	8
 License:	Distributable
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
 BuildRequires:	readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl tk XFree86-devel autoconf gcc
-BuildPreReq:	emacs xemacs
+BuildPreReq:	emacs
 
 
 ## all archives are re-compressed with bzip2 instead of gzip
@@ -26,6 +26,7 @@ Source4:	rubyfaq-jp-990927.tar.bz2
 Source5:	irb.1
 Source10:	ruby-mode-init.el
 
+Patch1:		ruby-1.6.7-libobj.patch
 Patch100:	ruby-1.6.7-100.patch
 Patch101:	ruby-1.6.7-101.patch
 Patch102:	ruby-1.6.7-102.patch
@@ -74,12 +75,12 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 
 
 %package -n irb
-Summary:	The Intaractive Ruby.
+Summary:	The Interactive Ruby.
 Group:		Development/Languages
 Requires:	%{name} = %{version}-%{release}
 
 %description -n irb
-The irb is acronym for Interactive RuBy.  It evaluates ruby expression
+The irb is acronym for Interactive Ruby.  It evaluates ruby expression
 from the terminal.
 
 
@@ -100,16 +101,6 @@ Requires:	emacs
 Emacs Lisp ruby-mode for the object-oriented scripting language Ruby.
 
 
-%package mode-xemacs
-Summary:	Emacs Lisp ruby-mode for the scripting language Ruby
-Group:		Applications/Editors
-Requires:	xemacs
-ExcludeArch:	alpha
-
-%description mode-xemacs
-Emacs Lisp ruby-mode for the object-oriented scripting language Ruby.
-
-
 %prep
 %setup -q -c -a 1 -a 2 -a 3 -a 4
 pushd %{name}-%{version}
@@ -119,6 +110,7 @@ pushd %{name}-%{version}
 %patch103 -p1
 %patch900 -p1
 popd
+%patch1 -p1
 
 %build
 pushd %{name}-%{version}
@@ -130,18 +122,19 @@ rb_cv_func_strtod=no CFLAGS="-O0" CXXFLAGS="-O0" ./configure \
 rb_cv_func_strtod=no ./configure \
 %endif
   --prefix=%{_prefix} \
-  --mandir='${prefix}/share/man' \
+  --mandir='%{_mandir}' \
   --sysconfdir=%{_sysconfdir} \
   --localstatedir=%{_localstatedir} \
-  --with-sitedir='${prefix}/local/lib/site_ruby/%{rubyxver}' \
+  --with-sitedir='%{sitedir}' \
   --with-default-kcode=none \
   --with-dbm-include=/usr/include/db1 \
   --enable-shared \
   --enable-ipv6 \
   --with-lookup-order-hack=INET \
-  %{_target_cpu}-%{_target_os}
+  --host=%{_target_cpu}-%{_target_os} \
+  --build=%{_target_cpu}-%{_target_os}
 
-make
+make RUBY_INSTALL_NAME=ruby
 make test
 
 popd
@@ -243,7 +236,6 @@ install %{SOURCE5} $RPM_BUILD_ROOT%{_mandir}/man1/
 # installing ruby-mode
 cd %{name}-%{version}
 cp misc/*.el $RPM_BUILD_ROOT%{_datadir}/emacs/site-lisp/ruby-mode
-cp misc/*.el $RPM_BUILD_ROOT%{_libdir}/xemacs/xemacs-packages/lisp/ruby-mode
 
 ## for ruby-mode
 pushd $RPM_BUILD_ROOT%{_datadir}/emacs/site-lisp/ruby-mode
@@ -255,17 +247,6 @@ rm -f path.el*
 popd
 install -m 644 %{SOURCE10} \
 	$RPM_BUILD_ROOT%{_datadir}/emacs/site-lisp/site-start.d
-
-## for ruby-mode-xemacs
-pushd $RPM_BUILD_ROOT%{_libdir}/xemacs/xemacs-packages/lisp/ruby-mode
-cat <<EOF > path.el
-(setq load-path (cons "." load-path) byte-compile-warnings nil)
-EOF
-xemacs -no-site-file -q -batch -l path.el -f batch-byte-compile *.el
-rm -f path.el*
-popd
-install -m 644 %{SOURCE10} \
-	$RPM_BUILD_ROOT%{_libdir}/xemacs/xemacs-packages/lisp/site-start.d
 
 cd ..
 
@@ -301,18 +282,12 @@ cp /dev/null ruby-libs.files
 
 # for ruby-mode
 cp /dev/null ruby-mode.files
-fgrep '.el' ruby-all.files | grep -v xemacs >> ruby-mode.files
-
-# for ruby-mode-xemacs
-cp /dev/null ruby-mode-xemacs.files
-fgrep '.el' ruby-all.files | grep -v share >> ruby-mode-xemacs.files
+fgrep '.el' ruby-all.files >> ruby-mode.files
 
 # for ruby.rpm
 sort ruby-all.files \
- ruby-libs.files ruby-devel.files ruby-tcltk.files irb.files ruby-mode.files ruby-mode-xemacs.files | 
+ ruby-libs.files ruby-devel.files ruby-tcltk.files irb.files ruby-mode.files | 
  uniq -u > ruby.files
-
-strip $RPM_BUILD_ROOT%{_bindir}/%{name}
 
 %clean
 [ -n "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != / ] && rm -rf $RPM_BUILD_ROOT
@@ -379,11 +354,26 @@ fi
 %defattr(-, root, root)
 %doc %{name}-%{version}/misc/README
 
-%files mode-xemacs -f ruby-mode-xemacs.files
-%defattr(-, root, root)
-%doc %{name}-%{version}/misc/README
-
 %changelog
+* Fri Jul 12 2002 Akira TAGOH <tagoh@redhat.com> 1.6.7-8
+- fix typo.
+
+* Thu Jul 04 2002 Akira TAGOH <tagoh@redhat.com> 1.6.7-7
+- removed the ruby-mode-xemacs because it's merged to the xemacs sumo.
+
+* Fri Jun 21 2002 Tim Powers <timp@redhat.com>
+- automated rebuild
+
+* Wed Jun 19 2002 Akira TAGOH <tagoh@redhat.com> 1.6.7-5
+- fix the stripped binary.
+- use the appropriate macros.
+
+* Sun May 26 2002 Tim Powers <timp@redhat.com>
+- automated rebuild
+
+* Thu May 23 2002 Akira TAGOH <tagoh@redhat.com> 1.6.7-3
+- ruby-1.6.7-libobj.patch: applied to fix autoconf2.53 error.
+
 * Mon Mar 18 2002 Akira TAGOH <tagoh@redhat.com> 1.6.7-2
 - ruby-man-1.4.6-jp.tar.bz2: removed.
 - ruby-refm-rdp-1.4.7-ja-html.tar.bz2: uses it instead of.
