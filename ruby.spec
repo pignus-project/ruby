@@ -86,7 +86,7 @@ Manuals and FAQs for the object-oriented scripting language Ruby.
 %package mode
 Summary:	Emacs Lisp ruby-mode for the scripting language Ruby
 Group:		Applications/Editors
-Requires:	emacs
+Requires:	emacs-common
 
 %description mode
 Emacs Lisp ruby-mode for the object-oriented scripting language Ruby.
@@ -363,6 +363,9 @@ rm -rf tmp-ruby-docs
 %dir %{_datadir}/emacs/site-lisp/ruby-mode
 
 %changelog
+* Wed Oct  6 2004 Akira TAGOH <tagoh@redhat.com> - 1.8.1-5
+- require emacs-common instead of emacs.
+
 * Wed Jun 23 2004 Akira TAGOH <tagoh@redhat.com> 1.8.1-4
 - updated the documentation.
 
