@@ -4,7 +4,7 @@
 
 Name:		ruby
 Version:	1.8.2
-Release: 1
+Release: 2
 License:	Distributable
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
@@ -384,6 +384,9 @@ rm -rf tmp-ruby-docs
 %dir %{_datadir}/emacs/site-lisp/ruby-mode
 
 %changelog
+* Wed Jan 12 2005 Tim Waugh <twaugh@redhat.com> - 1.8.2-2
+- Rebuilt for new readline.
+
 * Wed Jan  5 2005 Akira TAGOH <tagoh@redhat.com> - 1.8.2-1
 - New upstream release.
 - ruby-1.8.1-ia64-stack-limit.patch: removed - it's no longer needed.
