@@ -4,7 +4,7 @@
 
 Name:		ruby
 Version:	1.8.0
-Release: 1
+Release: 3
 License:	Distributable
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
@@ -356,6 +356,12 @@ rm -rf tmp-ruby-docs
 %dir %{_datadir}/emacs/site-lisp/ruby-mode
 
 %changelog
+* Sat Dec 13 2003 Jeff Johnson <jbj@jbj.org> 1.8.0-3
+- rebuild against db-4.2.52.
+
+* Thu Sep 25 2003 Jeff Johnson <jbj@jbj.org> 1.8.0-2
+- rebuild against db-4.2.42.
+
 * Tue Aug  5 2003 Akira TAGOH <tagoh@redhat.com> 1.8.0-1
 - New upstream release.
 
