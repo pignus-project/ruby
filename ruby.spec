@@ -3,8 +3,8 @@
 %define	sitedir		%{_libdir}/site_ruby
 
 Name:		ruby
-Version:	1.8.0
-Release: 3
+Version:	1.8.1
+Release: 2.1
 License:	Distributable
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
@@ -22,7 +22,8 @@ Source4:	rubyfaq-jp-990927.tar.bz2
 Source5:	irb.1
 Source10:	ruby-mode-init.el
 
-Patch903:	ruby-1.8.0-multilib.patch
+Patch1:		ruby-1.8.0-multilib.patch
+Patch2:		ruby-1.8.1-ia64-stack-limit.patch
 
 Summary:	An interpreter of object-oriented scripting language
 Group:		Development/Languages
@@ -98,7 +99,10 @@ pushd ruby-refm-ja
 unzip %{SOURCE2}
 popd
 pushd %{name}-%{version}
-%patch903 -p1
+%patch1 -p1
+%if ia64
+%patch2 -p1
+%endif
 popd
 
 %build
@@ -110,6 +114,9 @@ autoconf
 
 rb_cv_func_strtod=no
 export rb_cv_func_strtod
+%if ia64
+export RPM_OPT_FLAGS=`echo $RPM_OPT_FLAGS | sed 's/-O[1-9]/-O0/g'`
+%endif
 CFLAGS="$RPM_OPT_FLAGS -Wall"
 export CFLAGS
 %configure \
@@ -254,11 +261,11 @@ egrep '(\.[ah]|libruby\.so)$' ruby-all.files > ruby-devel.files
 
 # for ruby-tcltk.rpm
 cp /dev/null ruby-tcltk.files
-for f in `find %{name}-%{version}/ext/tk/lib -type f; echo %{name}-%{version}/ext/tk/*.so`
+for f in `find %{name}-%{version}/ext/tk/lib -type f; find %{name}-%{version}/ext/tk -type f -name '*.so'`
 do
   grep "/`basename $f`$" ruby-all.files >> ruby-tcltk.files || :
 done
-for f in `find %{name}-%{version}/ext/tcltklib/lib -type f; echo %{name}-%{version}/ext/tcltklib/*.so`
+for f in `find %{name}-%{version}/ext/tcltklib/lib -type f; find %{name}-%{version}/ext/tcltklib -type f -name '*.so'`
 do
   grep "/`basename $f`$" ruby-all.files >> ruby-tcltk.files || :
 done
@@ -356,6 +363,17 @@ rm -rf tmp-ruby-docs
 %dir %{_datadir}/emacs/site-lisp/ruby-mode
 
 %changelog
+* Tue Mar 02 2004 Elliot Lee <sopwith@redhat.com>
+- rebuilt
+
+* Fri Feb 13 2004 Elliot Lee <sopwith@redhat.com>
+- rebuilt
+
+* Wed Feb 04 2004 Akira TAGOH <tagoh@redhat.com> 1.8.1-1
+- New upstream release.
+- don't use any optimization for ia64 to avoid the build failure.
+- ruby-1.8.1-ia64-stack-limit.patch: applied to fix SystemStackError when the optimization is disabled.
+
 * Sat Dec 13 2003 Jeff Johnson <jbj@jbj.org> 1.8.0-3
 - rebuild against db-4.2.52.
 
