@@ -24,6 +24,7 @@ Source10:	ruby-mode-init.el
 Patch1:		ruby-1.8.0-multilib.patch
 Patch2:		ruby-1.8.2-strscan-memset.patch
 Patch3:		ruby-1.8.2-deadcode.patch
+Patch4:		ruby-1.8.2-tcltk-multilib.patch
 
 Summary:	An interpreter of object-oriented scripting language
 Group:		Development/Languages
@@ -127,6 +128,9 @@ pushd %{name}-%{version}
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%ifarch sparc64 ppc64 s390x x86_64
+%patch4 -p1
+%endif
 popd
 
 %build
@@ -407,6 +411,9 @@ rm -rf tmp-ruby-docs
 %dir %{_datadir}/emacs/site-lisp/ruby-mode
 
 %changelog
+* Thu Jun 16 2005 Akira TAGOH <tagoh@redhat.com> - 1.8.2-8
+- ruby-1.8.2-tcltk-multilib.patch: applied to get tcltklib.so built. (#160194)
+
 * Thu Apr  7 2005 Akira TAGOH <tagoh@redhat.com> - 1.8.2-7
 - ruby-1.8.2-deadcode.patch: removed the dead code from the source. (#146108)
 - make sure that all documentation files in ruby-docs are the world-
