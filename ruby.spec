@@ -4,7 +4,7 @@
 
 Name:		ruby
 Version:	1.8.2
-Release: 7
+Release: 8
 License:	Distributable
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
