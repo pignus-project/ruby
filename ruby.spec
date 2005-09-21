@@ -262,7 +262,15 @@ make DESTDIR=$RPM_BUILD_ROOT install
 cd ..
 
 # generate ri doc
-DESTDIR=$RPM_BUILD_ROOT LD_LIBRARY_PATH=$RPM_BUILD_ROOT%{_libdir} $RPM_BUILD_ROOT%{_bindir}/ruby -I $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version} -I $RPM_BUILD_ROOT%{_libdir}/ruby/%{rubyxver}/%{_target_cpu}-%{_target_os}/ -I $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/lib $RPM_BUILD_ROOT%{_bindir}/rdoc --all --ri-system $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}
+case %{_target_cpu} in
+	ppc|ppc64)
+		_cpu=%{_arch}
+		;;
+	*)
+		_cpu=%{_target_cpu}
+		;
+esac
+DESTDIR=$RPM_BUILD_ROOT LD_LIBRARY_PATH=$RPM_BUILD_ROOT%{_libdir} $RPM_BUILD_ROOT%{_bindir}/ruby -I $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version} -I $RPM_BUILD_ROOT%{_libdir}/ruby/%{rubyxver}/%{_cpu}-%{_target_os}/ -I $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/lib $RPM_BUILD_ROOT%{_bindir}/rdoc --all --ri-system $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}
 
 # XXX: installing irb
 chmod 555 $RPM_BUILD_ROOT%{_bindir}/irb
