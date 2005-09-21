@@ -1,0 +1,12 @@
+diff -ruN ruby-1.8.3.orig/mkconfig.rb ruby-1.8.3/mkconfig.rb
+--- ruby-1.8.3.orig/mkconfig.rb	2005-09-21 15:10:57.000000000 +0900
++++ ruby-1.8.3/mkconfig.rb	2005-09-21 15:17:32.000000000 +0900
+@@ -74,7 +74,7 @@
+ 
+ drive = File::PATH_SEPARATOR == ';'
+ 
+-prefix = '/lib/ruby/' + RUBY_VERSION.sub(/\.\d+$/, '') + '/' + RUBY_PLATFORM
++prefix = '/lib64/ruby/' + RUBY_VERSION.sub(/\.\d+$/, '') + '/' + RUBY_PLATFORM
+ print "  TOPDIR = File.dirname(__FILE__).chomp!(#{prefix.dump})\n"
+ print "  DESTDIR = ", (drive ? "TOPDIR && TOPDIR[/\\A[a-z]:/i] || " : ""), "'' unless defined? DESTDIR\n"
+ print "  CONFIG = {}\n"

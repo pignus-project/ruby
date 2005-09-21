@@ -3,12 +3,12 @@
 %define	sitedir		%{_libdir}/site_ruby
 
 Name:		ruby
-Version:	1.8.2
-Release: 9
+Version:	1.8.3
+Release: 1
 License:	Distributable
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
-BuildRequires:	readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl tk XFree86-devel autoconf gcc unzip openssl-devel db4-devel emacs
+BuildRequires:	readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl tk xorg-x11-devel autoconf gcc unzip openssl-devel db4-devel emacs
 
 Source0:	ftp://ftp.ruby-lang.org/pub/%{name}/%{name}-%{version}.tar.gz
 ##Source1:	ftp://ftp.ruby-lang.org/pub/%{name}/doc/%{name}-man-%{manver}.tar.gz
@@ -21,11 +21,10 @@ Source4:	rubyfaq-jp-990927.tar.bz2
 Source5:	irb.1
 Source10:	ruby-mode-init.el
 
-Patch1:		ruby-1.8.0-multilib.patch
+Patch1:		ruby-multilib.patch
 Patch2:		ruby-1.8.2-strscan-memset.patch
 Patch3:		ruby-1.8.2-deadcode.patch
 Patch4:		ruby-1.8.2-tcltk-multilib.patch
-Patch5:		ruby-1.8.2-xmlrpc-CAN-2005-1992.patch
 
 Summary:	An interpreter of object-oriented scripting language
 Group:		Development/Languages
@@ -126,13 +125,14 @@ pushd ruby-refm-ja
 tar fxz %{SOURCE2}
 popd
 pushd %{name}-%{version}
+%ifarch ppc64 s390x sparc64 x86_64
 %patch1 -p1
+%endif
 %patch2 -p1
 %patch3 -p1
-%ifarch sparc64 ppc64 s390x x86_64
+%ifarch ppc64 s390x sparc64 x86_64
 %patch4 -p1
 %endif
-%patch5 -p1
 popd
 
 %build
@@ -262,7 +262,7 @@ make DESTDIR=$RPM_BUILD_ROOT install
 cd ..
 
 # generate ri doc
-DESTDIR=$RPM_BUILD_ROOT LD_LIBRARY_PATH=$RPM_BUILD_ROOT%{_libdir} $RPM_BUILD_ROOT%{_bindir}/ruby -I $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version} -I $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/ext/syck -I $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/lib $RPM_BUILD_ROOT%{_bindir}/rdoc --all --ri-system $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}
+DESTDIR=$RPM_BUILD_ROOT LD_LIBRARY_PATH=$RPM_BUILD_ROOT%{_libdir} $RPM_BUILD_ROOT%{_bindir}/ruby -I $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version} -I $RPM_BUILD_ROOT%{_libdir}/ruby/%{rubyxver}/%{_target_cpu}-%{_target_os}/ -I $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/lib $RPM_BUILD_ROOT%{_bindir}/rdoc --all --ri-system $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}
 
 # XXX: installing irb
 chmod 555 $RPM_BUILD_ROOT%{_bindir}/irb
@@ -413,6 +413,12 @@ rm -rf tmp-ruby-docs
 %dir %{_datadir}/emacs/site-lisp/ruby-mode
 
 %changelog
+* Wed Sep 21 2005 Akira TAGOH <tagoh@redhat.com> - 1.8.3-1
+- New upstream release.
+- Build-Requires xorg-x11-devel instead of XFree86-devel.
+- ruby-multilib.patch: applied for only 64-bit archs.
+- ruby-1.8.2-xmlrpc-CAN-2005-1992.patch: removed. it has already been in upstream.
+
 * Tue Jun 21 2005 Akira TAGOH <tagoh@redhat.com> - 1.8.2-9
 - ruby-1.8.2-xmlrpc-CAN-2005-1992.patch: fixed the arbitrary command execution
   on XMLRPC server. (#161096)
