@@ -4,7 +4,7 @@
 
 Name:		ruby
 Version:	1.8.3
-Release: 1
+Release: 2
 License:	Distributable
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
@@ -414,6 +414,9 @@ rm -rf tmp-ruby-docs
 %dir %{_datadir}/emacs/site-lisp/ruby-mode
 
 %changelog
+* Mon Sep 26 2005 Akira TAGOH <tagoh@redhat.com> - 1.8.3-2
+- ruby-multilib.patch: added another chunk for multilib.
+
 * Wed Sep 21 2005 Akira TAGOH <tagoh@redhat.com> - 1.8.3-1
 - New upstream release.
 - Build-Requires xorg-x11-devel instead of XFree86-devel.
