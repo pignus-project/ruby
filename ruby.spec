@@ -415,7 +415,7 @@ rm -rf tmp-ruby-docs
 
 %changelog
 * Mon Sep 26 2005 Akira TAGOH <tagoh@redhat.com> - 1.8.3-2
-- ruby-multilib.patch: added another chunk for multilib.
+- ruby-multilib.patch: added another chunk for multilib. (#169127)
 
 * Wed Sep 21 2005 Akira TAGOH <tagoh@redhat.com> - 1.8.3-1
 - New upstream release.
