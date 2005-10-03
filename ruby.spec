@@ -4,7 +4,7 @@
 
 Name:		ruby
 Version:	1.8.3
-Release: 2
+Release: 3
 License:	Distributable
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
@@ -294,11 +294,11 @@ egrep '(\.[ah]|libruby\.so)$' ruby-all.files > ruby-devel.files
 
 # for ruby-tcltk.rpm
 cp /dev/null ruby-tcltk.files
-for f in `find %{name}-%{version}/ext/tk/lib -type f; find %{name}-%{version}/ext/tk -type f -name '*.so'`
+for f in `find %{name}-%{version}/ext/tk/lib -type f; find %{name}-%{version}/.ext/ -type f -name '*.so'`
 do
   egrep "tcl|tk" ruby-all.files | grep "/`basename $f`$" >> ruby-tcltk.files || :
 done
-for f in `find %{name}-%{version}/ext/tcltklib/lib -type f; find %{name}-%{version}/ext/tcltklib -type f -name '*.so'`
+for f in `find %{name}-%{version}/ext/tcltklib/lib -type f; find %{name}-%{version}/.ext -type f -name '*.so'`
 do
   egrep "tcl|tk" ruby-all.files | grep "/`basename $f`$" >> ruby-tcltk.files || :
 done
@@ -414,6 +414,10 @@ rm -rf tmp-ruby-docs
 %dir %{_datadir}/emacs/site-lisp/ruby-mode
 
 %changelog
+* Mon Oct  3 2005 Akira TAGOH <tagoh@redhat.com> - 1.8.3-3
+- fixed the wrong file list. the external library for tcl/tk was included
+  in ruby-libs unexpectedly.
+
 * Mon Sep 26 2005 Akira TAGOH <tagoh@redhat.com> - 1.8.3-2
 - ruby-multilib.patch: added another chunk for multilib. (#169127)
 
