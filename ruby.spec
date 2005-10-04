@@ -374,7 +374,6 @@ rm -rf tmp-ruby-docs
 %doc %{name}-%{version}/COPYING*
 %doc %{name}-%{version}/ChangeLog
 %doc %{name}-%{version}/LEGAL
-%doc tmp-ruby-docs/ruby-libs/*
 %dir %{_libdir}/ruby
 %dir %{_libdir}/ruby/%{rubyxver}
 %dir %{_libdir}/ruby/%{rubyxver}/cgi
@@ -407,6 +406,7 @@ rm -rf tmp-ruby-docs
 %files docs
 %defattr(-, root, root)
 %doc tmp-ruby-docs/ruby-docs/*
+%doc tmp-ruby-docs/ruby-libs/*
 
 %files mode -f ruby-mode.files 
 %defattr(-, root, root)
@@ -414,6 +414,10 @@ rm -rf tmp-ruby-docs
 %dir %{_datadir}/emacs/site-lisp/ruby-mode
 
 %changelog
+* Tue Oct  4 2005 Akira TAGOH <tagoh@redhat.com> - 1.8.3-4
+- moved the documents from ruby-libs to ruby-docs, which contains the arch
+  specific thing and to be multilib support. (#168826)
+
 * Mon Oct  3 2005 Akira TAGOH <tagoh@redhat.com> - 1.8.3-3
 - fixed the wrong file list. the external library for tcl/tk was included
   in ruby-libs unexpectedly.
