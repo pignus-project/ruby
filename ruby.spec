@@ -3,14 +3,14 @@
 %define	sitedir		%{_libdir}/site_ruby
 
 Name:		ruby
-Version:	1.8.3
-Release: 4
+Version:	1.8.4
+Release: 0.1.preview1
 License:	Distributable
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
 BuildRequires:	readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl tk xorg-x11-devel autoconf gcc unzip openssl-devel db4-devel emacs
 
-Source0:	ftp://ftp.ruby-lang.org/pub/%{name}/%{name}-%{version}.tar.gz
+Source0:	ftp://ftp.ruby-lang.org/pub/%{name}/%{name}-%{version}-preview1.tar.gz
 ##Source1:	ftp://ftp.ruby-lang.org/pub/%{name}/doc/%{name}-man-%{manver}.tar.gz
 Source1:	%{name}-man-%{manver}.tar.bz2
 Source2:	http://www7.tok2.com/home/misc/files/%{name}/%{name}-refm-rdp-1.8.1-ja-html.tar.gz
@@ -22,7 +22,6 @@ Source5:	irb.1
 Source10:	ruby-mode-init.el
 
 Patch1:		ruby-multilib.patch
-Patch2:		ruby-1.8.2-strscan-memset.patch
 Patch3:		ruby-1.8.2-deadcode.patch
 Patch4:		ruby-1.8.2-tcltk-multilib.patch
 
@@ -128,7 +127,6 @@ pushd %{name}-%{version}
 %ifarch ppc64 s390x sparc64 x86_64
 %patch1 -p1
 %endif
-%patch2 -p1
 %patch3 -p1
 %ifarch ppc64 s390x sparc64 x86_64
 %patch4 -p1
@@ -414,6 +412,10 @@ rm -rf tmp-ruby-docs
 %dir %{_datadir}/emacs/site-lisp/ruby-mode
 
 %changelog
+* Mon Oct 31 2005 Akira TAGOH <tagoh@redhat.com> - 1.8.4-0.1.preview1
+- New upstream release.
+- ruby-1.8.2-strscan-memset.patch: removed because it's no longer needed.
+
 * Tue Oct  4 2005 Akira TAGOH <tagoh@redhat.com> - 1.8.3-4
 - moved the documents from ruby-libs to ruby-docs, which contains the arch
   specific thing and to be multilib support. (#168826)
