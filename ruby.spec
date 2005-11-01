@@ -4,11 +4,11 @@
 
 Name:		ruby
 Version:	1.8.4
-Release: 0.1.preview1
+Release: 0.2.preview1
 License:	Distributable
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
-BuildRequires:	readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl tk xorg-x11-devel autoconf gcc unzip openssl-devel db4-devel emacs
+BuildRequires:	readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl tk libX11-devel autoconf gcc unzip openssl-devel db4-devel emacs
 
 Source0:	ftp://ftp.ruby-lang.org/pub/%{name}/%{name}-%{version}-preview1.tar.gz
 ##Source1:	ftp://ftp.ruby-lang.org/pub/%{name}/doc/%{name}-man-%{manver}.tar.gz
@@ -412,6 +412,9 @@ rm -rf tmp-ruby-docs
 %dir %{_datadir}/emacs/site-lisp/ruby-mode
 
 %changelog
+* Tue Nov  1 2005 Akira TAGOH <tagoh@redhat.com> - 1.8.4-0.2.preview1
+- build-deps libX11-devel instead of xorg-x11-devel.
+
 * Mon Oct 31 2005 Akira TAGOH <tagoh@redhat.com> - 1.8.4-0.1.preview1
 - New upstream release.
 - ruby-1.8.2-strscan-memset.patch: removed because it's no longer needed.
