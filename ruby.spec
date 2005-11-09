@@ -4,7 +4,7 @@
 
 Name:		ruby
 Version:	1.8.4
-Release: 0.2.preview1
+Release: 0.3.preview1
 License:	Distributable
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
@@ -412,6 +412,9 @@ rm -rf tmp-ruby-docs
 %dir %{_datadir}/emacs/site-lisp/ruby-mode
 
 %changelog
+* Thu Nov 10 2005 Akira TAGOH <tagoh@redhat.com> - 1.8.4-0.3.preview1
+- rebuilt against the latest openssl.
+
 * Tue Nov  1 2005 Akira TAGOH <tagoh@redhat.com> - 1.8.4-0.2.preview1
 - build-deps libX11-devel instead of xorg-x11-devel.
 
