@@ -23,7 +23,7 @@ Source10:	ruby-mode-init.el
 
 Patch1:		ruby-multilib.patch
 Patch3:		ruby-1.8.2-deadcode.patch
-Patch4:		ruby-1.8.2-tcltk-multilib.patch
+Patch4:		ruby-tcltk-multilib.patch
 
 Summary:	An interpreter of object-oriented scripting language
 Group:		Development/Languages
