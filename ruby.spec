@@ -4,13 +4,13 @@
 
 Name:		ruby
 Version:	1.8.4
-Release: 0.3.preview1.1
+Release: 0.4.preview2
 License:	Distributable
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
-BuildRequires:	readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl tk libX11-devel autoconf gcc unzip openssl-devel db4-devel emacs
+BuildRequires:	readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl-devel tk-devel libX11-devel autoconf gcc unzip openssl-devel db4-devel emacs
 
-Source0:	ftp://ftp.ruby-lang.org/pub/%{name}/%{name}-%{version}-preview1.tar.gz
+Source0:	ftp://ftp.ruby-lang.org/pub/%{name}/%{name}-%{version}-preview2.tar.gz
 ##Source1:	ftp://ftp.ruby-lang.org/pub/%{name}/doc/%{name}-man-%{manver}.tar.gz
 Source1:	%{name}-man-%{manver}.tar.bz2
 Source2:	http://www7.tok2.com/home/misc/files/%{name}/%{name}-refm-rdp-1.8.1-ja-html.tar.gz
@@ -65,23 +65,27 @@ Requires:	%{name}-libs = %{version}-%{release}
 Tcl/Tk interface for the object-oriented scripting language Ruby.
 
 
-%package -n irb
+%package irb
 Summary:	The Interactive Ruby.
 Group:		Development/Languages
 Requires:	%{name} = %{version}-%{release}
+Provides:	irb
+Obsoletes:	irb
 
-%description -n irb
+%description irb
 The irb is acronym for Interactive Ruby.  It evaluates ruby expression
 from the terminal.
 
 
-%package -n rdoc
+%package rdoc
 Summary:	A tool to generate documentation from Ruby source files
 Group:		Development/Languages
 Requires:	%{name} = %{version}-%{release}
-Requires:	irb = %{version}-%{release}
+Requires:	%{name}-irb = %{version}-%{release}
+Provides:	rdoc
+Obsoletes:	rdoc
 
-%description -n rdoc
+%description rdoc
 The rdoc is a tool to generate the documentation from Ruby source files.
 It supports some output formats, like HTML, Ruby interactive reference (ri),
 XML and Windows Help file (chm).
@@ -104,13 +108,15 @@ Requires:	emacs-common
 Emacs Lisp ruby-mode for the object-oriented scripting language Ruby.
 
 
-%package -n ri
+%package ri
 Summary:	Ruby interactive reference
 Group:		Documentation
 Requires:	%{name} = %{version}-%{release}
-Requires:	rdoc = %{version}-%{release}
+Requires:	%{name}-rdoc = %{version}-%{release}
+Provides:	ri
+Obsoletes:	ri
 
-%description -n ri
+%description ri
 ri is a command line tool that displays descriptions of built-in
 Ruby methods, classes and modules. For methods, it shows you the calling
 sequence and a description. For classes and modules, it shows a synopsis
@@ -385,19 +391,19 @@ rm -rf tmp-ruby-docs
 %defattr(-, root, root)
 %doc tmp-ruby-docs/ruby-tcltk/ext/*
 
-%files -n rdoc -f rdoc.files
+%files rdoc -f rdoc.files
 %defattr(-, root, root)
 %dir %{_libdir}/ruby
 %dir %{_libdir}/ruby/%{rubyxver}
 
-%files -n irb -f irb.files
+%files irb -f irb.files
 %defattr(-, root, root)
 %doc tmp-ruby-docs/irb/*
 %dir %{_libdir}/ruby/%{rubyxver}/irb
 %dir %{_libdir}/ruby/%{rubyxver}/irb/lc
 %dir %{_libdir}/ruby/%{rubyxver}/irb/lc/ja
 
-%files -n ri -f ri.files
+%files ri -f ri.files
 %defattr(-, root, root)
 %dir %{_datadir}/ri
 
@@ -412,6 +418,14 @@ rm -rf tmp-ruby-docs
 %dir %{_datadir}/emacs/site-lisp/ruby-mode
 
 %changelog
+* Fri Dec 16 2005 Akira TAGOH <tagoh@redhat.com> - 1.8.4-0.4.preview2
+- updates to 1.8.4-preview2.
+- renamed the packages to ruby-* (#175765)
+  - irb  -> ruby-irb
+  - rdoc -> ruby-rdoc
+  - ri   -> ruby-ri
+- added tcl-devel and tk-devel into BuildRequires.
+
 * Fri Dec 09 2005 Jesse Keating <jkeating@redhat.com>
 - rebuilt
 
