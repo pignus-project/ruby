@@ -4,7 +4,7 @@
 
 Name:		ruby
 Version:	1.8.4
-Release: 0.4.preview2
+Release:	1
 License:	Distributable
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
@@ -418,6 +418,11 @@ rm -rf tmp-ruby-docs
 %dir %{_datadir}/emacs/site-lisp/ruby-mode
 
 %changelog
+* Tue Dec 27 2005 Akira TAGOH <tagoh@redhat.com> - 1.8.4-1
+- New upstream release.
+  - fixed a missing return statement. (#140833)
+  - fixed an use of uninitialized variable. (#144890)
+
 * Fri Dec 16 2005 Akira TAGOH <tagoh@redhat.com> - 1.8.4-0.4.preview2
 - updates to 1.8.4-preview2.
 - renamed the packages to ruby-* (#175765)
