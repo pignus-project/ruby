@@ -4,7 +4,7 @@
 
 Name:		ruby
 Version:	1.8.4
-Release:	1
+Release:	2
 License:	Distributable
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
@@ -418,6 +418,9 @@ rm -rf tmp-ruby-docs
 %dir %{_datadir}/emacs/site-lisp/ruby-mode
 
 %changelog
+* Wed Jan  4 2006 Akira TAGOH <tagoh@redhat.com> - 1.8.4-2
+- ruby-tcltk-multilib.patch: fixed a typo.
+
 * Tue Dec 27 2005 Akira TAGOH <tagoh@redhat.com> - 1.8.4-1
 - New upstream release.
   - fixed a missing return statement. (#140833)
