@@ -4,7 +4,7 @@
 
 Name:		ruby
 Version:	1.8.4
-Release:	2
+Release:	3
 License:	Distributable
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
@@ -24,6 +24,7 @@ Source10:	ruby-mode-init.el
 Patch1:		ruby-multilib.patch
 Patch3:		ruby-1.8.2-deadcode.patch
 Patch4:		ruby-tcltk-multilib.patch
+Patch5:		ruby-1.8.4-no-eaccess.patch
 
 Summary:	An interpreter of object-oriented scripting language
 Group:		Development/Languages
@@ -137,6 +138,7 @@ pushd %{name}-%{version}
 %ifarch ppc64 s390x sparc64 x86_64
 %patch4 -p1
 %endif
+%patch5 -p1
 popd
 
 %build
@@ -418,6 +420,10 @@ rm -rf tmp-ruby-docs
 %dir %{_datadir}/emacs/site-lisp/ruby-mode
 
 %changelog
+* Mon Feb  6 2006 Akira TAGOH <tagoh@redhat.com> - 1.8.4-3
+- ruby-1.8.4-no-eaccess.patch: backported from ruby CVS to avoid conflict
+  between newer glibc. (#179835)
+
 * Wed Jan  4 2006 Akira TAGOH <tagoh@redhat.com> - 1.8.4-2
 - ruby-tcltk-multilib.patch: fixed a typo.
 
