@@ -4,7 +4,7 @@
 
 Name:		ruby
 Version:	1.8.4
-Release:	3
+Release:	3.1
 License:	Distributable
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
@@ -420,6 +420,9 @@ rm -rf tmp-ruby-docs
 %dir %{_datadir}/emacs/site-lisp/ruby-mode
 
 %changelog
+* Tue Feb 07 2006 Jesse Keating <jkeating@redhat.com> - 1.8.4-3.1
+- rebuilt for new gcc4.1 snapshot and glibc changes
+
 * Mon Feb  6 2006 Akira TAGOH <tagoh@redhat.com> - 1.8.4-3
 - ruby-1.8.4-no-eaccess.patch: backported from ruby CVS to avoid conflict
   between newer glibc. (#179835)
