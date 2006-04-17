@@ -1,10 +1,10 @@
 %define manver		1.4.6
 %define	rubyxver	1.8
-%define	sitedir		%{_libdir}/site_ruby
+%define	sitedir		%{_libdir}/ruby/site_ruby
 
 Name:		ruby
 Version:	1.8.4
-Release:	3.2
+Release:	4.fc6
 License:	Distributable
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
@@ -420,6 +420,9 @@ rm -rf tmp-ruby-docs
 %dir %{_datadir}/emacs/site-lisp/ruby-mode
 
 %changelog
+* Mon Apr 17 2006 Akira TAGOH <tagoh@redhat.com> - 1.8.4-4
+- correct sitelibdir. (#184198)
+
 * Fri Feb 10 2006 Jesse Keating <jkeating@redhat.com> - 1.8.4-3.2
 - bump again for double-long bug on ppc(64)
 
