@@ -1,0 +1,96 @@
+diff -ruN ruby-1.8.4.orig/configure.in ruby-1.8.4/configure.in
+--- ruby-1.8.4.orig/configure.in	2006-04-19 21:54:44.000000000 +0900
++++ ruby-1.8.4/configure.in	2006-04-19 21:59:48.000000000 +0900
+@@ -1433,6 +1433,13 @@
+     rubyw_install_name="$RUBYW_INSTALL_NAME"
+     ;;
+ esac
++
++AC_ARG_WITH(ruby-prefix,
++	AC_HELP_STRING([--with-ruby-prefix], [build ruby with the special library prefix.])
++	,,
++	with_ruby_prefix=no)
++
++if test "x$with_ruby_prefix" = "x"; then
+ case "$target_os" in
+   cygwin*|mingw*|*djgpp*|os2-emx*)
+     RUBY_LIB_PREFIX="/lib/ruby"
+@@ -1441,21 +1448,30 @@
+     RUBY_LIB_PREFIX="${prefix}/lib/ruby"
+     ;;
+ esac
++else
++	RUBY_LIB_PREFIX="${with_ruby_prefix}/ruby"
++fi
+ RUBY_LIB_PATH="${RUBY_LIB_PREFIX}/${MAJOR}.${MINOR}"
++RUBY_LIB_PATH2="${libdir}/ruby/${MAJOR}.${MINOR}"
+ 
+ AC_ARG_WITH(sitedir,
+ 	    [  --with-sitedir=DIR      site libraries in DIR [PREFIX/lib/ruby/site_ruby]],
+             [sitedir=$withval],
+             [sitedir='${prefix}/lib/ruby/site_ruby'])
+-SITE_DIR="`eval \"echo ${sitedir}\"`"
++SITE_DIR="`eval \"echo ${sitedir}\" | sed -e s/lib64/lib/`"
++_fc_sitedir=${sitedir}
++SITE_DIR2="`eval \"echo ${_fc_sitedir}\"`"
++sitedir="`eval \"echo ${sitedir}\" | sed -e s/lib64/lib/`"
+ case "$target_os" in
+   cygwin*|mingw*|*djgpp*|os2-emx*)
+     RUBY_SITE_LIB_PATH="`expr "$SITE_DIR" : "$prefix\(/.*\)"`" ||
+     RUBY_SITE_LIB_PATH="$SITE_DIR";;
+   *)
+-    RUBY_SITE_LIB_PATH="$SITE_DIR";;
++    RUBY_SITE_LIB_PATH="$SITE_DIR";
++    RUBY_SITE_LIB_PATH2="$SITE_DIR2";;
+ esac
++RUBY_SITE_LIB_PATH3="${RUBY_SITE_LIB_PATH2}/${MAJOR}.${MINOR}"
+ RUBY_SITE_LIB_PATH2="${RUBY_SITE_LIB_PATH}/${MAJOR}.${MINOR}"
+ 
+ AC_DEFINE_UNQUOTED(RUBY_LIB, "${RUBY_LIB_PATH}")
+ AC_DEFINE_UNQUOTED(RUBY_SITE_LIB, "${RUBY_SITE_LIB_PATH}")
+@@ -1464,6 +1480,7 @@
+ AC_SUBST(arch)dnl
+ AC_SUBST(sitearch)dnl
+ AC_SUBST(sitedir)dnl
++AC_SUBST(_fc_sitedir)dnl
+ 
+ configure_args=$ac_configure_args
+ AC_SUBST(configure_args)dnl
+@@ -1472,7 +1489,7 @@
+     arch="fat-${target_os}"
+ 
+     AC_DEFINE_UNQUOTED(RUBY_THIN_ARCHLIB,
+-                 "${RUBY_LIB_PATH}/" __ARCHITECTURE__ "-${target_os}")
++                 "${RUBY_LIB_PATH2}/" __ARCHITECTURE__ "-${target_os}")
+ 
+     AC_DEFINE_UNQUOTED(RUBY_SITE_THIN_ARCHLIB,
+                  "${RUBY_SITE_LIB_PATH}/" __ARCHITECTURE__ "-${target_os}")
+@@ -1487,8 +1504,8 @@
+   *) sitearch="${arch}" ;;
+ esac
+ 
+-AC_DEFINE_UNQUOTED(RUBY_ARCHLIB, "${RUBY_LIB_PATH}/${arch}")
+-AC_DEFINE_UNQUOTED(RUBY_SITE_ARCHLIB, "${RUBY_SITE_LIB_PATH2}/${sitearch}")
++AC_DEFINE_UNQUOTED(RUBY_ARCHLIB, "${RUBY_LIB_PATH2}/${arch}")
++AC_DEFINE_UNQUOTED(RUBY_SITE_ARCHLIB, "${RUBY_SITE_LIB_PATH3}/${sitearch}")
+ 
+ AC_ARG_WITH(search-path,
+ 		[  --with-search-path=DIR specify the additional search path],
+diff -ruN ruby-1.8.4.orig/mkconfig.rb ruby-1.8.4/mkconfig.rb
+--- ruby-1.8.4.orig/mkconfig.rb	2005-11-11 08:22:03.000000000 +0900
++++ ruby-1.8.4/mkconfig.rb	2006-04-19 21:55:08.000000000 +0900
+@@ -108,10 +108,10 @@
+ print v_fast, v_others
+ print <<EOS
+   CONFIG["ruby_version"] = "$(MAJOR).$(MINOR)"
+-  CONFIG["rubylibdir"] = "$(libdir)/ruby/$(ruby_version)"
+-  CONFIG["archdir"] = "$(rubylibdir)/$(arch)"
+-  CONFIG["sitelibdir"] = "$(sitedir)/$(ruby_version)"
+-  CONFIG["sitearchdir"] = "$(sitelibdir)/$(sitearch)"
++  CONFIG["rubylibdir"] = "$(prefix)/lib/ruby/$(ruby_version)"
++  CONFIG["archdir"] = "$(libdir)/ruby/$(ruby_version)/$(arch)"
++  CONFIG["sitelibdir"] = "$(prefix)/lib/ruby/site_ruby/$(ruby_version)"
++  CONFIG["sitearchdir"] = "$(_fc_sitedir)/$(ruby_version)/$(sitearch)"
+   CONFIG["topdir"] = File.dirname(__FILE__)
+   MAKEFILE_CONFIG = {}
+   CONFIG.each{|k,v| MAKEFILE_CONFIG[k] = v.dup}

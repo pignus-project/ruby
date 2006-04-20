@@ -1,10 +1,11 @@
 %define manver		1.4.6
 %define	rubyxver	1.8
 %define	sitedir		%{_libdir}/ruby/site_ruby
+%define	sitedir2	%{_prefix}/lib/ruby/site_ruby
 
 Name:		ruby
 Version:	1.8.4
-Release:	4.fc6
+Release:	4.fc6.1
 License:	Distributable
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
@@ -21,10 +22,11 @@ Source4:	rubyfaq-jp-990927.tar.bz2
 Source5:	irb.1
 Source10:	ruby-mode-init.el
 
-Patch1:		ruby-multilib.patch
-Patch3:		ruby-1.8.2-deadcode.patch
-Patch4:		ruby-tcltk-multilib.patch
-Patch5:		ruby-1.8.4-no-eaccess.patch
+Patch1:		ruby-1.8.2-deadcode.patch
+Patch2:		ruby-1.8.4-no-eaccess.patch
+Patch3:		ruby-rubyprefix.patch
+Patch4:		ruby-multilib.patch
+Patch5:		ruby-tcltk-multilib.patch
 
 Summary:	An interpreter of object-oriented scripting language
 Group:		Development/Languages
@@ -131,14 +133,13 @@ pushd ruby-refm-ja
 tar fxz %{SOURCE2}
 popd
 pushd %{name}-%{version}
-%ifarch ppc64 s390x sparc64 x86_64
 %patch1 -p1
-%endif
+%patch2 -p1
 %patch3 -p1
 %ifarch ppc64 s390x sparc64 x86_64
 %patch4 -p1
-%endif
 %patch5 -p1
+%endif
 popd
 
 %build
@@ -161,7 +162,8 @@ export CFLAGS
   --enable-shared \
   --enable-ipv6 \
   --with-lookup-order-hack=INET \
-  --disable-rpath
+  --disable-rpath \
+  --with-ruby-prefix=%{_prefix}/lib
 
 make RUBY_INSTALL_NAME=ruby %{?_smp_mflags}
 %ifarch ia64
@@ -267,13 +269,21 @@ cd %{name}-%{version}
 make DESTDIR=$RPM_BUILD_ROOT install
 cd ..
 
-# generate ri doc
 _cpu=`echo %{_target_cpu} | sed 's/^ppc/powerpc/'`
+
+%{__mkdir_p} $RPM_BUILD_ROOT%{sitedir2}/%{rubyxver}
+%{__mkdir_p} $RPM_BUILD_ROOT%{sitedir}/%{rubyxver}/$_cpu-%{_target_os}
+
+%ifarch ppc64 s390x sparc64 x86_64
+# move the arch-specific files to proper location
+mv $RPM_BUILD_ROOT%{_prefix}/lib/ruby/%{rubyxver}/$_cpu-%{_target_os}/* $RPM_BUILD_ROOT%{_libdir}/ruby/%{rubyxver}/$_cpu-%{_target_os}/
+rmdir $RPM_BUILD_ROOT%{_prefix}/lib/ruby/%{rubyxver}/$_cpu-%{_target_os}
+%endif
+
+# generate ri doc
 DESTDIR=$RPM_BUILD_ROOT LD_LIBRARY_PATH=$RPM_BUILD_ROOT%{_libdir} $RPM_BUILD_ROOT%{_bindir}/ruby -I $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version} -I $RPM_BUILD_ROOT%{_libdir}/ruby/%{rubyxver}/$_cpu-%{_target_os}/ -I $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/lib $RPM_BUILD_ROOT%{_bindir}/rdoc --all --ri-system $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}
 
 # XXX: installing irb
-chmod 555 $RPM_BUILD_ROOT%{_bindir}/irb
-install %{SOURCE5} $RPM_BUILD_ROOT%{_mandir}/man1/
 
 # installing ruby-mode
 cd %{name}-%{version}
@@ -323,8 +333,8 @@ fgrep rdoc ruby-all.files >> rdoc.files
 
 # for ruby-libs
 cp /dev/null ruby-libs.files
-(fgrep    '%{_libdir}' ruby-all.files; 
- fgrep -h '%{_libdir}' ruby-devel.files ruby-tcltk.files irb.files ri.files rdoc.files) | egrep -v "elc?$" | \
+(fgrep    '%{_prefix}/lib' ruby-all.files; 
+ fgrep -h '%{_prefix}/lib' ruby-devel.files ruby-tcltk.files irb.files ri.files rdoc.files) | egrep -v "elc?$" | \
  sort | uniq -u > ruby-libs.files
 
 # for ruby-mode
@@ -343,7 +353,6 @@ arch=`$RPM_BUILD_ROOT%{_bindir}/ruby -r $rbconfig -e 'printf ("%s\n", Config::CO
 cat <<__EOF__ >> ruby-libs.files
 %%dir %%{_libdir}/ruby/%%{rubyxver}/$arch
 %%dir %%{_libdir}/ruby/%%{rubyxver}/$arch/digest
-%%dir %%{sitedir}/%%{rubyxver}/$arch
 __EOF__
 
 %clean
@@ -381,13 +390,17 @@ rm -rf tmp-ruby-docs
 %doc %{name}-%{version}/ChangeLog
 %doc %{name}-%{version}/LEGAL
 %dir %{_libdir}/ruby
+%dir %{_prefix}/lib/ruby
 %dir %{_libdir}/ruby/%{rubyxver}
-%dir %{_libdir}/ruby/%{rubyxver}/cgi
-%dir %{_libdir}/ruby/%{rubyxver}/net
-%dir %{_libdir}/ruby/%{rubyxver}/shell
-%dir %{_libdir}/ruby/%{rubyxver}/uri
+%dir %{_prefix}/lib/ruby/%{rubyxver}
+%dir %{_prefix}/lib/ruby/%{rubyxver}/cgi
+%dir %{_prefix}/lib/ruby/%{rubyxver}/net
+%dir %{_prefix}/lib/ruby/%{rubyxver}/shell
+%dir %{_prefix}/lib/ruby/%{rubyxver}/uri
 %dir %{sitedir}
 %dir %{sitedir}/%{rubyxver}
+%dir %{sitedir2}
+%dir %{sitedir2}/%{rubyxver}
 
 %files tcltk -f ruby-tcltk.files
 %defattr(-, root, root)
@@ -401,9 +414,9 @@ rm -rf tmp-ruby-docs
 %files irb -f irb.files
 %defattr(-, root, root)
 %doc tmp-ruby-docs/irb/*
-%dir %{_libdir}/ruby/%{rubyxver}/irb
-%dir %{_libdir}/ruby/%{rubyxver}/irb/lc
-%dir %{_libdir}/ruby/%{rubyxver}/irb/lc/ja
+%dir %{_prefix}/lib/ruby/%{rubyxver}/irb
+%dir %{_prefix}/lib/ruby/%{rubyxver}/irb/lc
+%dir %{_prefix}/lib/ruby/%{rubyxver}/irb/lc/ja
 
 %files ri -f ri.files
 %defattr(-, root, root)
@@ -420,6 +433,12 @@ rm -rf tmp-ruby-docs
 %dir %{_datadir}/emacs/site-lisp/ruby-mode
 
 %changelog
+* Wed Apr 19 2006 Akira TAGOH <tagoh@redhat.com>
+- ruby-rubyprefix.patch: moved all arch-independent modules to /usr/lib/ruby
+  and keep arch-dependent modules  in /usr/lib64/ruby for 64bit arch.
+  so 'rubylibdir', 'sitelibdir' and 'sitedir' on Config::CONFIG points to
+  /usr/lib/ruby now. (#184199)
+
 * Mon Apr 17 2006 Akira TAGOH <tagoh@redhat.com> - 1.8.4-4
 - correct sitelibdir. (#184198)
 
