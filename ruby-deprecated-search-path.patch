@@ -1,0 +1,45 @@
+バイナリー・ファイルruby-1.8.4.orig/.ruby.c.swpとruby-1.8.4/.ruby.c.swpは違います
+diff -ruN ruby-1.8.4.orig/configure.in ruby-1.8.4/configure.in
+--- ruby-1.8.4.orig/configure.in	2006-04-20 12:53:38.000000000 +0900
++++ ruby-1.8.4/configure.in	2006-04-20 13:06:07.000000000 +0900
+@@ -1472,10 +1472,14 @@
+ esac
+ RUBY_SITE_LIB_PATH3="${RUBY_SITE_LIB_PATH2}/${MAJOR}.${MINOR}"
+ RUBY_SITE_LIB_PATH2="${RUBY_SITE_LIB_PATH}/${MAJOR}.${MINOR}"
++RUBY_DEPRECATED_SITE_LIB_PATH="${SITE_DIR2}/${MAJOR}.${MINOR}"
+ 
+ AC_DEFINE_UNQUOTED(RUBY_LIB, "${RUBY_LIB_PATH}")
+ AC_DEFINE_UNQUOTED(RUBY_SITE_LIB, "${RUBY_SITE_LIB_PATH}")
+ AC_DEFINE_UNQUOTED(RUBY_SITE_LIB2, "${RUBY_SITE_LIB_PATH2}")
++AC_DEFINE_UNQUOTED(RUBY_DEPRECATED_LIB, "${RUBY_LIB_PATH2}")
++AC_DEFINE_UNQUOTED(RUBY_DEPRECATED_SITE_LIB, "${SITE_DIR2}")
++AC_DEFINE_UNQUOTED(RUBY_DEPRECATED_SITE_LIB2, "${RUBY_DEPRECATED_SITE_LIB_PATH}")
+ 
+ AC_SUBST(arch)dnl
+ AC_SUBST(sitearch)dnl
+diff -ruN ruby-1.8.4.orig/ruby.c ruby-1.8.4/ruby.c
+--- ruby-1.8.4.orig/ruby.c	2005-12-12 09:36:52.000000000 +0900
++++ ruby-1.8.4/ruby.c	2006-04-20 12:59:50.000000000 +0900
+@@ -292,13 +292,22 @@
+ #endif
+ 
+     ruby_incpush(RUBY_RELATIVE(RUBY_SITE_LIB2));
++#ifdef RUBY_DEPRECATED_SITE_LIB
++    ruby_incpush(RUBY_RELATIVE(RUBY_DEPRECATED_SITE_LIB2));
++#endif
+ #ifdef RUBY_SITE_THIN_ARCHLIB
+     ruby_incpush(RUBY_RELATIVE(RUBY_SITE_THIN_ARCHLIB));
+ #endif
+     ruby_incpush(RUBY_RELATIVE(RUBY_SITE_ARCHLIB));
+     ruby_incpush(RUBY_RELATIVE(RUBY_SITE_LIB));
++#ifdef RUBY_DEPRECATED_SITE_LIB
++    ruby_incpush(RUBY_RELATIVE(RUBY_DEPRECATED_SITE_LIB));
++#endif
+ 
+     ruby_incpush(RUBY_RELATIVE(RUBY_LIB));
++#ifdef RUBY_DEPRECATED_LIB
++    ruby_incpush(RUBY_RELATIVE(RUBY_DEPRECATED_LIB));
++#endif
+ #ifdef RUBY_THIN_ARCHLIB
+     ruby_incpush(RUBY_RELATIVE(RUBY_THIN_ARCHLIB));
+ #endif

@@ -5,7 +5,7 @@
 
 Name:		ruby
 Version:	1.8.4
-Release:	4.fc6.1
+Release:	4.fc6.2
 License:	Distributable
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
@@ -25,8 +25,9 @@ Source10:	ruby-mode-init.el
 Patch1:		ruby-1.8.2-deadcode.patch
 Patch2:		ruby-1.8.4-no-eaccess.patch
 Patch3:		ruby-rubyprefix.patch
-Patch4:		ruby-multilib.patch
-Patch5:		ruby-tcltk-multilib.patch
+Patch4:		ruby-deprecated-search-path.patch
+Patch5:		ruby-multilib.patch
+Patch6:		ruby-tcltk-multilib.patch
 
 Summary:	An interpreter of object-oriented scripting language
 Group:		Development/Languages
@@ -42,6 +43,7 @@ straight-forward, and extensible.
 %package libs
 Summary:	Libraries necessary to run Ruby.
 Group:		Development/Libraries
+Provides:	ruby(abi) = %{rubyxver}
 Provides:	libruby
 Obsoletes:	libruby
 
@@ -139,6 +141,7 @@ pushd %{name}-%{version}
 %ifarch ppc64 s390x sparc64 x86_64
 %patch4 -p1
 %patch5 -p1
+%patch6 -p1
 %endif
 popd
 
@@ -433,6 +436,11 @@ rm -rf tmp-ruby-docs
 %dir %{_datadir}/emacs/site-lisp/ruby-mode
 
 %changelog
+* Thu Apr 20 2006 Akira TAGOH <tagoh@redhat.com>
+- ruby-deprecated-search-path.patch: added the deprecated installation paths
+  to the search path for the backward compatibility.
+- added a Provides: ruby(abi) to ruby-libs.
+
 * Wed Apr 19 2006 Akira TAGOH <tagoh@redhat.com>
 - ruby-rubyprefix.patch: moved all arch-independent modules to /usr/lib/ruby
   and keep arch-dependent modules  in /usr/lib64/ruby for 64bit arch.
