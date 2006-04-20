@@ -1,0 +1,26 @@
+diff -ruN ruby-1.8.4.orig/pack.c ruby-1.8.4/pack.c
+--- ruby-1.8.4.orig/pack.c	2005-10-13 23:30:49.000000000 +0900
++++ ruby-1.8.4/pack.c	2006-04-20 13:50:25.000000000 +0900
+@@ -347,11 +347,11 @@
+     return 0;			/* not reached */
+ }
+ 
+-#if SIZEOF_LONG == SIZE32 || SIZEOF_INT == SIZE32
++#if SIZEOF_LONG == SIZE32
+ # define EXTEND32(x) 
+ #else
+ /* invariant in modulo 1<<31 */
+-# define EXTEND32(x) do {if (!natint) {(x) = (I32)(((1<<31)-1-(x))^~(~0<<31));}} while(0)
++# define EXTEND32(x) do { if (!natint) {(x) = (((1L<<31)-1-(x))^~(~0L<<31));}} while(0)
+ #endif
+ #if SIZEOF_SHORT == SIZE16
+ # define EXTEND16(x) 
+@@ -1951,7 +1951,7 @@
+ 	  case 'w':
+ 	    {
+ 		unsigned long ul = 0;
+-		unsigned long ulmask = 0xfeL << ((sizeof(unsigned long) - 1) * 8);
++		unsigned long ulmask = 0xfeUL << ((sizeof(unsigned long) - 1UL) * 8UL);
+ 
+ 		while (len > 0 && s < send) {
+ 		    ul <<= 7;
