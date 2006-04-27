@@ -5,7 +5,7 @@
 
 Name:		ruby
 Version:	1.8.4
-Release:	5.fc6
+Release:	6.fc6
 License:	Ruby License/GPL - see COPYING
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
@@ -166,6 +166,7 @@ export CFLAGS
   --with-default-kcode=none \
   --enable-shared \
   --enable-ipv6 \
+  --enable-pthread \
   --with-lookup-order-hack=INET \
   --disable-rpath \
   --with-ruby-prefix=%{_prefix}/lib
@@ -439,7 +440,7 @@ rm -rf tmp-ruby-docs
 %dir %{_datadir}/emacs/site-lisp/ruby-mode
 
 %changelog
-* Thu Apr 27 2006 Akira TAGOH <tagoh@redhat.com> - 1.8.4-5
+* Thu Apr 27 2006 Akira TAGOH <tagoh@redhat.com> - 1.8.4-6
 - ruby-deprecated-search-path.patch: added the deprecated installation paths
   to the search path for the backward compatibility.
 - added a Provides: ruby(abi) to ruby-libs.
@@ -447,6 +448,7 @@ rm -rf tmp-ruby-docs
   not working on 64bit arch and integer overflow on template "w". (#189350)
 - updated License tag to be more comfortable, and with a pointer to get more
   details, like Python package does. (#179933)
+- build with --enable-pthread to build Tcl/Tk module against thread enabled Tcl/Tk.
 
 * Wed Apr 19 2006 Akira TAGOH <tagoh@redhat.com>
 - ruby-rubyprefix.patch: moved all arch-independent modules under /usr/lib/ruby
