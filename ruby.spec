@@ -289,6 +289,7 @@ rmdir $RPM_BUILD_ROOT%{_prefix}/lib/ruby/%{rubyxver}/$_cpu-%{_target_os}
 DESTDIR=$RPM_BUILD_ROOT LD_LIBRARY_PATH=$RPM_BUILD_ROOT%{_libdir} $RPM_BUILD_ROOT%{_bindir}/ruby -I $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version} -I $RPM_BUILD_ROOT%{_libdir}/ruby/%{rubyxver}/$_cpu-%{_target_os}/ -I $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/lib $RPM_BUILD_ROOT%{_bindir}/rdoc --all --ri-system $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}
 
 # XXX: installing irb
+install %{SOURCE5} $RPM_BUILD_ROOT%{_mandir}/man1/
 
 # installing ruby-mode
 cd %{name}-%{version}
@@ -442,16 +443,16 @@ rm -rf tmp-ruby-docs
 - ruby-deprecated-search-path.patch: added the deprecated installation paths
   to the search path for the backward compatibility.
 - added a Provides: ruby(abi) to ruby-libs.
-- ruby-1.8.4-64bit-pack.patch: backport patch to fix unpack("l") not working
-  on 64bit arch and integer overflow on template "w". (#189350)
+- ruby-1.8.4-64bit-pack.patch: backport patch from upstream to fix unpack("l")
+  not working on 64bit arch and integer overflow on template "w". (#189350)
 - updated License tag to be more comfortable, and with a pointer to get more
   details, like Python package does. (#179933)
 
 * Wed Apr 19 2006 Akira TAGOH <tagoh@redhat.com>
-- ruby-rubyprefix.patch: moved all arch-independent modules to /usr/lib/ruby
-  and keep arch-dependent modules  in /usr/lib64/ruby for 64bit arch.
-  so 'rubylibdir', 'sitelibdir' and 'sitedir' on Config::CONFIG points to
-  /usr/lib/ruby now. (#184199)
+- ruby-rubyprefix.patch: moved all arch-independent modules under /usr/lib/ruby
+  and keep arch-dependent modules under /usr/lib64/ruby for 64bit archs.
+  so 'rubylibdir', 'sitelibdir' and 'sitedir' in Config::CONFIG points to
+  the kind of /usr/lib/ruby now. (#184199)
 
 * Mon Apr 17 2006 Akira TAGOH <tagoh@redhat.com> - 1.8.4-4
 - correct sitelibdir. (#184198)
