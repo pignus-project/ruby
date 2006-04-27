@@ -5,7 +5,7 @@
 
 Name:		ruby
 Version:	1.8.4
-Release:	4.fc6.2
+Release:	5.fc6
 License:	Ruby License/GPL - see COPYING
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
@@ -438,7 +438,7 @@ rm -rf tmp-ruby-docs
 %dir %{_datadir}/emacs/site-lisp/ruby-mode
 
 %changelog
-* Thu Apr 20 2006 Akira TAGOH <tagoh@redhat.com>
+* Thu Apr 27 2006 Akira TAGOH <tagoh@redhat.com> - 1.8.4-5
 - ruby-deprecated-search-path.patch: added the deprecated installation paths
   to the search path for the backward compatibility.
 - added a Provides: ruby(abi) to ruby-libs.
