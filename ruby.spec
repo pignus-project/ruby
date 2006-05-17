@@ -279,12 +279,6 @@ _cpu=`echo %{_target_cpu} | sed 's/^ppc/powerpc/'`
 %{__mkdir_p} $RPM_BUILD_ROOT%{sitedir2}/%{rubyxver}
 %{__mkdir_p} $RPM_BUILD_ROOT%{sitedir}/%{rubyxver}/$_cpu-%{_target_os}
 
-%ifarch ppc64 s390x sparc64 x86_64
-# move the arch-specific files to proper location
-mv $RPM_BUILD_ROOT%{_prefix}/lib/ruby/%{rubyxver}/$_cpu-%{_target_os}/* $RPM_BUILD_ROOT%{_libdir}/ruby/%{rubyxver}/$_cpu-%{_target_os}/
-rmdir $RPM_BUILD_ROOT%{_prefix}/lib/ruby/%{rubyxver}/$_cpu-%{_target_os}
-%endif
-
 # generate ri doc
 DESTDIR=$RPM_BUILD_ROOT LD_LIBRARY_PATH=$RPM_BUILD_ROOT%{_libdir} $RPM_BUILD_ROOT%{_bindir}/ruby -I $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version} -I $RPM_BUILD_ROOT%{_libdir}/ruby/%{rubyxver}/$_cpu-%{_target_os}/ -I $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/lib $RPM_BUILD_ROOT%{_bindir}/rdoc --all --ri-system $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}
 
