@@ -156,9 +156,6 @@ autoconf
 
 rb_cv_func_strtod=no
 export rb_cv_func_strtod
-%if ia64
-export RPM_OPT_FLAGS=`echo $RPM_OPT_FLAGS | sed 's/-O[1-9]/-O0/g'`
-%endif
 CFLAGS="$RPM_OPT_FLAGS -Wall"
 export CFLAGS
 %configure \
@@ -166,11 +163,13 @@ export CFLAGS
   --with-default-kcode=none \
   --enable-shared \
   --enable-ipv6 \
-  --enable-pthread \
+  --disable-pthread \
   --with-lookup-order-hack=INET \
   --disable-rpath \
   --with-ruby-prefix=%{_prefix}/lib
 
+cp Makefile Makefile.orig
+sed -e 's/^EXTMK_ARGS[[:space:]].*=\(.*\) --$/EXTMK_ARGS=\1 --disable-tcl-thread --/' Makefile.orig > Makefile
 make RUBY_INSTALL_NAME=ruby %{?_smp_mflags}
 %ifarch ia64
 # Miscompilation? Buggy code?
@@ -440,7 +439,7 @@ rm -rf tmp-ruby-docs
 %dir %{_datadir}/emacs/site-lisp/ruby-mode
 
 %changelog
-* Thu Apr 27 2006 Akira TAGOH <tagoh@redhat.com> - 1.8.4-6
+* Wed May 17 2006 Akira TAGOH <tagoh@redhat.com> - 1.8.4-6
 - ruby-deprecated-search-path.patch: added the deprecated installation paths
   to the search path for the backward compatibility.
 - added a Provides: ruby(abi) to ruby-libs.
@@ -448,7 +447,7 @@ rm -rf tmp-ruby-docs
   not working on 64bit arch and integer overflow on template "w". (#189350)
 - updated License tag to be more comfortable, and with a pointer to get more
   details, like Python package does. (#179933)
-- build with --enable-pthread to build Tcl/Tk module against thread enabled Tcl/Tk.
+- clean up.
 
 * Wed Apr 19 2006 Akira TAGOH <tagoh@redhat.com>
 - ruby-rubyprefix.patch: moved all arch-independent modules under /usr/lib/ruby
