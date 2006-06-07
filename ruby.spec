@@ -5,11 +5,11 @@
 
 Name:		ruby
 Version:	1.8.4
-Release:	6.fc6
+Release:	7.fc6
 License:	Ruby License/GPL - see COPYING
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
-BuildRequires:	readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl-devel tk-devel libX11-devel autoconf gcc unzip openssl-devel db4-devel emacs
+BuildRequires:	readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl-devel tk-devel libX11-devel autoconf gcc unzip openssl-devel db4-devel emacs byacc
 
 Source0:	ftp://ftp.ruby-lang.org/pub/%{name}/%{name}-%{version}.tar.gz
 ##Source1:	ftp://ftp.ruby-lang.org/pub/%{name}/doc/%{name}-man-%{manver}.tar.gz
@@ -25,10 +25,11 @@ Source10:	ruby-mode-init.el
 Patch1:		ruby-1.8.2-deadcode.patch
 Patch2:		ruby-1.8.4-no-eaccess.patch
 Patch3:		ruby-rubyprefix.patch
-Patch4:		ruby-deprecated-search-path.patch
-Patch5:		ruby-multilib.patch
-Patch6:		ruby-tcltk-multilib.patch
-Patch7:		ruby-1.8.4-64bit-pack.patch
+Patch4:		ruby-deprecated-sitelib-search-path.patch
+Patch5:		ruby-deprecated-search-path.patch
+Patch6:		ruby-multilib.patch
+Patch7:		ruby-tcltk-multilib.patch
+Patch8:		ruby-1.8.4-64bit-pack.patch
 
 Summary:	An interpreter of object-oriented scripting language
 Group:		Development/Languages
@@ -105,6 +106,7 @@ Group:		Documentation
 Manuals and FAQs for the object-oriented scripting language Ruby.
 
 
+%ifnarch ppc64
 %package mode
 Summary:	Emacs Lisp ruby-mode for the scripting language Ruby
 Group:		Applications/Editors
@@ -112,6 +114,7 @@ Requires:	emacs-common
 
 %description mode
 Emacs Lisp ruby-mode for the object-oriented scripting language Ruby.
+%endif
 
 
 %package ri
@@ -139,11 +142,12 @@ pushd %{name}-%{version}
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
-%ifarch ppc64 s390x sparc64 x86_64
 %patch4 -p1
+%ifarch ppc64 s390x sparc64 x86_64
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
+%patch8 -p1
 %endif
 popd
 
@@ -185,10 +189,12 @@ popd
 %install
 [ -n "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != / ] && rm -rf $RPM_BUILD_ROOT
 
+%ifnarch ppc64
 %{__mkdir_p} $RPM_BUILD_ROOT%{_datadir}/emacs/site-lisp/ruby-mode
 %{__mkdir_p} $RPM_BUILD_ROOT%{_datadir}/emacs/site-lisp/site-start.d
-%{__mkdir_p} $RPM_BUILD_ROOT%{_libdir}/xemacs/xemacs-packages/lisp/ruby-mode
-%{__mkdir_p} $RPM_BUILD_ROOT%{_libdir}/xemacs/xemacs-packages/lisp/site-start.d
+#%{__mkdir_p} $RPM_BUILD_ROOT%{_libdir}/xemacs/xemacs-packages/lisp/ruby-mode
+#%{__mkdir_p} $RPM_BUILD_ROOT%{_libdir}/xemacs/xemacs-packages/lisp/site-start.d
+%endif
 
 # installing documents and exapmles...
 mkdir tmp-ruby-docs
@@ -285,6 +291,7 @@ DESTDIR=$RPM_BUILD_ROOT LD_LIBRARY_PATH=$RPM_BUILD_ROOT%{_libdir} $RPM_BUILD_ROO
 # XXX: installing irb
 install %{SOURCE5} $RPM_BUILD_ROOT%{_mandir}/man1/
 
+%ifnarch ppc64
 # installing ruby-mode
 cd %{name}-%{version}
 cp misc/*.el $RPM_BUILD_ROOT%{_datadir}/emacs/site-lisp/ruby-mode
@@ -301,6 +308,7 @@ install -m 644 %{SOURCE10} \
 	$RPM_BUILD_ROOT%{_datadir}/emacs/site-lisp/site-start.d
 
 cd ..
+%endif
 
 # listing all files in ruby-all.files
 (find $RPM_BUILD_ROOT -type f -o -type l) |
@@ -337,9 +345,13 @@ cp /dev/null ruby-libs.files
  fgrep -h '%{_prefix}/lib' ruby-devel.files ruby-tcltk.files irb.files ri.files rdoc.files) | egrep -v "elc?$" | \
  sort | uniq -u > ruby-libs.files
 
+%ifnarch ppc64
 # for ruby-mode
 cp /dev/null ruby-mode.files
 fgrep '.el' ruby-all.files >> ruby-mode.files
+%else
+touch ruby-mode.files
+%endif
 
 # for ruby.rpm
 sort ruby-all.files \
@@ -427,12 +439,21 @@ rm -rf tmp-ruby-docs
 %doc tmp-ruby-docs/ruby-docs/*
 %doc tmp-ruby-docs/ruby-libs/*
 
+%ifnarch ppc64
 %files mode -f ruby-mode.files 
 %defattr(-, root, root)
 %doc %{name}-%{version}/misc/README
 %dir %{_datadir}/emacs/site-lisp/ruby-mode
+%endif
 
 %changelog
+* Wed Jun  7 2006 Akira TAGOH <tagoh@redhat.com> - 1.8.4-7
+- exclude ppc64 to make ruby-mode package. right now emacs.ppc64 isn't provided
+  and buildsys became much stricker.
+- ruby-deprecated-sitelib-search-path.patch: applied to add more search path
+  for backward compatiblity.
+- added byacc to BuildReq. (#194161)
+
 * Wed May 17 2006 Akira TAGOH <tagoh@redhat.com> - 1.8.4-6
 - ruby-deprecated-search-path.patch: added the deprecated installation paths
   to the search path for the backward compatibility.
