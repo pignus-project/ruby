@@ -455,7 +455,7 @@ rm -rf tmp-ruby-docs
 
 * Wed Jun  7 2006 Akira TAGOH <tagoh@redhat.com> - 1.8.4-7
 - exclude ppc64 to make ruby-mode package. right now emacs.ppc64 isn't provided
-  and buildsys became much stricker.
+  and buildsys became much stricter.
 - ruby-deprecated-sitelib-search-path.patch: applied to add more search path
   for backward compatiblity.
 - added byacc to BuildReq. (#194161)
