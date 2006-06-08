@@ -25,14 +25,14 @@ diff -ruN ruby-1.8.4.orig/ruby.c ruby-1.8.4/ruby.c
  #endif
      ruby_incpush(RUBY_RELATIVE(RUBY_SITE_ARCHLIB));
      ruby_incpush(RUBY_RELATIVE(RUBY_SITE_LIB));
++#ifdef RUBY_DEPRECATED_OLD_SITE_LIB2
++    ruby_incpush(RUBY_RELATIVE(RUBY_DEPRECATED_OLD_SITE_LIB2));
++#endif
 +#ifdef RUBY_DEPRECATED_OLD_SITE_ARCHLIB
 +    ruby_incpush(RUBY_RELATIVE(RUBY_DEPRECATED_OLD_SITE_ARCHLIB));
 +#endif
 +#ifdef RUBY_DEPRECATED_OLD_SITE_LIB
 +    ruby_incpush(RUBY_RELATIVE(RUBY_DEPRECATED_OLD_SITE_LIB));
-+#endif
-+#ifdef RUBY_DEPRECATED_OLD_SITE_LIB2
-+    ruby_incpush(RUBY_RELATIVE(RUBY_DEPRECATED_OLD_SITE_LIB2));
 +#endif
  
      ruby_incpush(RUBY_RELATIVE(RUBY_LIB));

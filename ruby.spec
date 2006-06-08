@@ -5,7 +5,7 @@
 
 Name:		ruby
 Version:	1.8.4
-Release:	7.fc6
+Release:	8.fc6
 License:	Ruby License/GPL - see COPYING
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
@@ -450,6 +450,9 @@ rm -rf tmp-ruby-docs
 %endif
 
 %changelog
+* Thu Jun  8 2006 Akira TAGOH <tagoh@redhat.com> - 1.8.4-8
+- ruby-deprecated-sitelib-search-path.patch: correct the order of search path.
+
 * Wed Jun  7 2006 Akira TAGOH <tagoh@redhat.com> - 1.8.4-7
 - exclude ppc64 to make ruby-mode package. right now emacs.ppc64 isn't provided
   and buildsys became much stricker.

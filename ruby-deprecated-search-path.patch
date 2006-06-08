@@ -36,8 +36,8 @@ diff -ruN ruby-1.8.4.orig/ruby.c ruby-1.8.4/ruby.c
 +#ifdef RUBY_DEPRECATED_SITE_LIB
 +    ruby_incpush(RUBY_RELATIVE(RUBY_DEPRECATED_SITE_LIB));
 +#endif
- #ifdef RUBY_DEPRECATED_OLD_SITE_ARCHLIB
-     ruby_incpush(RUBY_RELATIVE(RUBY_DEPRECATED_OLD_SITE_ARCHLIB));
+ #ifdef RUBY_DEPRECATED_OLD_SITE_LIB2
+     ruby_incpush(RUBY_RELATIVE(RUBY_DEPRECATED_OLD_SITE_LIB2));
  #endif
 @@ -308,6 +314,9 @@
  #endif
