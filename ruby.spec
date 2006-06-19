@@ -5,7 +5,7 @@
 
 Name:		ruby
 Version:	1.8.4
-Release:	8.fc6
+Release:	9.fc6
 License:	Ruby License/GPL - see COPYING
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
@@ -321,11 +321,7 @@ egrep '(\.[ah]|libruby\.so)$' ruby-all.files > ruby-devel.files
 
 # for ruby-tcltk.rpm
 cp /dev/null ruby-tcltk.files
-for f in `find %{name}-%{version}/ext/tk/lib -type f; find %{name}-%{version}/.ext/ -type f -name '*.so'`
-do
-  egrep "tcl|tk" ruby-all.files | grep "/`basename $f`$" >> ruby-tcltk.files || :
-done
-for f in `find %{name}-%{version}/ext/tcltklib/lib -type f; find %{name}-%{version}/.ext -type f -name '*.so'`
+for f in `find %{name}-%{version}/ext/tk/lib -type f; find %{name}-%{version}/ext/tk -type f -name '*.so'`
 do
   egrep "tcl|tk" ruby-all.files | grep "/`basename $f`$" >> ruby-tcltk.files || :
 done
@@ -450,6 +446,10 @@ rm -rf tmp-ruby-docs
 %endif
 
 %changelog
+* Mon Jun 19 2006 Akira TAGOH <tagoh@redhat.com> - 1.8.4-9
+- fixed the wrong file list again. moved tcltk library into ruby-tcltk.
+  (#194537)
+
 * Thu Jun  8 2006 Akira TAGOH <tagoh@redhat.com> - 1.8.4-8
 - ruby-deprecated-sitelib-search-path.patch: correct the order of search path.
 
