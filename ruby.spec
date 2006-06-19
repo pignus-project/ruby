@@ -5,7 +5,7 @@
 
 Name:		ruby
 Version:	1.8.4
-Release:	9.fc6
+Release:	10.fc6
 License:	Ruby License/GPL - see COPYING
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
@@ -446,9 +446,9 @@ rm -rf tmp-ruby-docs
 %endif
 
 %changelog
-* Mon Jun 19 2006 Akira TAGOH <tagoh@redhat.com> - 1.8.4-9
+* Mon Jun 19 2006 Akira TAGOH <tagoh@redhat.com> - 1.8.4-10
 - fixed the wrong file list again. moved tcltk library into ruby-tcltk.
-  (#194537)
+  (#195872)
 
 * Thu Jun  8 2006 Akira TAGOH <tagoh@redhat.com> - 1.8.4-8
 - ruby-deprecated-sitelib-search-path.patch: correct the order of search path.
