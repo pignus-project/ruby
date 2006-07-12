@@ -5,7 +5,7 @@
 
 Name:		ruby
 Version:	1.8.4
-Release:	10.fc6
+Release:	10.fc6.1
 License:	Ruby License/GPL - see COPYING
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
@@ -446,6 +446,9 @@ rm -rf tmp-ruby-docs
 %endif
 
 %changelog
+* Wed Jul 12 2006 Jesse Keating <jkeating@redhat.com> - 1.8.4-10.fc6.1
+- rebuild
+
 * Mon Jun 19 2006 Akira TAGOH <tagoh@redhat.com> - 1.8.4-10
 - fixed the wrong file list again. moved tcltk library into ruby-tcltk.
   (#195872)
