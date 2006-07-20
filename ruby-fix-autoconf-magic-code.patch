@@ -1,0 +1,11 @@
+diff -ruN ruby-1.8.4.orig/mkconfig.rb ruby-1.8.4/mkconfig.rb
+--- ruby-1.8.4.orig/mkconfig.rb	2006-07-19 20:39:48.000000000 +0900
++++ ruby-1.8.4/mkconfig.rb	2006-07-19 20:40:12.000000000 +0900
+@@ -37,6 +37,7 @@
+ has_version = false
+ File.foreach "config.status" do |line|
+   next if /^#/ =~ line
++  line.gsub!(/\|#_!!_#\|/, '')
+   if /^s[%,]@program_transform_name@[%,]s,(.*)/ =~ line
+     next if $install_name
+     ptn = $1.sub(/\$\$/, '$').split(/,/)	#'

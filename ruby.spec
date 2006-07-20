@@ -5,10 +5,10 @@
 
 Name:		ruby
 Version:	1.8.4
-Release:	10.fc6.1
+Release:	11%{?dist}
 License:	Ruby License/GPL - see COPYING
 URL:		http://www.ruby-lang.org/
-BuildRoot:	%{_tmppath}/%{name}-%{version}-root
+BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:	readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl-devel tk-devel libX11-devel autoconf gcc unzip openssl-devel db4-devel byacc
 %ifnarch ppc64
 BuildRequires:	emacs
@@ -27,12 +27,16 @@ Source10:	ruby-mode-init.el
 
 Patch1:		ruby-1.8.2-deadcode.patch
 Patch2:		ruby-1.8.4-no-eaccess.patch
-Patch3:		ruby-rubyprefix.patch
-Patch4:		ruby-deprecated-sitelib-search-path.patch
-Patch5:		ruby-deprecated-search-path.patch
-Patch6:		ruby-multilib.patch
-Patch7:		ruby-tcltk-multilib.patch
-Patch8:		ruby-1.8.4-64bit-pack.patch
+Patch3:		ruby-1.8.4-64bit-pack.patch
+Patch4:		ruby-1.8.4-fix-insecure-dir-operation.patch
+Patch5:		ruby-1.8.4-fix-insecure-regexp-modification.patch
+Patch6:		ruby-1.8.4-fix-alias-safe-level.patch
+Patch20:	ruby-rubyprefix.patch
+Patch21:	ruby-deprecated-sitelib-search-path.patch
+Patch22:	ruby-deprecated-search-path.patch
+Patch23:	ruby-multilib.patch
+Patch24:	ruby-tcltk-multilib.patch
+Patch25:	ruby-fix-autoconf-magic-code.patch
 
 Summary:	An interpreter of object-oriented scripting language
 Group:		Development/Languages
@@ -146,12 +150,16 @@ pushd %{name}-%{version}
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
-%ifarch ppc64 s390x sparc64 x86_64
 %patch5 -p1
 %patch6 -p1
-%patch7 -p1
-%patch8 -p1
+%patch20 -p1
+%patch21 -p1
+%ifarch ppc64 s390x sparc64 x86_64
+%patch22 -p1
+%patch23 -p1
+%patch24 -p1
 %endif
+%patch25 -p1
 popd
 
 %build
@@ -190,7 +198,7 @@ make test
 popd
 
 %install
-[ -n "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != / ] && rm -rf $RPM_BUILD_ROOT
+rm -rf $RPM_BUILD_ROOT
 
 %ifnarch ppc64
 %{__mkdir_p} $RPM_BUILD_ROOT%{_datadir}/emacs/site-lisp/ruby-mode
@@ -367,7 +375,7 @@ cat <<__EOF__ >> ruby-libs.files
 __EOF__
 
 %clean
-[ -n "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != / ] && rm -rf $RPM_BUILD_ROOT
+rm -rf $RPM_BUILD_ROOT
 rm -f *.files
 rm -rf tmp-ruby-docs
 
@@ -446,6 +454,14 @@ rm -rf tmp-ruby-docs
 %endif
 
 %changelog
+* Thu Jul 20 2006 Akira TAGOH <tagoh@redhat.com> - 1.8.4-11
+- security fixes.
+  - ruby-1.8.4-fix-insecure-dir-operation.patch:
+  - ruby-1.8.4-fix-insecure-regexp-modification.patch: fixed the insecure
+    operations in the certain safe-level restrictions. (#199538)
+  - ruby-1.8.4-fix-alias-safe-level.patch: fixed to not bypass the certain
+    safe-level restrictions. (#199543)
+
 * Wed Jul 12 2006 Jesse Keating <jkeating@redhat.com> - 1.8.4-10.fc6.1
 - rebuild
 
