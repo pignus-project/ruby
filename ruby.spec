@@ -455,7 +455,7 @@ rm -rf tmp-ruby-docs
 
 %changelog
 * Thu Jul 20 2006 Akira TAGOH <tagoh@redhat.com> - 1.8.4-11
-- security fixes.
+- security fixes [CVE-2006-3694]
   - ruby-1.8.4-fix-insecure-dir-operation.patch:
   - ruby-1.8.4-fix-insecure-regexp-modification.patch: fixed the insecure
     operations in the certain safe-level restrictions. (#199538)
