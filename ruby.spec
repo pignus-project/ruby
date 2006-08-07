@@ -5,7 +5,7 @@
 
 Name:		ruby
 Version:	1.8.4
-Release:	11%{?dist}
+Release:	12%{?dist}
 License:	Ruby License/GPL - see COPYING
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -416,10 +416,8 @@ rm -rf tmp-ruby-docs
 %dir %{_prefix}/lib/ruby/%{rubyxver}/net
 %dir %{_prefix}/lib/ruby/%{rubyxver}/shell
 %dir %{_prefix}/lib/ruby/%{rubyxver}/uri
-%dir %{sitedir}
-%dir %{sitedir}/%{rubyxver}
-%dir %{sitedir2}
-%dir %{sitedir2}/%{rubyxver}
+%{sitedir}
+%{sitedir2}
 
 %files tcltk -f ruby-tcltk.files
 %defattr(-, root, root)
@@ -454,6 +452,9 @@ rm -rf tmp-ruby-docs
 %endif
 
 %changelog
+* Mon Aug  7 2006 Akira TAGOH <tagoh@redhat.com> - 1.8.4-12
+- owns sitearchdir. (#201208)
+
 * Thu Jul 20 2006 Akira TAGOH <tagoh@redhat.com> - 1.8.4-11
 - security fixes [CVE-2006-3694]
   - ruby-1.8.4-fix-insecure-dir-operation.patch:
