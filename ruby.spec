@@ -164,7 +164,6 @@ export rb_cv_func_strtod
 CFLAGS="$RPM_OPT_FLAGS -Wall"
 export CFLAGS
 %configure \
-  --datarootdir='$(DESTDIR)/%{_datadir}' \
   --with-sitedir='%{sitedir}' \
   --with-default-kcode=none \
   --enable-shared \
