@@ -452,6 +452,7 @@ rm -rf tmp-ruby-docs
   - ruby-1.8.4-fix-insecure-dir-operation.patch
   - ruby-1.8.4-fix-insecure-regexp-modification.patch
   - ruby-1.8.4-fix-alias-safe-level.patch
+- build with --enable-pthread. (#201452)
 
 * Mon Aug  7 2006 Akira TAGOH <tagoh@redhat.com> - 1.8.4-12
 - owns sitearchdir. (#201208)
