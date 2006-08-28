@@ -4,8 +4,8 @@
 %define	sitedir2	%{_prefix}/lib/ruby/site_ruby
 
 Name:		ruby
-Version:	1.8.4
-Release:	12%{?dist}
+Version:	1.8.5
+Release:	1%{?dist}
 License:	Ruby License/GPL - see COPYING
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -26,11 +26,6 @@ Source5:	irb.1
 Source10:	ruby-mode-init.el
 
 Patch1:		ruby-1.8.2-deadcode.patch
-Patch2:		ruby-1.8.4-no-eaccess.patch
-Patch3:		ruby-1.8.4-64bit-pack.patch
-Patch4:		ruby-1.8.4-fix-insecure-dir-operation.patch
-Patch5:		ruby-1.8.4-fix-insecure-regexp-modification.patch
-Patch6:		ruby-1.8.4-fix-alias-safe-level.patch
 Patch20:	ruby-rubyprefix.patch
 Patch21:	ruby-deprecated-sitelib-search-path.patch
 Patch22:	ruby-deprecated-search-path.patch
@@ -147,11 +142,6 @@ tar fxz %{SOURCE2}
 popd
 pushd %{name}-%{version}
 %patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
 %patch20 -p1
 %patch21 -p1
 %ifarch ppc64 s390x sparc64 x86_64
@@ -159,7 +149,7 @@ pushd %{name}-%{version}
 %patch23 -p1
 %patch24 -p1
 %endif
-%patch25 -p1
+#%%patch25 -p1
 popd
 
 %build
@@ -174,17 +164,18 @@ export rb_cv_func_strtod
 CFLAGS="$RPM_OPT_FLAGS -Wall"
 export CFLAGS
 %configure \
+  --datarootdir='$(DESTDIR)/%{_datadir}' \
   --with-sitedir='%{sitedir}' \
   --with-default-kcode=none \
   --enable-shared \
   --enable-ipv6 \
-  --disable-pthread \
+  --enable-pthread \
   --with-lookup-order-hack=INET \
   --disable-rpath \
   --with-ruby-prefix=%{_prefix}/lib
 
-cp Makefile Makefile.orig
-sed -e 's/^EXTMK_ARGS[[:space:]].*=\(.*\) --$/EXTMK_ARGS=\1 --disable-tcl-thread --/' Makefile.orig > Makefile
+#cp Makefile Makefile.orig
+#sed -e 's/^EXTMK_ARGS[[:space:]].*=\(.*\) --$/EXTMK_ARGS=\1 --disable-tcl-thread --/' Makefile.orig > Makefile
 make RUBY_INSTALL_NAME=ruby %{?_smp_mflags}
 %ifarch ia64
 # Miscompilation? Buggy code?
@@ -297,7 +288,8 @@ _cpu=`echo %{_target_cpu} | sed 's/^ppc/powerpc/'`
 %{__mkdir_p} $RPM_BUILD_ROOT%{sitedir}/%{rubyxver}/$_cpu-%{_target_os}
 
 # generate ri doc
-DESTDIR=$RPM_BUILD_ROOT LD_LIBRARY_PATH=$RPM_BUILD_ROOT%{_libdir} $RPM_BUILD_ROOT%{_bindir}/ruby -I $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version} -I $RPM_BUILD_ROOT%{_libdir}/ruby/%{rubyxver}/$_cpu-%{_target_os}/ -I $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/lib $RPM_BUILD_ROOT%{_bindir}/rdoc --all --ri-system $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}
+make -C $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version} DESTDIR=$RPM_BUILD_ROOT install-doc
+#DESTDIR=$RPM_BUILD_ROOT LD_LIBRARY_PATH=$RPM_BUILD_ROOT%{_libdir} $RPM_BUILD_ROOT%{_bindir}/ruby -I $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version} -I $RPM_BUILD_ROOT%{_libdir}/ruby/%{rubyxver}/$_cpu-%{_target_os}/ -I $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/lib $RPM_BUILD_ROOT%{_bindir}/rdoc --all --ri-system $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}
 
 # XXX: installing irb
 install %{SOURCE5} $RPM_BUILD_ROOT%{_mandir}/man1/
@@ -329,7 +321,7 @@ egrep '(\.[ah]|libruby\.so)$' ruby-all.files > ruby-devel.files
 
 # for ruby-tcltk.rpm
 cp /dev/null ruby-tcltk.files
-for f in `find %{name}-%{version}/ext/tk/lib -type f; find %{name}-%{version}/ext/tk -type f -name '*.so'`
+for f in `find %{name}-%{version}/ext/tk/lib -type f; find %{name}-%{version}/.ext -type f -name '*.so'`
 do
   egrep "tcl|tk" ruby-all.files | grep "/`basename $f`$" >> ruby-tcltk.files || :
 done
@@ -452,6 +444,15 @@ rm -rf tmp-ruby-docs
 %endif
 
 %changelog
+* Mon Aug 28 2006 Akira TAGOH <tagoh@redhat.com> - 1.8.5-1
+- New upstream release.
+- removed the unnecessary patches:
+  - ruby-1.8.4-no-eaccess.patch
+  - ruby-1.8.4-64bit-pack.patch
+  - ruby-1.8.4-fix-insecure-dir-operation.patch
+  - ruby-1.8.4-fix-insecure-regexp-modification.patch
+  - ruby-1.8.4-fix-alias-safe-level.patch
+
 * Mon Aug  7 2006 Akira TAGOH <tagoh@redhat.com> - 1.8.4-12
 - owns sitearchdir. (#201208)
 
