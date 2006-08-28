@@ -161,20 +161,29 @@ autoconf
 
 rb_cv_func_strtod=no
 export rb_cv_func_strtod
-CFLAGS="$RPM_OPT_FLAGS -Wall"
+CFLAGS="$RPM_OPT_FLAGS -Wall -fno-strict-aliasing"
 export CFLAGS
 %configure \
   --with-sitedir='%{sitedir}' \
   --with-default-kcode=none \
+  --with-bundled-sha1 \
+  --with-bundled-md5 \
+  --with-bundled-rmd160 \
   --enable-shared \
   --enable-ipv6 \
+%ifarch ppc
+  --disable-pthread \
+%else
   --enable-pthread \
+%endif
   --with-lookup-order-hack=INET \
   --disable-rpath \
   --with-ruby-prefix=%{_prefix}/lib
 
-#cp Makefile Makefile.orig
-#sed -e 's/^EXTMK_ARGS[[:space:]].*=\(.*\) --$/EXTMK_ARGS=\1 --disable-tcl-thread --/' Makefile.orig > Makefile
+%ifarch ppc
+cp Makefile Makefile.orig
+sed -e 's/^EXTMK_ARGS[[:space:]].*=\(.*\) --$/EXTMK_ARGS=\1 --disable-tcl-thread --/' Makefile.orig > Makefile
+%endif
 make RUBY_INSTALL_NAME=ruby %{?_smp_mflags}
 %ifarch ia64
 # Miscompilation? Buggy code?
@@ -320,7 +329,7 @@ egrep '(\.[ah]|libruby\.so)$' ruby-all.files > ruby-devel.files
 
 # for ruby-tcltk.rpm
 cp /dev/null ruby-tcltk.files
-for f in `find %{name}-%{version}/ext/tk/lib -type f; find %{name}-%{version}/.ext -type f -name '*.so'`
+for f in `find %{name}-%{version}/ext/tk/lib -type f; find %{name}-%{version}/.ext -type f -name '*.so'; find %{name}-%{version}/ext/tk -type f -name '*.so'`
 do
   egrep "tcl|tk" ruby-all.files | grep "/`basename $f`$" >> ruby-tcltk.files || :
 done
@@ -451,7 +460,7 @@ rm -rf tmp-ruby-docs
   - ruby-1.8.4-fix-insecure-dir-operation.patch
   - ruby-1.8.4-fix-insecure-regexp-modification.patch
   - ruby-1.8.4-fix-alias-safe-level.patch
-- build with --enable-pthread. (#201452)
+- build with --enable-pthread except on ppc.
 
 * Mon Aug  7 2006 Akira TAGOH <tagoh@redhat.com> - 1.8.4-12
 - owns sitearchdir. (#201208)
