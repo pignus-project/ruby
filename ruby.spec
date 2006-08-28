@@ -296,7 +296,7 @@ _cpu=`echo %{_target_cpu} | sed 's/^ppc/powerpc/'`
 %{__mkdir_p} $RPM_BUILD_ROOT%{sitedir}/%{rubyxver}/$_cpu-%{_target_os}
 
 # generate ri doc
-make -C $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version} RUNRUBY="\$(MINIRUBY) -I $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version} -I $RPM_BUILD_ROOT%{_libdir}/ruby/%{rubyxver}/$_cpu-%{_target_os} -I $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/lib \$(srcdir)/runruby.rb --extout=\$(EXTOUT) --" DESTDIR=$RPM_BUILD_ROOT install-doc
+make -C $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version} RUNRUBY="$RPM_BUILD_ROOT%{_bindir}/ruby -I $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version} -I $RPM_BUILD_ROOT%{_libdir}/ruby/%{rubyxver}/$_cpu-%{_target_os} -I $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/lib \$(srcdir)/runruby.rb --extout=\$(EXTOUT) --" DESTDIR=$RPM_BUILD_ROOT install-doc
 #DESTDIR=$RPM_BUILD_ROOT LD_LIBRARY_PATH=$RPM_BUILD_ROOT%{_libdir} $RPM_BUILD_ROOT%{_bindir}/ruby -I $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version} -I $RPM_BUILD_ROOT%{_libdir}/ruby/%{rubyxver}/$_cpu-%{_target_os}/ -I $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/lib $RPM_BUILD_ROOT%{_bindir}/rdoc --all --ri-system $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}
 
 # XXX: installing irb
