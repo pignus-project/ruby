@@ -297,6 +297,12 @@ _cpu=`echo %{_target_cpu} | sed 's/^ppc/powerpc/'`
 %{__mkdir_p} $RPM_BUILD_ROOT%{sitedir2}/%{rubyxver}
 %{__mkdir_p} $RPM_BUILD_ROOT%{sitedir}/%{rubyxver}/$_cpu-%{_target_os}
 
+%ifarch ppc64 s390x sparc64 x86_64
+# correct archdir
+mv $RPM_BUILD_ROOT%{_prefix}/lib/ruby/%{rubyxver}/$_cpu-%{_target_os}/* $RPM_BUILD_ROOT%{_libdir}/ruby/%{rubyxver}/$_cpu-%{_target_os}/
+rmdir $RPM_BUILD_ROOT%{_prefix}/lib/ruby/%{rubyxver}/$_cpu-%{_target_os}
+%endif
+
 # XXX: installing irb
 install %{SOURCE5} $RPM_BUILD_ROOT%{_mandir}/man1/
 
