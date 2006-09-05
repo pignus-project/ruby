@@ -26,6 +26,7 @@ Source5:	irb.1
 Source10:	ruby-mode-init.el
 
 Patch1:		ruby-1.8.2-deadcode.patch
+Patch2:		ruby-1.8.5-hash-memory-leak.patch
 Patch20:	ruby-rubyprefix.patch
 Patch21:	ruby-deprecated-sitelib-search-path.patch
 Patch22:	ruby-deprecated-search-path.patch
@@ -142,6 +143,7 @@ tar fxz %{SOURCE2}
 popd
 pushd %{name}-%{version}
 %patch1 -p1
+%patch2 -p1
 %patch20 -p1
 %patch21 -p1
 %ifarch ppc64 s390x sparc64 x86_64
@@ -161,7 +163,7 @@ autoconf
 
 rb_cv_func_strtod=no
 export rb_cv_func_strtod
-CFLAGS="$RPM_OPT_FLAGS -Wall -fno-strict-aliasing"
+CFLAGS="$RPM_OPT_FLAGS -Wall"
 export CFLAGS
 %configure \
   --with-sitedir='%{sitedir}' \
@@ -285,14 +287,15 @@ done
 # done
 cd ..
 
-# generate ri doc
-make -C $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version} RUNRUBY="\$(MINIRUBY) \$(srcdir)/runruby.rb --extout=\$(EXTOUT) --" DESTDIR=$RPM_BUILD_ROOT install-doc
-#DESTDIR=$RPM_BUILD_ROOT LD_LIBRARY_PATH=$RPM_BUILD_ROOT%{_libdir} $RPM_BUILD_ROOT%{_bindir}/ruby -I $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version} -I $RPM_BUILD_ROOT%{_libdir}/ruby/%{rubyxver}/$_cpu-%{_target_os}/ -I $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/lib $RPM_BUILD_ROOT%{_bindir}/rdoc --all --ri-system $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}
-
 # installing binaries ...
 make -C $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version} DESTDIR=$RPM_BUILD_ROOT install
 
 _cpu=`echo %{_target_cpu} | sed 's/^ppc/powerpc/'`
+
+# generate ri doc
+rubybuilddir=$RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}
+LD_LIBRARY_PATH=$RPM_BUILD_ROOT%{_libdir} RUBYLIB=$RPM_BUILD_ROOT%{_libdir}/ruby/%{rubyxver}:$RPM_BUILD_ROOT%{_libdir}/ruby/%{rubyxver}/$_cpu-%{_target_os} make -C $rubybuilddir DESTDIR=$RPM_BUILD_ROOT install-doc
+#DESTDIR=$RPM_BUILD_ROOT LD_LIBRARY_PATH=$RPM_BUILD_ROOT%{_libdir} $RPM_BUILD_ROOT%{_bindir}/ruby -I $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version} -I $RPM_BUILD_ROOT%{_libdir}/ruby/%{rubyxver}/$_cpu-%{_target_os}/ -I $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/lib $RPM_BUILD_ROOT%{_bindir}/rdoc --all --ri-system $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}
 
 %{__mkdir_p} $RPM_BUILD_ROOT%{sitedir2}/%{rubyxver}
 %{__mkdir_p} $RPM_BUILD_ROOT%{sitedir}/%{rubyxver}/$_cpu-%{_target_os}
@@ -465,6 +468,8 @@ rm -rf tmp-ruby-docs
   - ruby-1.8.4-fix-insecure-regexp-modification.patch
   - ruby-1.8.4-fix-alias-safe-level.patch
 - build with --enable-pthread except on ppc.
+- ruby-1.8.5-hash-memory-leak.patch: backported from CVS to fix a memory leak
+  on Hash. [ruby-talk:211233]
 
 * Mon Aug  7 2006 Akira TAGOH <tagoh@redhat.com> - 1.8.4-12
 - owns sitearchdir. (#201208)
