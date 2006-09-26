@@ -31,7 +31,7 @@ diff -ruN ruby-1.8.4.orig/configure.in ruby-1.8.4/configure.in
              [sitedir='${prefix}/lib/ruby/site_ruby'])
 -SITE_DIR="`eval \"echo ${sitedir}\"`"
 +SITE_DIR="`eval \"echo ${sitedir}\" | sed -e s/lib64/lib/`"
-+_fc_sitedir=${sitedir}
++_fc_sitedir="\$(DESTDIR)${sitedir}"
 +SITE_DIR2="`eval \"echo ${_fc_sitedir}\"`"
 +sitedir="`eval \"echo ${sitedir}\" | sed -e s/lib64/lib/`"
  case "$target_os" in
@@ -85,11 +85,10 @@ diff -ruN ruby-1.8.4.orig/mkconfig.rb ruby-1.8.4/mkconfig.rb
    CONFIG["ruby_version"] = "$(MAJOR).$(MINOR)"
 -  CONFIG["rubylibdir"] = "$(libdir)/ruby/$(ruby_version)"
 -  CONFIG["archdir"] = "$(rubylibdir)/$(arch)"
--  CONFIG["sitelibdir"] = "$(sitedir)/$(ruby_version)"
--  CONFIG["sitearchdir"] = "$(sitelibdir)/$(sitearch)"
 +  CONFIG["rubylibdir"] = "$(prefix)/lib/ruby/$(ruby_version)"
 +  CONFIG["archdir"] = "$(libdir)/ruby/$(ruby_version)/$(arch)"
-+  CONFIG["sitelibdir"] = "$(prefix)/lib/ruby/site_ruby/$(ruby_version)"
+   CONFIG["sitelibdir"] = "$(sitedir)/$(ruby_version)"
+-  CONFIG["sitearchdir"] = "$(sitelibdir)/$(sitearch)"
 +  CONFIG["sitearchdir"] = "$(_fc_sitedir)/$(ruby_version)/$(sitearch)"
    CONFIG["topdir"] = File.dirname(__FILE__)
    MAKEFILE_CONFIG = {}

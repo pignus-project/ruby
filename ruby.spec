@@ -5,7 +5,7 @@
 
 Name:		ruby
 Version:	1.8.5
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Ruby License/GPL - see COPYING
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -295,7 +295,7 @@ _cpu=`echo %{_target_cpu} | sed 's/^ppc/powerpc/'`
 # generate ri doc
 rubybuilddir=$RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}
 LD_LIBRARY_PATH=$RPM_BUILD_ROOT%{_libdir} RUBYLIB=$RPM_BUILD_ROOT%{_libdir}/ruby/%{rubyxver}:$RPM_BUILD_ROOT%{_libdir}/ruby/%{rubyxver}/$_cpu-%{_target_os} make -C $rubybuilddir DESTDIR=$RPM_BUILD_ROOT install-doc
-#DESTDIR=$RPM_BUILD_ROOT LD_LIBRARY_PATH=$RPM_BUILD_ROOT%{_libdir} $RPM_BUILD_ROOT%{_bindir}/ruby -I $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version} -I $RPM_BUILD_ROOT%{_libdir}/ruby/%{rubyxver}/$_cpu-%{_target_os}/ -I $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/lib $RPM_BUILD_ROOT%{_bindir}/rdoc --all --ri-system $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}
+#DESTDIR=$RPM_BUILD_ROOT LD_LIBRARY_PATH=$RPM_BUILD_ROOT%{_libdir} $RPM_BUILD_ROOT%{_bindir}/ruby -I $rubybuilddir -I $RPM_BUILD_ROOT%{_libdir}/ruby/%{rubyxver}/$_cpu-%{_target_os}/ -I $rubybuilddir/lib $RPM_BUILD_ROOT%{_bindir}/rdoc --all --ri-system $rubybuilddir
 
 %{__mkdir_p} $RPM_BUILD_ROOT%{sitedir2}/%{rubyxver}
 %{__mkdir_p} $RPM_BUILD_ROOT%{sitedir}/%{rubyxver}/$_cpu-%{_target_os}
@@ -459,6 +459,9 @@ rm -rf tmp-ruby-docs
 %endif
 
 %changelog
+* Tue Sep 26 2006 Akira TAGOH <tagoh@redhat.com> - 1.8.5-2
+- fixed rbconfig.rb to refer to DESTDIR for sitearchdir. (#207311)
+
 * Mon Aug 28 2006 Akira TAGOH <tagoh@redhat.com> - 1.8.5-1
 - New upstream release.
 - removed the unnecessary patches:
