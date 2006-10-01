@@ -5,7 +5,7 @@
 
 Name:		ruby
 Version:	1.8.5
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	Ruby License/GPL - see COPYING
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -459,6 +459,9 @@ rm -rf tmp-ruby-docs
 %endif
 
 %changelog
+* Sun Oct 01 2006 Jesse Keating <jkeating@redhat.com> - 1.8.5-3
+- rebuilt for unwind info generation, broken in gcc-4.1.1-21
+
 * Tue Sep 26 2006 Akira TAGOH <tagoh@redhat.com> - 1.8.5-2
 - fixed rbconfig.rb to refer to DESTDIR for sitearchdir. (#207311)
 
