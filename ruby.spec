@@ -5,7 +5,7 @@
 
 Name:		ruby
 Version:	1.8.5
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	Ruby License/GPL - see COPYING
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -27,6 +27,7 @@ Source10:	ruby-mode-init.el
 
 Patch1:		ruby-1.8.2-deadcode.patch
 Patch2:		ruby-1.8.5-hash-memory-leak.patch
+Patch3:		ruby-1.8.5-cgi-CVE-2006-5467.patch
 Patch20:	ruby-rubyprefix.patch
 Patch21:	ruby-deprecated-sitelib-search-path.patch
 Patch22:	ruby-deprecated-search-path.patch
@@ -144,6 +145,7 @@ popd
 pushd %{name}-%{version}
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 %patch20 -p1
 %patch21 -p1
 %ifarch ppc64 s390x sparc64 x86_64
@@ -459,6 +461,11 @@ rm -rf tmp-ruby-docs
 %endif
 
 %changelog
+* Fri Oct 27 2006 Akira TAGOH <tagoh@redhat.com> - 1.8.5-4
+- security fix release.
+- ruby-1.8.5-cgi-CVE-2006-5467.patch: fix a CGI multipart parsing bug that
+  causes the denial of service. (#212396)
+
 * Sun Oct 01 2006 Jesse Keating <jkeating@redhat.com> - 1.8.5-3
 - rebuilt for unwind info generation, broken in gcc-4.1.1-21
 
