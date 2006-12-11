@@ -1,11 +1,15 @@
 %define manver		1.4.6
 %define	rubyxver	1.8
+%define	rubyver		1.8.5
+%define _patchlevel	2
+%define dotpatchlevel	%{?_patchlevel:.%{_patchlevel}}
+%define patchlevel	%{?_patchlevel:-p%{_patchlevel}}
 %define	sitedir		%{_libdir}/ruby/site_ruby
 %define	sitedir2	%{_prefix}/lib/ruby/site_ruby
 
 Name:		ruby
-Version:	1.8.5
-Release:	4%{?dist}
+Version:	%{rubyver}%{?dotpatchlevel}
+Release:	1%{?dist}
 License:	Ruby License/GPL - see COPYING
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -14,7 +18,7 @@ BuildRequires:	readline readline-devel ncurses ncurses-devel gdbm gdbm-devel gli
 BuildRequires:	emacs
 %endif
 
-Source0:	ftp://ftp.ruby-lang.org/pub/%{name}/%{name}-%{version}.tar.gz
+Source0:	ftp://ftp.ruby-lang.org/pub/%{name}/%{name}-%{rubyver}%{?patchlevel}.tar.gz
 ##Source1:	ftp://ftp.ruby-lang.org/pub/%{name}/doc/%{name}-man-%{manver}.tar.gz
 Source1:	%{name}-man-%{manver}.tar.bz2
 Source2:	http://www7.tok2.com/home/misc/files/%{name}/%{name}-refm-rdp-1.8.1-ja-html.tar.gz
@@ -27,7 +31,6 @@ Source10:	ruby-mode-init.el
 
 Patch1:		ruby-1.8.2-deadcode.patch
 Patch2:		ruby-1.8.5-hash-memory-leak.patch
-Patch3:		ruby-1.8.5-cgi-CVE-2006-5467.patch
 Patch20:	ruby-rubyprefix.patch
 Patch21:	ruby-deprecated-sitelib-search-path.patch
 Patch22:	ruby-deprecated-search-path.patch
@@ -142,10 +145,9 @@ mkdir -p ruby-refm-ja
 pushd ruby-refm-ja
 tar fxz %{SOURCE2}
 popd
-pushd %{name}-%{version}
+pushd %{name}-%{rubyver}%{?patchlevel}
 %patch1 -p1
 %patch2 -p1
-%patch3 -p1
 %patch20 -p1
 %patch21 -p1
 %ifarch ppc64 s390x sparc64 x86_64
@@ -157,7 +159,7 @@ pushd %{name}-%{version}
 popd
 
 %build
-pushd %{name}-%{version}
+pushd %{name}-%{rubyver}%{?patchlevel}
 for i in config.sub config.guess; do
 	test -f %{_datadir}/libtool/$i && cp %{_datadir}/libtool/$i .
 done
@@ -217,14 +219,14 @@ cd tmp-ruby-docs
 # for ruby.rpm
 mkdir ruby ruby-libs ruby-devel ruby-tcltk ruby-docs irb
 cd ruby
-(cd ../../%{name}-%{version} && tar cf - sample) | tar xvf -
+(cd ../../%{name}-%{rubyver}%{?patchlevel} && tar cf - sample) | tar xvf -
 cd ..
 
 # for ruby-libs
 cd ruby-libs
-(cd ../../%{name}-%{version} && tar cf - lib/README*) | tar xvf -
-(cd ../../%{name}-%{version}/doc && tar cf - .) | tar xvf -
-(cd ../../%{name}-%{version} &&
+(cd ../../%{name}-%{rubyver}%{?patchlevel} && tar cf - lib/README*) | tar xvf -
+(cd ../../%{name}-%{rubyver}%{?patchlevel}/doc && tar cf - .) | tar xvf -
+(cd ../../%{name}-%{rubyver}%{?patchlevel} &&
  tar cf - `find ext \
   -mindepth 1 \
   \( -path '*/sample/*' -o -path '*/demo/*' \) -o \
@@ -290,12 +292,12 @@ done
 cd ..
 
 # installing binaries ...
-make -C $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version} DESTDIR=$RPM_BUILD_ROOT install
+make -C $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{rubyver}%{?patchlevel} DESTDIR=$RPM_BUILD_ROOT install
 
 _cpu=`echo %{_target_cpu} | sed 's/^ppc/powerpc/'`
 
 # generate ri doc
-rubybuilddir=$RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}
+rubybuilddir=$RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{rubyver}%{?patchlevel}
 LD_LIBRARY_PATH=$RPM_BUILD_ROOT%{_libdir} RUBYLIB=$RPM_BUILD_ROOT%{_libdir}/ruby/%{rubyxver}:$RPM_BUILD_ROOT%{_libdir}/ruby/%{rubyxver}/$_cpu-%{_target_os} make -C $rubybuilddir DESTDIR=$RPM_BUILD_ROOT install-doc
 #DESTDIR=$RPM_BUILD_ROOT LD_LIBRARY_PATH=$RPM_BUILD_ROOT%{_libdir} $RPM_BUILD_ROOT%{_bindir}/ruby -I $rubybuilddir -I $RPM_BUILD_ROOT%{_libdir}/ruby/%{rubyxver}/$_cpu-%{_target_os}/ -I $rubybuilddir/lib $RPM_BUILD_ROOT%{_bindir}/rdoc --all --ri-system $rubybuilddir
 
@@ -313,7 +315,7 @@ install %{SOURCE5} $RPM_BUILD_ROOT%{_mandir}/man1/
 
 %ifnarch ppc64
 # installing ruby-mode
-cd %{name}-%{version}
+cd %{name}-%{rubyver}%{?patchlevel}
 cp misc/*.el $RPM_BUILD_ROOT%{_datadir}/emacs/site-lisp/ruby-mode
 
 ## for ruby-mode
@@ -338,7 +340,7 @@ egrep '(\.[ah]|libruby\.so)$' ruby-all.files > ruby-devel.files
 
 # for ruby-tcltk.rpm
 cp /dev/null ruby-tcltk.files
-for f in `find %{name}-%{version}/ext/tk/lib -type f; find %{name}-%{version}/.ext -type f -name '*.so'; find %{name}-%{version}/ext/tk -type f -name '*.so'`
+for f in `find %{name}-%{rubyver}%{?patchlevel}/ext/tk/lib -type f; find %{name}-%{rubyver}%{?patchlevel}/.ext -type f -name '*.so'; find %{name}-%{rubyver}%{?patchlevel}/ext/tk -type f -name '*.so'`
 do
   egrep "tcl|tk" ruby-all.files | grep "/`basename $f`$" >> ruby-tcltk.files || :
 done
@@ -396,27 +398,27 @@ rm -rf tmp-ruby-docs
 
 %files -f ruby.files
 %defattr(-, root, root)
-%doc %{name}-%{version}/README
-%lang(ja) %doc %{name}-%{version}/README.ja
-%doc %{name}-%{version}/COPYING*
-%doc %{name}-%{version}/ChangeLog
-%doc %{name}-%{version}/LEGAL
-%doc %{name}-%{version}/ToDo 
-%doc %{name}-%{version}/doc/NEWS 
+%doc %{name}-%{rubyver}%{?patchlevel}/README
+%lang(ja) %doc %{name}-%{rubyver}%{?patchlevel}/README.ja
+%doc %{name}-%{rubyver}%{?patchlevel}/COPYING*
+%doc %{name}-%{rubyver}%{?patchlevel}/ChangeLog
+%doc %{name}-%{rubyver}%{?patchlevel}/LEGAL
+%doc %{name}-%{rubyver}%{?patchlevel}/ToDo 
+%doc %{name}-%{rubyver}%{?patchlevel}/doc/NEWS 
 %doc tmp-ruby-docs/ruby/*
 
 %files devel -f ruby-devel.files
 %defattr(-, root, root)
-%doc %{name}-%{version}/README.EXT
-%lang(ja) %doc %{name}-%{version}/README.EXT.ja
+%doc %{name}-%{rubyver}%{?patchlevel}/README.EXT
+%lang(ja) %doc %{name}-%{rubyver}%{?patchlevel}/README.EXT.ja
 
 %files libs -f ruby-libs.files
 %defattr(-, root, root)
-%doc %{name}-%{version}/README
-%lang(ja) %doc %{name}-%{version}/README.ja
-%doc %{name}-%{version}/COPYING*
-%doc %{name}-%{version}/ChangeLog
-%doc %{name}-%{version}/LEGAL
+%doc %{name}-%{rubyver}%{?patchlevel}/README
+%lang(ja) %doc %{name}-%{rubyver}%{?patchlevel}/README.ja
+%doc %{name}-%{rubyver}%{?patchlevel}/COPYING*
+%doc %{name}-%{rubyver}%{?patchlevel}/ChangeLog
+%doc %{name}-%{rubyver}%{?patchlevel}/LEGAL
 %dir %{_libdir}/ruby
 %dir %{_prefix}/lib/ruby
 %dir %{_libdir}/ruby/%{rubyxver}
@@ -456,11 +458,14 @@ rm -rf tmp-ruby-docs
 %ifnarch ppc64
 %files mode -f ruby-mode.files 
 %defattr(-, root, root)
-%doc %{name}-%{version}/misc/README
+%doc %{name}-%{rubyver}%{?patchlevel}/misc/README
 %dir %{_datadir}/emacs/site-lisp/ruby-mode
 %endif
 
 %changelog
+* Mon Dec 11 2006 Akira TAGOH <tagoh@redhat.com> - 1.8.5.2-1
+- security fix release.
+
 * Fri Oct 27 2006 Akira TAGOH <tagoh@redhat.com> - 1.8.5-4
 - security fix release.
 - ruby-1.8.5-cgi-CVE-2006-5467.patch: fix a CGI multipart parsing bug that
