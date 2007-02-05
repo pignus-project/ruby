@@ -9,7 +9,7 @@
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Ruby License/GPL - see COPYING
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -463,6 +463,9 @@ rm -rf tmp-ruby-docs
 %endif
 
 %changelog
+* Mon Feb  5 2007 Akira TAGOH <tagoh@redhat.com> - 1.8.5.2-2
+- rebuild
+
 * Mon Dec 11 2006 Akira TAGOH <tagoh@redhat.com> - 1.8.5.2-1
 - security fix release.
 
