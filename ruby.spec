@@ -1,7 +1,7 @@
 %define manver		1.4.6
 %define	rubyxver	1.8
 %define	rubyver		1.8.5
-%define _patchlevel	2
+%define _patchlevel	12
 %define dotpatchlevel	%{?_patchlevel:.%{_patchlevel}}
 %define patchlevel	%{?_patchlevel:-p%{_patchlevel}}
 %define	sitedir		%{_libdir}/ruby/site_ruby
@@ -9,7 +9,7 @@
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	2%{?dist}
+Release:	1%{?dist}
 License:	Ruby License/GPL - see COPYING
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -30,7 +30,6 @@ Source5:	irb.1
 Source10:	ruby-mode-init.el
 
 Patch1:		ruby-1.8.2-deadcode.patch
-Patch2:		ruby-1.8.5-hash-memory-leak.patch
 Patch20:	ruby-rubyprefix.patch
 Patch21:	ruby-deprecated-sitelib-search-path.patch
 Patch22:	ruby-deprecated-search-path.patch
@@ -147,7 +146,6 @@ tar fxz %{SOURCE2}
 popd
 pushd %{name}-%{rubyver}%{?patchlevel}
 %patch1 -p1
-%patch2 -p1
 %patch20 -p1
 %patch21 -p1
 %ifarch ppc64 s390x sparc64 x86_64
@@ -463,8 +461,8 @@ rm -rf tmp-ruby-docs
 %endif
 
 %changelog
-* Mon Feb  5 2007 Akira TAGOH <tagoh@redhat.com> - 1.8.5.2-2
-- rebuild
+* Mon Feb  5 2007 Akira TAGOH <tagoh@redhat.com> - 1.8.5.12-1
+- New upstream release.
 
 * Mon Dec 11 2006 Akira TAGOH <tagoh@redhat.com> - 1.8.5.2-1
 - security fix release.
