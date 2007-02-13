@@ -461,7 +461,7 @@ rm -rf tmp-ruby-docs
 %endif
 
 %changelog
-* Fue Feb 13 2007 Akira TAGOH <tagoh@redhat.com> - 1.8.5.12-2
+* Tue Feb 13 2007 Akira TAGOH <tagoh@redhat.com> - 1.8.5.12-2
 - Rebuild
 
 * Mon Feb  5 2007 Akira TAGOH <tagoh@redhat.com> - 1.8.5.12-1
