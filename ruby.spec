@@ -1,15 +1,17 @@
 %define manver		1.4.6
 %define	rubyxver	1.8
-%define	rubyver		1.8.5
-%define _patchlevel	12
+%define	rubyver		1.8.6
+#%%define _patchlevel	12
 %define dotpatchlevel	%{?_patchlevel:.%{_patchlevel}}
 %define patchlevel	%{?_patchlevel:-p%{_patchlevel}}
 %define	sitedir		%{_libdir}/ruby/site_ruby
+# This is required to ensure that noarch files puts under /usr/lib/... for
+# multilib because ruby library is installed under /usr/{lib,lib64}/ruby anyway.
 %define	sitedir2	%{_prefix}/lib/ruby/site_ruby
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	2%{?dist}
+Release:	1%{?dist}
 License:	Ruby License/GPL - see COPYING
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -18,7 +20,7 @@ BuildRequires:	readline readline-devel ncurses ncurses-devel gdbm gdbm-devel gli
 BuildRequires:	emacs
 %endif
 
-Source0:	ftp://ftp.ruby-lang.org/pub/%{name}/%{name}-%{rubyver}%{?patchlevel}.tar.gz
+Source0:	ftp://ftp.ruby-lang.org/pub/%{name}/%{name}-%{rubyver}%{?patchlevel}.tar.bz2
 ##Source1:	ftp://ftp.ruby-lang.org/pub/%{name}/doc/%{name}-man-%{manver}.tar.gz
 Source1:	%{name}-man-%{manver}.tar.bz2
 Source2:	http://www7.tok2.com/home/misc/files/%{name}/%{name}-refm-rdp-1.8.1-ja-html.tar.gz
@@ -29,13 +31,11 @@ Source4:	rubyfaq-jp-990927.tar.bz2
 Source5:	irb.1
 Source10:	ruby-mode-init.el
 
-Patch1:		ruby-1.8.2-deadcode.patch
+Patch1:		ruby-deadcode.patch
 Patch20:	ruby-rubyprefix.patch
 Patch21:	ruby-deprecated-sitelib-search-path.patch
 Patch22:	ruby-deprecated-search-path.patch
 Patch23:	ruby-multilib.patch
-Patch24:	ruby-tcltk-multilib.patch
-Patch25:	ruby-fix-autoconf-magic-code.patch
 
 Summary:	An interpreter of object-oriented scripting language
 Group:		Development/Languages
@@ -49,18 +49,18 @@ straight-forward, and extensible.
 
 
 %package libs
-Summary:	Libraries necessary to run Ruby.
+Summary:	Libraries necessary to run Ruby
 Group:		Development/Libraries
 Provides:	ruby(abi) = %{rubyxver}
-Provides:	libruby
-Obsoletes:	libruby
+Provides:	libruby = %{version}-%{release}
+Obsoletes:	libruby <= %{version}-%{release}
 
 %description libs
 This package includes the libruby, necessary to run Ruby.
 
 
 %package devel
-Summary:	A Ruby development environment.
+Summary:	A Ruby development environment
 Group:		Development/Languages
 Requires:	%{name}-libs = %{version}-%{release}
 
@@ -70,7 +70,7 @@ Ruby or an application embedded Ruby.
 
 
 %package tcltk
-Summary:	Tcl/Tk interface for scripting language Ruby.
+Summary:	Tcl/Tk interface for scripting language Ruby
 Group:		Development/Languages
 Requires:	%{name}-libs = %{version}-%{release}
 
@@ -79,11 +79,11 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 
 
 %package irb
-Summary:	The Interactive Ruby.
+Summary:	The Interactive Ruby
 Group:		Development/Languages
 Requires:	%{name} = %{version}-%{release}
-Provides:	irb
-Obsoletes:	irb
+Provides:	irb = %{version}-%{release}
+Obsoletes:	irb <= %{version}-%{release}
 
 %description irb
 The irb is acronym for Interactive Ruby.  It evaluates ruby expression
@@ -95,8 +95,8 @@ Summary:	A tool to generate documentation from Ruby source files
 Group:		Development/Languages
 Requires:	%{name} = %{version}-%{release}
 Requires:	%{name}-irb = %{version}-%{release}
-Provides:	rdoc
-Obsoletes:	rdoc
+Provides:	rdoc = %{version}-%{release}
+Obsoletes:	rdoc <= %{version}-%{release}
 
 %description rdoc
 The rdoc is a tool to generate the documentation from Ruby source files.
@@ -105,7 +105,7 @@ XML and Windows Help file (chm).
 
 
 %package docs
-Summary:	Manuals and FAQs for scripting language Ruby.
+Summary:	Manuals and FAQs for scripting language Ruby
 Group:		Documentation
 
 %description docs
@@ -128,8 +128,8 @@ Summary:	Ruby interactive reference
 Group:		Documentation
 Requires:	%{name} = %{version}-%{release}
 Requires:	%{name}-rdoc = %{version}-%{release}
-Provides:	ri
-Obsoletes:	ri
+Provides:	ri = %{version}-%{release}
+Obsoletes:	ri <= %{version}-%{release}
 
 %description ri
 ri is a command line tool that displays descriptions of built-in
@@ -151,9 +151,7 @@ pushd %{name}-%{rubyver}%{?patchlevel}
 %ifarch ppc64 s390x sparc64 x86_64
 %patch22 -p1
 %patch23 -p1
-%patch24 -p1
 %endif
-#%%patch25 -p1
 popd
 
 %build
@@ -194,10 +192,14 @@ make RUBY_INSTALL_NAME=ruby %{?_smp_mflags}
 rm -f parse.o
 make OPT=-O0 RUBY_INSTALL_NAME=ruby %{?_smp_mflags}
 %endif
+
+popd
+
+%check
+pushd %{name}-%{rubyver}%{?patchlevel}
 %ifnarch ppc64
 make test
 %endif
-
 popd
 
 %install
@@ -304,12 +306,12 @@ LD_LIBRARY_PATH=$RPM_BUILD_ROOT%{_libdir} RUBYLIB=$RPM_BUILD_ROOT%{_libdir}/ruby
 
 %ifarch ppc64 s390x sparc64 x86_64
 # correct archdir
-mv $RPM_BUILD_ROOT%{_prefix}/lib/ruby/%{rubyxver}/$_cpu-%{_target_os}/* $RPM_BUILD_ROOT%{_libdir}/ruby/%{rubyxver}/$_cpu-%{_target_os}/
-rmdir $RPM_BUILD_ROOT%{_prefix}/lib/ruby/%{rubyxver}/$_cpu-%{_target_os}
+#mv $RPM_BUILD_ROOT%{_prefix}/lib/ruby/%{rubyxver}/$_cpu-%{_target_os}/* $RPM_BUILD_ROOT%{_libdir}/ruby/%{rubyxver}/$_cpu-%{_target_os}/
+#rmdir $RPM_BUILD_ROOT%{_prefix}/lib/ruby/%{rubyxver}/$_cpu-%{_target_os}
 %endif
 
 # XXX: installing irb
-install %{SOURCE5} $RPM_BUILD_ROOT%{_mandir}/man1/
+install -m 0644 %{SOURCE5} $RPM_BUILD_ROOT%{_mandir}/man1/
 
 %ifnarch ppc64
 # installing ruby-mode
@@ -336,12 +338,14 @@ cd ..
                    -e "s,\(/man/man./.*\)$,\1*," > ruby-all.files
 egrep '(\.[ah]|libruby\.so)$' ruby-all.files > ruby-devel.files
 
+_rubytmpfile=`mktemp -t %{name}-%{version}-%{release}-tmp-%(%{__id_u -n}).XXXXXXXXXX`
 # for ruby-tcltk.rpm
 cp /dev/null ruby-tcltk.files
 for f in `find %{name}-%{rubyver}%{?patchlevel}/ext/tk/lib -type f; find %{name}-%{rubyver}%{?patchlevel}/.ext -type f -name '*.so'; find %{name}-%{rubyver}%{?patchlevel}/ext/tk -type f -name '*.so'`
 do
   egrep "tcl|tk" ruby-all.files | grep "/`basename $f`$" >> ruby-tcltk.files || :
 done
+sort ruby-tcltk.files | uniq - $_rubytmpfile && mv $_rubytmpfile ruby-tcltk.files
 
 # for irb.rpm
 fgrep 'irb' ruby-all.files > irb.files
@@ -388,21 +392,23 @@ rm -rf $RPM_BUILD_ROOT
 rm -f *.files
 rm -rf tmp-ruby-docs
 
-%post libs
-/sbin/ldconfig
+%post libs -p /sbin/ldconfig
 
-%postun libs
-/sbin/ldconfig
+%postun libs -p /sbin/ldconfig
 
 %files -f ruby.files
 %defattr(-, root, root)
-%doc %{name}-%{rubyver}%{?patchlevel}/README
-%lang(ja) %doc %{name}-%{rubyver}%{?patchlevel}/README.ja
 %doc %{name}-%{rubyver}%{?patchlevel}/COPYING*
 %doc %{name}-%{rubyver}%{?patchlevel}/ChangeLog
+%doc %{name}-%{rubyver}%{?patchlevel}/GPL
 %doc %{name}-%{rubyver}%{?patchlevel}/LEGAL
+%doc %{name}-%{rubyver}%{?patchlevel}/LGPL
+%doc %{name}-%{rubyver}%{?patchlevel}/NEWS 
+%doc %{name}-%{rubyver}%{?patchlevel}/README
+%lang(ja) %doc %{name}-%{rubyver}%{?patchlevel}/README.ja
 %doc %{name}-%{rubyver}%{?patchlevel}/ToDo 
-%doc %{name}-%{rubyver}%{?patchlevel}/doc/NEWS 
+%doc %{name}-%{rubyver}%{?patchlevel}/doc/ChangeLog-1.8.0
+%doc %{name}-%{rubyver}%{?patchlevel}/doc/NEWS-1.8.0
 %doc tmp-ruby-docs/ruby/*
 
 %files devel -f ruby-devel.files
@@ -416,7 +422,9 @@ rm -rf tmp-ruby-docs
 %lang(ja) %doc %{name}-%{rubyver}%{?patchlevel}/README.ja
 %doc %{name}-%{rubyver}%{?patchlevel}/COPYING*
 %doc %{name}-%{rubyver}%{?patchlevel}/ChangeLog
+%doc %{name}-%{rubyver}%{?patchlevel}/GPL
 %doc %{name}-%{rubyver}%{?patchlevel}/LEGAL
+%doc %{name}-%{rubyver}%{?patchlevel}/LGPL
 %dir %{_libdir}/ruby
 %dir %{_prefix}/lib/ruby
 %dir %{_libdir}/ruby/%{rubyxver}
@@ -461,6 +469,10 @@ rm -rf tmp-ruby-docs
 %endif
 
 %changelog
+* Thu Mar 15 2007 Akira TAGOH <tagoh@redhat.com> - 1.8.6-1
+- New upstream release.
+- clean up a spec file.
+
 * Tue Feb 13 2007 Akira TAGOH <tagoh@redhat.com> - 1.8.5.12-2
 - Rebuild
 
@@ -969,7 +981,7 @@ rm -rf tmp-ruby-docs
 * Fri Jul 23 1999 Atsushi Yamagata <yamagata@plathome.co.jp>
 - 2nd release
 - Updated to version 1.2.6(15 Jul 1999)
-- striped %{prefix}/bin/ruby
+- striped %%{prefix}/bin/ruby
 
 * Mon Jun 28 1999 Atsushi Yamagata <yamagata@plathome.co.jp>
 - Updated to version 1.2.6(21 Jun 1999)
