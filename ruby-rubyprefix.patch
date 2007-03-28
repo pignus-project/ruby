@@ -32,7 +32,7 @@ diff -ruN ruby-1.8.5-p12.orig/configure.in ruby-1.8.5-p12/configure.in
 -SITE_DIR=`eval echo \\"${sitedir}\\"`
 +SITE_DIR=`eval echo \\"${sitedir}\\" | sed -e "s/lib64/lib/"`
 +_fc_sitedir="\$(DESTDIR)${sitedir}"
-+SITE_DIR2=`eval echo \\"${sitedir}\\" | sed -e "s/lib64/lib/"`
++SITE_DIR2=`eval echo \\"${_fc_sitedir}\\"`
 +sitedir=`eval echo \\"${sitedir}\\" | sed -e "s/lib64/lib/"`
  case "$target_os" in
    cygwin*|mingw*|*djgpp*|os2-emx*)

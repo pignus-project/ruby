@@ -11,7 +11,7 @@
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Ruby License/GPL - see COPYING
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -469,6 +469,9 @@ rm -rf tmp-ruby-docs
 %endif
 
 %changelog
+* Wed Mar 28 2007 Akira TAGOH <tagoh@redhat.com> - 1.8.6-2
+- Fix search path breakage. (#234029)
+
 * Thu Mar 15 2007 Akira TAGOH <tagoh@redhat.com> - 1.8.6-1
 - New upstream release.
 - clean up a spec file.
