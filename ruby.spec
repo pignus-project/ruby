@@ -1,7 +1,7 @@
 %define manver		1.4.6
 %define	rubyxver	1.8
 %define	rubyver		1.8.6
-#%%define _patchlevel	12
+%define _patchlevel	36
 %define dotpatchlevel	%{?_patchlevel:.%{_patchlevel}}
 %define patchlevel	%{?_patchlevel:-p%{_patchlevel}}
 %define	sitedir		%{_libdir}/ruby/site_ruby
@@ -11,7 +11,7 @@
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	2%{?dist}
+Release:	1%{?dist}
 License:	Ruby License/GPL - see COPYING
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -469,6 +469,10 @@ rm -rf tmp-ruby-docs
 %endif
 
 %changelog
+* Thu Jul 20 2007 Akira TAGOH <tagoh@redhat.com> - 1.8.6.36-1
+- New upstream release.
+  - Fix Etc::getgrgid to get the correct gid as requested. (#236647)
+
 * Wed Mar 28 2007 Akira TAGOH <tagoh@redhat.com> - 1.8.6-2
 - Fix search path breakage. (#234029)
 
