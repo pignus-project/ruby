@@ -11,7 +11,7 @@
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	Ruby License/GPL - see COPYING
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -36,6 +36,7 @@ Patch20:	ruby-rubyprefix.patch
 Patch21:	ruby-deprecated-sitelib-search-path.patch
 Patch22:	ruby-deprecated-search-path.patch
 Patch23:	ruby-multilib.patch
+Patch24:	ruby-r12567.patch
 
 Summary:	An interpreter of object-oriented scripting language
 Group:		Development/Languages
@@ -152,6 +153,7 @@ pushd %{name}-%{rubyver}%{?patchlevel}
 %patch22 -p1
 %patch23 -p1
 %endif
+%patch24 -p0
 popd
 
 %build
@@ -469,6 +471,10 @@ rm -rf tmp-ruby-docs
 %endif
 
 %changelog
+* Mon Jul 25 2007 Akira TAGOH <tagoh@redhat.com> - 1.8.6.36-3
+- ruby-r12567.patch: backport patch from upstream svn to get rid of
+  the unnecessary declarations. (#245446)
+
 * Wed Jul 20 2007 Akira TAGOH <tagoh@redhat.com> - 1.8.6.36-2
 - New upstream release.
   - Fix Etc::getgrgid to get the correct gid as requested. (#236647)
