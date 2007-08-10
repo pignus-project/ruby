@@ -12,7 +12,7 @@
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
 Release:	3%{?dist}
-License:	Ruby License/GPL - see COPYING
+License:	Ruby or GPL+
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:	readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl-devel tk-devel libX11-devel autoconf gcc unzip openssl-devel db4-devel byacc
@@ -471,6 +471,9 @@ rm -rf tmp-ruby-docs
 %endif
 
 %changelog
+* Fri Aug 10 2007 Akira TAGOH <tagoh@redhat.com>
+- Update License tag.
+
 * Mon Jul 25 2007 Akira TAGOH <tagoh@redhat.com> - 1.8.6.36-3
 - ruby-r12567.patch: backport patch from upstream svn to get rid of
   the unnecessary declarations. (#245446)
