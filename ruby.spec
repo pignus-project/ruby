@@ -11,7 +11,7 @@
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	Ruby or GPL+
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -471,6 +471,9 @@ rm -rf tmp-ruby-docs
 %endif
 
 %changelog
+* Thu Aug 23 2007 Akira TAGOH <tagoh@redhat.com> - 1.8.6.36-4
+- Rebuild
+
 * Fri Aug 10 2007 Akira TAGOH <tagoh@redhat.com>
 - Update License tag.
 
