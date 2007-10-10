@@ -24,28 +24,28 @@ diff -ruN ruby-1.8.4.orig/ruby.c ruby-1.8.4/ruby.c
 @@ -292,11 +292,17 @@
  #endif
  
-     ruby_incpush(RUBY_RELATIVE(RUBY_SITE_LIB2));
+     incpush(RUBY_RELATIVE(RUBY_SITE_LIB2));
 +#ifdef RUBY_DEPRECATED_SITE_LIB
-+    ruby_incpush(RUBY_RELATIVE(RUBY_DEPRECATED_SITE_LIB2));
++    incpush(RUBY_RELATIVE(RUBY_DEPRECATED_SITE_LIB2));
 +#endif
  #ifdef RUBY_SITE_THIN_ARCHLIB
-     ruby_incpush(RUBY_RELATIVE(RUBY_SITE_THIN_ARCHLIB));
+     incpush(RUBY_RELATIVE(RUBY_SITE_THIN_ARCHLIB));
  #endif
-     ruby_incpush(RUBY_RELATIVE(RUBY_SITE_ARCHLIB));
-     ruby_incpush(RUBY_RELATIVE(RUBY_SITE_LIB));
+     incpush(RUBY_RELATIVE(RUBY_SITE_ARCHLIB));
+     incpush(RUBY_RELATIVE(RUBY_SITE_LIB));
 +#ifdef RUBY_DEPRECATED_SITE_LIB
-+    ruby_incpush(RUBY_RELATIVE(RUBY_DEPRECATED_SITE_LIB));
++    incpush(RUBY_RELATIVE(RUBY_DEPRECATED_SITE_LIB));
 +#endif
  #ifdef RUBY_DEPRECATED_OLD_SITE_LIB2
-     ruby_incpush(RUBY_RELATIVE(RUBY_DEPRECATED_OLD_SITE_LIB2));
+     incpush(RUBY_RELATIVE(RUBY_DEPRECATED_OLD_SITE_LIB2));
  #endif
 @@ -308,6 +314,9 @@
  #endif
  
-     ruby_incpush(RUBY_RELATIVE(RUBY_LIB));
+     incpush(RUBY_RELATIVE(RUBY_LIB));
 +#ifdef RUBY_DEPRECATED_LIB
-+    ruby_incpush(RUBY_RELATIVE(RUBY_DEPRECATED_LIB));
++    incpush(RUBY_RELATIVE(RUBY_DEPRECATED_LIB));
 +#endif
  #ifdef RUBY_THIN_ARCHLIB
-     ruby_incpush(RUBY_RELATIVE(RUBY_THIN_ARCHLIB));
+     incpush(RUBY_RELATIVE(RUBY_THIN_ARCHLIB));
  #endif
