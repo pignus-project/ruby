@@ -1,7 +1,7 @@
 %define manver		1.4.6
 %define	rubyxver	1.8
 %define	rubyver		1.8.6
-%define _patchlevel	36
+%define _patchlevel	110
 %define dotpatchlevel	%{?_patchlevel:.%{_patchlevel}}
 %define patchlevel	%{?_patchlevel:-p%{_patchlevel}}
 %define	sitedir		%{_libdir}/ruby/site_ruby
@@ -11,7 +11,7 @@
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	4%{?dist}
+Release:	1%{?dist}
 License:	Ruby or GPL+
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -36,7 +36,7 @@ Patch20:	ruby-rubyprefix.patch
 Patch21:	ruby-deprecated-sitelib-search-path.patch
 Patch22:	ruby-deprecated-search-path.patch
 Patch23:	ruby-multilib.patch
-Patch24:	ruby-r12567.patch
+Patch24:	ruby-1.8.6-CVE-2007-5162.patch
 
 Summary:	An interpreter of object-oriented scripting language
 Group:		Development/Languages
@@ -153,7 +153,7 @@ pushd %{name}-%{rubyver}%{?patchlevel}
 %patch22 -p1
 %patch23 -p1
 %endif
-%patch24 -p0
+%patch24 -p1
 popd
 
 %build
@@ -471,6 +471,12 @@ rm -rf tmp-ruby-docs
 %endif
 
 %changelog
+* Wed Oct 10 2007 Akira TAGOH <tagoh@redhat.com> - 1.8.6.110-1
+- New upstream release.
+  - ruby-r12567.patch: removed.
+- ruby-1.8.6-CVE-2007-5162.patch: security fix for Net::HTTP that is
+  insufficient verification of SSL certificate.
+
 * Thu Aug 23 2007 Akira TAGOH <tagoh@redhat.com> - 1.8.6.36-4
 - Rebuild
 
