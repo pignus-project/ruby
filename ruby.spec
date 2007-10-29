@@ -1,7 +1,7 @@
 %define manver		1.4.6
 %define	rubyxver	1.8
 %define	rubyver		1.8.6
-%define _patchlevel	110
+%define _patchlevel	111
 %define dotpatchlevel	%{?_patchlevel:.%{_patchlevel}}
 %define patchlevel	%{?_patchlevel:-p%{_patchlevel}}
 %define	sitedir		%{_libdir}/ruby/site_ruby
@@ -11,7 +11,7 @@
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	2%{?dist}
+Release:	1%{?dist}
 License:	Ruby or GPL+
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -36,7 +36,7 @@ Patch20:	ruby-rubyprefix.patch
 Patch21:	ruby-deprecated-sitelib-search-path.patch
 Patch22:	ruby-deprecated-search-path.patch
 Patch23:	ruby-multilib.patch
-Patch24:	ruby-1.8.6-CVE-2007-5162.patch
+Patch24:	ruby-1.8.6.111-CVE-2007-5162.patch
 
 Summary:	An interpreter of object-oriented scripting language
 Group:		Development/Languages
@@ -180,10 +180,6 @@ export CFLAGS
   --disable-rpath \
   --with-ruby-prefix=%{_prefix}/lib
 
-%ifarch ppc
-cp Makefile Makefile.orig
-sed -e 's/^EXTMK_ARGS[[:space:]].*=\(.*\) --$/EXTMK_ARGS=\1 --disable-tcl-thread --/' Makefile.orig > Makefile
-%endif
 make RUBY_INSTALL_NAME=ruby %{?_smp_mflags}
 %ifarch ia64
 # Miscompilation? Buggy code?
@@ -467,6 +463,14 @@ rm -rf tmp-ruby-docs
 %endif
 
 %changelog
+* Mon Oct 29 2007 Akira TAGOH <tagoh@redhat.com> - 1.8.6.111-1
+- New upstream release.
+- ruby-1.8.6.111-CVE-2007-5162.patch: Update a bit with backporting the changes
+   at trunk to enable the fix without any modifications on the users' scripts.
+   Note that Net::HTTP#enable_post_connection_check isn't available anymore.
+   If you want to disable this post-check, you should give OpenSSL::SSL::VERIFY_NONE
+   to Net::HTTP#verify_mode= instead of.
+
 * Mon Oct 15 2007 Akira TAGOH <tagoh@redhat.com> - 1.8.6.110-2
 - Enable pthread support for ppc too. (#201452)
 - Fix unexpected dependencies appears in ruby-libs. (#253325)
