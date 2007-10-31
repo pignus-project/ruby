@@ -20,10 +20,11 @@ BuildRequires:	readline readline-devel ncurses ncurses-devel gdbm gdbm-devel gli
 BuildRequires:	emacs
 %endif
 
-Source0:	ftp://ftp.ruby-lang.org/pub/%{name}/%{name}-%{rubyver}%{?patchlevel}.tar.bz2
+Source0:	ftp://ftp.ruby-lang.org/pub/%{name}/%{rubyxver}/%{name}-%{rubyver}%{?patchlevel}.tar.bz2
 ##Source1:	ftp://ftp.ruby-lang.org/pub/%{name}/doc/%{name}-man-%{manver}.tar.gz
 Source1:	%{name}-man-%{manver}.tar.bz2
-Source2:	http://www7.tok2.com/home/misc/files/%{name}/%{name}-refm-rdp-1.8.1-ja-html.tar.gz
+##Source2:	http://www7.tok2.com/home/misc/files/%{name}/%{name}-refm-rdp-1.8.1-ja-html.tar.gz
+Source2:	%{name}-refm-rdp-1.8.1-ja-html.tar.gz
 ##Source3:	ftp://ftp.ruby-lang.org/pub/%{name}/doc/rubyfaq-990927.tar.gz
 Source3:	rubyfaq-990927.tar.bz2
 ##Source4:	ftp://ftp.ruby-lang.org/pub/%{name}/doc/rubyfaq-jp-990927.tar.gz
@@ -463,6 +464,9 @@ rm -rf tmp-ruby-docs
 %endif
 
 %changelog
+* Wed Oct 31 2007 Akira TAGOH <tagoh@redhat.com>
+- Fix the dead link.
+
 * Mon Oct 29 2007 Akira TAGOH <tagoh@redhat.com> - 1.8.6.111-1
 - New upstream release.
 - ruby-1.8.6.111-CVE-2007-5162.patch: Update a bit with backporting the changes
