@@ -11,7 +11,7 @@
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Ruby or GPL+
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -464,6 +464,9 @@ rm -rf tmp-ruby-docs
 %endif
 
 %changelog
+* Tue Dec 04 2007 Release Engineering <rel-eng at fedoraproject dot org> - %{rubyver}%{?dotpatchlevel}-2
+ - Rebuild for openssl bump
+
 * Wed Oct 31 2007 Akira TAGOH <tagoh@redhat.com>
 - Fix the dead link.
 
