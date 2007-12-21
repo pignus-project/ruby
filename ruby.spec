@@ -4,14 +4,16 @@
 %define _patchlevel	111
 %define dotpatchlevel	%{?_patchlevel:.%{_patchlevel}}
 %define patchlevel	%{?_patchlevel:-p%{_patchlevel}}
+%define	arcver		%{rubyver}%{?patchlevel}
 %define	sitedir		%{_libdir}/ruby/site_ruby
 # This is required to ensure that noarch files puts under /usr/lib/... for
 # multilib because ruby library is installed under /usr/{lib,lib64}/ruby anyway.
 %define	sitedir2	%{_prefix}/lib/ruby/site_ruby
+%define	_normalized_cpu	%(echo `echo %{_target_cpu} | sed 's/^ppc/powerpc/'`)
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	Ruby or GPL+
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -20,16 +22,14 @@ BuildRequires:	readline readline-devel ncurses ncurses-devel gdbm gdbm-devel gli
 BuildRequires:	emacs
 %endif
 
-Source0:	ftp://ftp.ruby-lang.org/pub/%{name}/%{rubyxver}/%{name}-%{rubyver}%{?patchlevel}.tar.bz2
-##Source1:	ftp://ftp.ruby-lang.org/pub/%{name}/doc/%{name}-man-%{manver}.tar.gz
-Source1:	%{name}-man-%{manver}.tar.bz2
-##Source2:	http://www7.tok2.com/home/misc/files/%{name}/%{name}-refm-rdp-1.8.1-ja-html.tar.gz
-Source2:	%{name}-refm-rdp-1.8.1-ja-html.tar.gz
-##Source3:	ftp://ftp.ruby-lang.org/pub/%{name}/doc/rubyfaq-990927.tar.gz
-Source3:	rubyfaq-990927.tar.bz2
-##Source4:	ftp://ftp.ruby-lang.org/pub/%{name}/doc/rubyfaq-jp-990927.tar.gz
-Source4:	rubyfaq-jp-990927.tar.bz2
-Source5:	irb.1
+Source0:	ftp://ftp.ruby-lang.org/pub/%{name}/%{rubyxver}/%{name}-%{arcver}.tar.bz2
+##Source1:	http://www7.tok2.com/home/misc/files/%{name}/%{name}-refm-rdp-1.8.1-ja-html.tar.gz
+Source1:	%{name}-refm-rdp-1.8.1-ja-html.tar.gz
+##Source2:	ftp://ftp.ruby-lang.org/pub/%{name}/doc/rubyfaq-990927.tar.gz
+Source2:	rubyfaq-990927.tar.bz2
+##Source3:	ftp://ftp.ruby-lang.org/pub/%{name}/doc/rubyfaq-jp-990927.tar.gz
+Source3:	rubyfaq-jp-990927.tar.bz2
+Source4:	irb.1
 Source10:	ruby-mode-init.el
 
 Patch1:		ruby-deadcode.patch
@@ -141,12 +141,12 @@ along with a list of the methods the class or module implements.
 
 
 %prep
-%setup -q -c -a 1 -a 3 -a 4
+%setup -q -c -a 2 -a 3
 mkdir -p ruby-refm-ja
 pushd ruby-refm-ja
-tar fxz %{SOURCE2}
+tar fxz %{SOURCE1}
 popd
-pushd %{name}-%{rubyver}%{?patchlevel}
+pushd %{name}-%{arcver}
 %patch1 -p1
 %patch20 -p1
 %patch21 -p1
@@ -158,7 +158,7 @@ pushd %{name}-%{rubyver}%{?patchlevel}
 popd
 
 %build
-pushd %{name}-%{rubyver}%{?patchlevel}
+pushd %{name}-%{arcver}
 for i in config.sub config.guess; do
 	test -f %{_datadir}/libtool/$i && cp %{_datadir}/libtool/$i .
 done
@@ -191,7 +191,7 @@ make OPT=-O0 RUBY_INSTALL_NAME=ruby %{?_smp_mflags}
 popd
 
 %check
-pushd %{name}-%{rubyver}%{?patchlevel}
+pushd %{name}-%{arcver}
 %ifnarch ppc64
 make test
 %endif
@@ -203,8 +203,6 @@ rm -rf $RPM_BUILD_ROOT
 %ifnarch ppc64
 %{__mkdir_p} $RPM_BUILD_ROOT%{_datadir}/emacs/site-lisp/ruby-mode
 %{__mkdir_p} $RPM_BUILD_ROOT%{_datadir}/emacs/site-lisp/site-start.d
-#%{__mkdir_p} $RPM_BUILD_ROOT%{_libdir}/xemacs/xemacs-packages/lisp/ruby-mode
-#%{__mkdir_p} $RPM_BUILD_ROOT%{_libdir}/xemacs/xemacs-packages/lisp/site-start.d
 %endif
 
 # installing documents and exapmles...
@@ -214,14 +212,14 @@ cd tmp-ruby-docs
 # for ruby.rpm
 mkdir ruby ruby-libs ruby-devel ruby-tcltk ruby-docs irb
 cd ruby
-(cd ../../%{name}-%{rubyver}%{?patchlevel} && tar cf - sample) | tar xvf -
+(cd ../../%{name}-%{arcver} && tar cf - sample) | tar xvf -
 cd ..
 
 # for ruby-libs
 cd ruby-libs
-(cd ../../%{name}-%{rubyver}%{?patchlevel} && tar cf - lib/README*) | tar xvf -
-(cd ../../%{name}-%{rubyver}%{?patchlevel}/doc && tar cf - .) | tar xvf -
-(cd ../../%{name}-%{rubyver}%{?patchlevel} &&
+(cd ../../%{name}-%{arcver} && tar cf - lib/README*) | tar xvf -
+(cd ../../%{name}-%{arcver}/doc && tar cf - .) | tar xvf -
+(cd ../../%{name}-%{arcver} &&
  tar cf - `find ext \
   -mindepth 1 \
   \( -path '*/sample/*' -o -path '*/demo/*' \) -o \
@@ -253,8 +251,7 @@ cd ..
 
 # for ruby-docs
 cd ruby-docs
-mkdir doc-en refm-ja faq-en faq-ja
-(cd ../../ruby-man-`echo %{manver} | sed -e 's/\.[0-9]*$//'` && tar cf - .) | (cd doc-en && tar xvf -)
+mkdir refm-ja faq-en faq-ja
 (cd ../../ruby-refm-ja && tar cf - .) | (cd refm-ja && tar xvf -)
 (cd ../../rubyfaq && tar cf - .) | (cd faq-en && tar xvf -)
 (cd ../../rubyfaq-jp && tar cf - .) | (cd faq-ja && tar xvf -)
@@ -266,15 +263,12 @@ mkdir doc-en refm-ja faq-en faq-ja
    < $f > `echo $f | sed -e's/-jp//'`
   rm -f $f; \
  done)
-# make sure that all doc files are the world-readable
-find -type f | xargs chmod 0644
-
 cd ..
 
 # fixing `#!' paths
 for f in `find . -type f`
 do
-  sed -e 's,^#![ 	]*\([^ 	]*\)/\(ruby\|with\|perl\|env\),#!/usr/bin/\2,' < $f > $f.n
+  sed -e 's,^#![ 	]*\([^ 	]*\)/\(ruby\|wish\|perl\|env\),#!/usr/bin/\2,' < $f > $f.n
   if ! cmp $f $f.n
   then
     mv -f $f.n $f
@@ -283,34 +277,44 @@ do
   fi
 done
 
+# make sure that all doc files are the world-readable
+find -type f | xargs chmod 0644
+
+# convert to utf-8
+for i in `find -type f`; do
+	iconv -f utf-8 -t utf-8 $i > /dev/null 2>&1 || (iconv -f euc-jp -t utf-8 $i > $i.new && mv $i.new $i || exit 1)
+	if [ $? != 0 ]; then
+		iconv -f iso8859-1 -t utf-8 $i > $.new && mv $i.new $i || exit 1
+	fi
+	if [ -f $i.new ]; then
+		echo "Failed to convert with iconv."
+		exit 1
+	fi
+done
+
 # done
 cd ..
 
 # installing binaries ...
-make -C $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{rubyver}%{?patchlevel} DESTDIR=$RPM_BUILD_ROOT install
+make -C $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{arcver} DESTDIR=$RPM_BUILD_ROOT install
 
-_cpu=`echo %{_target_cpu} | sed 's/^ppc/powerpc/'`
+# remove the static library
+rm $RPM_BUILD_ROOT%{_libdir}/libruby-static.a
 
 # generate ri doc
-rubybuilddir=$RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{rubyver}%{?patchlevel}
-LD_LIBRARY_PATH=$RPM_BUILD_ROOT%{_libdir} RUBYLIB=$RPM_BUILD_ROOT%{_libdir}/ruby/%{rubyxver}:$RPM_BUILD_ROOT%{_libdir}/ruby/%{rubyxver}/$_cpu-%{_target_os} make -C $rubybuilddir DESTDIR=$RPM_BUILD_ROOT install-doc
-#DESTDIR=$RPM_BUILD_ROOT LD_LIBRARY_PATH=$RPM_BUILD_ROOT%{_libdir} $RPM_BUILD_ROOT%{_bindir}/ruby -I $rubybuilddir -I $RPM_BUILD_ROOT%{_libdir}/ruby/%{rubyxver}/$_cpu-%{_target_os}/ -I $rubybuilddir/lib $RPM_BUILD_ROOT%{_bindir}/rdoc --all --ri-system $rubybuilddir
+rubybuilddir=$RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{arcver}
+LD_LIBRARY_PATH=$RPM_BUILD_ROOT%{_libdir} RUBYLIB=$RPM_BUILD_ROOT%{_libdir}/ruby/%{rubyxver}:$RPM_BUILD_ROOT%{_libdir}/ruby/%{rubyxver}/%{_normalized_cpu}-%{_target_os} make -C $rubybuilddir DESTDIR=$RPM_BUILD_ROOT install-doc
+#DESTDIR=$RPM_BUILD_ROOT LD_LIBRARY_PATH=$RPM_BUILD_ROOT%{_libdir} $RPM_BUILD_ROOT%{_bindir}/ruby -I $rubybuilddir -I $RPM_BUILD_ROOT%{_libdir}/ruby/%{rubyxver}/%{_normalized_cpu}-%{_target_os}/ -I $rubybuilddir/lib $RPM_BUILD_ROOT%{_bindir}/rdoc --all --ri-system $rubybuilddir
 
 %{__mkdir_p} $RPM_BUILD_ROOT%{sitedir2}/%{rubyxver}
-%{__mkdir_p} $RPM_BUILD_ROOT%{sitedir}/%{rubyxver}/$_cpu-%{_target_os}
-
-%ifarch ppc64 s390x sparc64 x86_64
-# correct archdir
-#mv $RPM_BUILD_ROOT%{_prefix}/lib/ruby/%{rubyxver}/$_cpu-%{_target_os}/* $RPM_BUILD_ROOT%{_libdir}/ruby/%{rubyxver}/$_cpu-%{_target_os}/
-#rmdir $RPM_BUILD_ROOT%{_prefix}/lib/ruby/%{rubyxver}/$_cpu-%{_target_os}
-%endif
+%{__mkdir_p} $RPM_BUILD_ROOT%{sitedir}/%{rubyxver}/%{_normalized_cpu}-%{_target_os}
 
 # XXX: installing irb
-install -m 0644 %{SOURCE5} $RPM_BUILD_ROOT%{_mandir}/man1/
+install -m 0644 %{SOURCE4} $RPM_BUILD_ROOT%{_mandir}/man1/
 
 %ifnarch ppc64
 # installing ruby-mode
-cd %{name}-%{rubyver}%{?patchlevel}
+cd %{name}-%{arcver}
 cp misc/*.el $RPM_BUILD_ROOT%{_datadir}/emacs/site-lisp/ruby-mode
 
 ## for ruby-mode
@@ -327,144 +331,192 @@ install -m 644 %{SOURCE10} \
 cd ..
 %endif
 
-# listing all files in ruby-all.files
-(find $RPM_BUILD_ROOT -type f -o -type l) |
- sort | uniq | sed -e "s,^$RPM_BUILD_ROOT,," \
-                   -e "s,\(/man/man./.*\)$,\1*," > ruby-all.files
-egrep '(\.[ah]|libruby\.so)$' ruby-all.files > ruby-devel.files
-
-_rubytmpfile=`mktemp -t %{name}-%{version}-%{release}-tmp-%(%{__id_u -n}).XXXXXXXXXX`
-# for ruby-tcltk.rpm
-cp /dev/null ruby-tcltk.files
-for f in `find %{name}-%{rubyver}%{?patchlevel}/ext/tk/lib -type f; find %{name}-%{rubyver}%{?patchlevel}/.ext -type f -name '*.so'; find %{name}-%{rubyver}%{?patchlevel}/ext/tk -type f -name '*.so'`
-do
-  egrep "tcl|tk" ruby-all.files | grep "/`basename $f`$" >> ruby-tcltk.files || :
+# remove shebang
+for i in $RPM_BUILD_ROOT%{_prefix}/lib/ruby/1.8/{abbrev,generator,irb/{cmd/subirb,ext/save-history},matrix,rdoc/{markup/sample/rdoc2latex,parsers/parse_rb},set,tsort}.rb; do
+	sed -i -e '/#![ 	]*/{D}' $i
 done
-sort ruby-tcltk.files | uniq - $_rubytmpfile && mv $_rubytmpfile ruby-tcltk.files
-
-# for irb.rpm
-fgrep 'irb' ruby-all.files > irb.files
-
-# for ri
-cp /dev/null ri.files
-fgrep '%{_datadir}/ri' ruby-all.files >> ri.files
-fgrep '%{_bindir}/ri' ruby-all.files >> ri.files
-
-# for rdoc
-cp /dev/null rdoc.files
-fgrep rdoc ruby-all.files >> rdoc.files
-
-# for ruby-libs
-cp /dev/null ruby-libs.files
-(fgrep    '%{_prefix}/lib' ruby-all.files; 
- fgrep -h '%{_prefix}/lib' ruby-devel.files ruby-tcltk.files irb.files ri.files rdoc.files) | egrep -v "elc?$" | \
- sort | uniq -u > ruby-libs.files
-
-%ifnarch ppc64
-# for ruby-mode
-cp /dev/null ruby-mode.files
-fgrep '.el' ruby-all.files >> ruby-mode.files
-%else
-touch ruby-mode.files
-%endif
-
-# for ruby.rpm
-sort ruby-all.files \
- ruby-libs.files ruby-devel.files ruby-tcltk.files irb.files ruby-mode.files ri.files rdoc.files | 
- uniq -u > ruby.files
-
-# for arch-dependent dir
-rbconfig=`find $RPM_BUILD_ROOT -name rbconfig.rb`
-export LD_LIBRARY_PATH=$RPM_BUILD_ROOT%{_libdir}
-arch=`$RPM_BUILD_ROOT%{_bindir}/ruby -r $rbconfig -e 'printf ("%s\n", Config::CONFIG["arch"])'`
-cat <<__EOF__ >> ruby-libs.files
-%%dir %%{_libdir}/ruby/%%{rubyxver}/$arch
-%%dir %%{_libdir}/ruby/%%{rubyxver}/$arch/digest
-__EOF__
 
 %clean
 rm -rf $RPM_BUILD_ROOT
-rm -f *.files
 rm -rf tmp-ruby-docs
 
 %post libs -p /sbin/ldconfig
 
 %postun libs -p /sbin/ldconfig
 
-%files -f ruby.files
-%defattr(-, root, root)
-%doc %{name}-%{rubyver}%{?patchlevel}/COPYING*
-%doc %{name}-%{rubyver}%{?patchlevel}/ChangeLog
-%doc %{name}-%{rubyver}%{?patchlevel}/GPL
-%doc %{name}-%{rubyver}%{?patchlevel}/LEGAL
-%doc %{name}-%{rubyver}%{?patchlevel}/LGPL
-%doc %{name}-%{rubyver}%{?patchlevel}/NEWS 
-%doc %{name}-%{rubyver}%{?patchlevel}/README
-%lang(ja) %doc %{name}-%{rubyver}%{?patchlevel}/README.ja
-%doc %{name}-%{rubyver}%{?patchlevel}/ToDo 
-%doc %{name}-%{rubyver}%{?patchlevel}/doc/ChangeLog-1.8.0
-%doc %{name}-%{rubyver}%{?patchlevel}/doc/NEWS-1.8.0
+%files
+%defattr(-, root, root, -)
+%doc %{name}-%{arcver}/COPYING*
+%doc %{name}-%{arcver}/ChangeLog
+%doc %{name}-%{arcver}/GPL
+%doc %{name}-%{arcver}/LEGAL
+%doc %{name}-%{arcver}/LGPL
+%doc %{name}-%{arcver}/NEWS 
+%doc %{name}-%{arcver}/README
+%lang(ja) %doc %{name}-%{arcver}/README.ja
+%doc %{name}-%{arcver}/ToDo 
+%doc %{name}-%{arcver}/doc/ChangeLog-1.8.0
+%doc %{name}-%{arcver}/doc/NEWS-1.8.0
 %doc tmp-ruby-docs/ruby/*
+%{_bindir}/ruby
+%{_bindir}/erb
+%{_bindir}/testrb
+%{_mandir}/man1/ruby.1*
 
-%files devel -f ruby-devel.files
-%defattr(-, root, root)
-%doc %{name}-%{rubyver}%{?patchlevel}/README.EXT
-%lang(ja) %doc %{name}-%{rubyver}%{?patchlevel}/README.EXT.ja
+%files devel
+%defattr(-, root, root, -)
+%doc %{name}-%{arcver}/COPYING*
+%doc %{name}-%{arcver}/ChangeLog
+%doc %{name}-%{arcver}/GPL
+%doc %{name}-%{arcver}/LEGAL
+%doc %{name}-%{arcver}/LGPL
+%doc %{name}-%{arcver}/README.EXT
+%lang(ja) %doc %{name}-%{arcver}/README.EXT.ja
+%{_libdir}/libruby.so
+%{_libdir}/ruby/%{rubyxver}/*/*.h
 
-%files libs -f ruby-libs.files
-%defattr(-, root, root)
-%doc %{name}-%{rubyver}%{?patchlevel}/README
-%lang(ja) %doc %{name}-%{rubyver}%{?patchlevel}/README.ja
-%doc %{name}-%{rubyver}%{?patchlevel}/COPYING*
-%doc %{name}-%{rubyver}%{?patchlevel}/ChangeLog
-%doc %{name}-%{rubyver}%{?patchlevel}/GPL
-%doc %{name}-%{rubyver}%{?patchlevel}/LEGAL
-%doc %{name}-%{rubyver}%{?patchlevel}/LGPL
+%files libs
+%defattr(-, root, root, -)
+%doc %{name}-%{arcver}/README
+%lang(ja) %doc %{name}-%{arcver}/README.ja
+%doc %{name}-%{arcver}/COPYING*
+%doc %{name}-%{arcver}/ChangeLog
+%doc %{name}-%{arcver}/GPL
+%doc %{name}-%{arcver}/LEGAL
+%doc %{name}-%{arcver}/LGPL
 %dir %{_libdir}/ruby
 %dir %{_prefix}/lib/ruby
 %dir %{_libdir}/ruby/%{rubyxver}
 %dir %{_prefix}/lib/ruby/%{rubyxver}
-%dir %{_prefix}/lib/ruby/%{rubyxver}/cgi
-%dir %{_prefix}/lib/ruby/%{rubyxver}/net
-%dir %{_prefix}/lib/ruby/%{rubyxver}/shell
-%dir %{_prefix}/lib/ruby/%{rubyxver}/uri
+%dir %{_libdir}/ruby/%{rubyxver}/%{_normalized_cpu}-%{_target_os}
 %{sitedir}
 %{sitedir2}
+## the following files should goes into ruby-tcltk package.
+%exclude %{_prefix}/lib/ruby/%{rubyxver}/*tk.rb
+%exclude %{_prefix}/lib/ruby/%{rubyxver}/tcltk.rb
+%exclude %{_prefix}/lib/ruby/%{rubyxver}/tk
+%exclude %{_prefix}/lib/ruby/%{rubyxver}/tk*.rb
+%exclude %{_prefix}/lib/ruby/%{rubyxver}/tkextlib
+%exclude %{_libdir}/ruby/%{rubyxver}/*/tcltklib.so
+%exclude %{_libdir}/ruby/%{rubyxver}/*/tkutil.so
+## the following files should goes into ruby-rdoc package.
+%exclude %{_prefix}/lib/ruby/%{rubyxver}/rdoc
+## the following files should goes into ruby-irb package.
+%exclude %{_prefix}/lib/ruby/%{rubyxver}/irb.rb
+%exclude %{_prefix}/lib/ruby/%{rubyxver}/irb
+## files in ruby-libs from here
+%{_prefix}/lib/ruby/%{rubyxver}/*.rb
+%{_prefix}/lib/ruby/%{rubyxver}/bigdecimal
+%{_prefix}/lib/ruby/%{rubyxver}/cgi
+%{_prefix}/lib/ruby/%{rubyxver}/date
+%{_prefix}/lib/ruby/%{rubyxver}/digest
+%{_prefix}/lib/ruby/%{rubyxver}/dl
+%{_prefix}/lib/ruby/%{rubyxver}/drb
+%{_prefix}/lib/ruby/%{rubyxver}/io
+%{_prefix}/lib/ruby/%{rubyxver}/net
+%{_prefix}/lib/ruby/%{rubyxver}/openssl
+%{_prefix}/lib/ruby/%{rubyxver}/optparse
+%{_prefix}/lib/ruby/%{rubyxver}/racc
+%{_prefix}/lib/ruby/%{rubyxver}/rexml
+%{_prefix}/lib/ruby/%{rubyxver}/rinda
+%{_prefix}/lib/ruby/%{rubyxver}/rss
+%{_prefix}/lib/ruby/%{rubyxver}/runit
+%{_prefix}/lib/ruby/%{rubyxver}/shell
+%{_prefix}/lib/ruby/%{rubyxver}/soap
+%{_prefix}/lib/ruby/%{rubyxver}/test
+%{_prefix}/lib/ruby/%{rubyxver}/uri
+%{_prefix}/lib/ruby/%{rubyxver}/webrick
+%{_prefix}/lib/ruby/%{rubyxver}/wsdl
+%{_prefix}/lib/ruby/%{rubyxver}/xmlrpc
+%{_prefix}/lib/ruby/%{rubyxver}/xsd
+%{_prefix}/lib/ruby/%{rubyxver}/yaml
+%{_libdir}/libruby.so.*
+%{_libdir}/ruby/%{rubyxver}/*/*.so
+%{_libdir}/ruby/%{rubyxver}/*/digest
+%{_libdir}/ruby/%{rubyxver}/*/io
+%{_libdir}/ruby/%{rubyxver}/*/racc
+%{_libdir}/ruby/%{rubyxver}/*/rbconfig.rb
 
-%files tcltk -f ruby-tcltk.files
-%defattr(-, root, root)
+%files tcltk
+%defattr(-, root, root, -)
+%doc %{name}-%{arcver}/COPYING*
+%doc %{name}-%{arcver}/ChangeLog
+%doc %{name}-%{arcver}/GPL
+%doc %{name}-%{arcver}/LEGAL
+%doc %{name}-%{arcver}/LGPL
 %doc tmp-ruby-docs/ruby-tcltk/ext/*
+%{_prefix}/lib/ruby/%{rubyxver}/*-tk.rb
+%{_prefix}/lib/ruby/%{rubyxver}/tcltk.rb
+%{_prefix}/lib/ruby/%{rubyxver}/tk
+%{_prefix}/lib/ruby/%{rubyxver}/tk*.rb
+%{_prefix}/lib/ruby/%{rubyxver}/tkextlib
+%{_libdir}/ruby/%{rubyxver}/*/tcltklib.so
+%{_libdir}/ruby/%{rubyxver}/*/tkutil.so
 
-%files rdoc -f rdoc.files
-%defattr(-, root, root)
-%dir %{_libdir}/ruby
-%dir %{_libdir}/ruby/%{rubyxver}
+%files rdoc
+%defattr(-, root, root, -)
+%doc %{name}-%{arcver}/COPYING*
+%doc %{name}-%{arcver}/ChangeLog
+%doc %{name}-%{arcver}/GPL
+%doc %{name}-%{arcver}/LEGAL
+%doc %{name}-%{arcver}/LGPL
+%{_bindir}/rdoc
+%{_prefix}/lib/ruby/%{rubyxver}/rdoc
 
-%files irb -f irb.files
-%defattr(-, root, root)
+%files irb
+%defattr(-, root, root, -)
+%doc %{name}-%{arcver}/COPYING*
+%doc %{name}-%{arcver}/ChangeLog
+%doc %{name}-%{arcver}/GPL
+%doc %{name}-%{arcver}/LEGAL
+%doc %{name}-%{arcver}/LGPL
 %doc tmp-ruby-docs/irb/*
-%dir %{_prefix}/lib/ruby/%{rubyxver}/irb
-%dir %{_prefix}/lib/ruby/%{rubyxver}/irb/lc
-%dir %{_prefix}/lib/ruby/%{rubyxver}/irb/lc/ja
+%{_bindir}/irb
+%{_prefix}/lib/ruby/%{rubyxver}/irb.rb
+%{_prefix}/lib/ruby/%{rubyxver}/irb
+%{_mandir}/man1/irb.1*
 
-%files ri -f ri.files
-%defattr(-, root, root)
-%dir %{_datadir}/ri
+%files ri
+%defattr(-, root, root, -)
+%doc %{name}-%{arcver}/COPYING*
+%doc %{name}-%{arcver}/ChangeLog
+%doc %{name}-%{arcver}/GPL
+%doc %{name}-%{arcver}/LEGAL
+%doc %{name}-%{arcver}/LGPL
+%{_bindir}/ri
+%{_datadir}/ri
 
 %files docs
-%defattr(-, root, root)
+%defattr(-, root, root, -)
+%doc %{name}-%{arcver}/COPYING*
+%doc %{name}-%{arcver}/ChangeLog
+%doc %{name}-%{arcver}/GPL
+%doc %{name}-%{arcver}/LEGAL
+%doc %{name}-%{arcver}/LGPL
 %doc tmp-ruby-docs/ruby-docs/*
 %doc tmp-ruby-docs/ruby-libs/*
 
 %ifnarch ppc64
-%files mode -f ruby-mode.files 
-%defattr(-, root, root)
-%doc %{name}-%{rubyver}%{?patchlevel}/misc/README
-%dir %{_datadir}/emacs/site-lisp/ruby-mode
+%files mode
+%defattr(-, root, root, -)
+%doc %{name}-%{arcver}/COPYING*
+%doc %{name}-%{arcver}/ChangeLog
+%doc %{name}-%{arcver}/GPL
+%doc %{name}-%{arcver}/LEGAL
+%doc %{name}-%{arcver}/LGPL
+%doc %{name}-%{arcver}/misc/README
+%{_datadir}/emacs/site-lisp/ruby-mode
+%{_datadir}/emacs/site-lisp/site-start.d/ruby-mode-init.el
 %endif
 
 %changelog
-* Tue Dec 04 2007 Release Engineering <rel-eng at fedoraproject dot org> - %{rubyver}%{?dotpatchlevel}-2
+* Fri Dec 21 2007 Akira TAGOH <tagoh@redhat.com> - 1.8.6.111-3
+- Clean up the spec file.
+- Remove ruby-man-1.4.6 stuff. this is entirely the out-dated document.
+  this could be replaced by ri.
+- Disable the static library building.
+
+* Tue Dec 04 2007 Release Engineering <rel-eng at fedoraproject dot org> - 1.8.6.111-2
  - Rebuild for openssl bump
 
 * Wed Oct 31 2007 Akira TAGOH <tagoh@redhat.com>

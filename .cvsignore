@@ -4,6 +4,8 @@ ruby-refm-rdp-1.8.1-ja-html.tar.gz
 rubyfaq-990927.tar.bz2
 rubyfaq-jp-990927.tar.bz2
 *.rpm
+*.gz
+*.bz2
 ruby-1.8.2.tar.gz
 ruby-1.8.3.tar.gz
 ruby-1.8.4-preview1.tar.gz
