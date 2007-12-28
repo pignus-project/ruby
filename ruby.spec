@@ -1,4 +1,3 @@
-%define manver		1.4.6
 %define	rubyxver	1.8
 %define	rubyver		1.8.6
 %define _patchlevel	111
@@ -13,7 +12,7 @@
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	Ruby or GPL+
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -23,12 +22,11 @@ BuildRequires:	emacs
 %endif
 
 Source0:	ftp://ftp.ruby-lang.org/pub/%{name}/%{rubyxver}/%{name}-%{arcver}.tar.bz2
+## Dead link
 ##Source1:	http://www7.tok2.com/home/misc/files/%{name}/%{name}-refm-rdp-1.8.1-ja-html.tar.gz
 Source1:	%{name}-refm-rdp-1.8.1-ja-html.tar.gz
-##Source2:	ftp://ftp.ruby-lang.org/pub/%{name}/doc/rubyfaq-990927.tar.gz
-Source2:	rubyfaq-990927.tar.bz2
-##Source3:	ftp://ftp.ruby-lang.org/pub/%{name}/doc/rubyfaq-jp-990927.tar.gz
-Source3:	rubyfaq-jp-990927.tar.bz2
+Source2:	ftp://ftp.ruby-lang.org/pub/%{name}/doc/rubyfaq-990927.tar.gz
+Source3:	ftp://ftp.ruby-lang.org/pub/%{name}/doc/rubyfaq-jp-990927.tar.gz
 Source4:	irb.1
 Source10:	ruby-mode-init.el
 
@@ -95,7 +93,8 @@ from the terminal.
 %package rdoc
 Summary:	A tool to generate documentation from Ruby source files
 Group:		Development/Languages
-Requires:	%{name} = %{version}-%{release}
+## ruby-irb requires ruby
+#Requires:	%{name} = %{version}-%{release}
 Requires:	%{name}-irb = %{version}-%{release}
 Provides:	rdoc = %{version}-%{release}
 Obsoletes:	rdoc <= %{version}-%{release}
@@ -128,7 +127,8 @@ Emacs Lisp ruby-mode for the object-oriented scripting language Ruby.
 %package ri
 Summary:	Ruby interactive reference
 Group:		Documentation
-Requires:	%{name} = %{version}-%{release}
+## ruby-irb requires ruby, which ruby-rdoc requires
+#Requires:	%{name} = %{version}-%{release}
 Requires:	%{name}-rdoc = %{version}-%{release}
 Provides:	ri = %{version}-%{release}
 Obsoletes:	ri <= %{version}-%{release}
@@ -181,7 +181,7 @@ export CFLAGS
   --disable-rpath \
   --with-ruby-prefix=%{_prefix}/lib
 
-make RUBY_INSTALL_NAME=ruby %{?_smp_mflags}
+make RUBY_INSTALL_NAME=ruby %{?_smp_mflags} COPY="cp -p" %{?_smp_mflags}
 %ifarch ia64
 # Miscompilation? Buggy code?
 rm -f parse.o
@@ -201,11 +201,12 @@ popd
 rm -rf $RPM_BUILD_ROOT
 
 %ifnarch ppc64
-%{__mkdir_p} $RPM_BUILD_ROOT%{_datadir}/emacs/site-lisp/ruby-mode
-%{__mkdir_p} $RPM_BUILD_ROOT%{_datadir}/emacs/site-lisp/site-start.d
+mkdir -p $RPM_BUILD_ROOT%{_datadir}/emacs/site-lisp/ruby-mode
+mkdir -p $RPM_BUILD_ROOT%{_datadir}/emacs/site-lisp/site-start.d
 %endif
 
 # installing documents and exapmles...
+rm -rf tmp-ruby-docs
 mkdir tmp-ruby-docs
 cd tmp-ruby-docs
 
@@ -217,14 +218,14 @@ cd ..
 
 # for ruby-libs
 cd ruby-libs
-(cd ../../%{name}-%{arcver} && tar cf - lib/README*) | tar xvf -
-(cd ../../%{name}-%{arcver}/doc && tar cf - .) | tar xvf -
+(cd ../../%{name}-%{arcver} && tar cf - lib/README*) | tar xf -
+(cd ../../%{name}-%{arcver}/doc && tar cf - .) | tar xf -
 (cd ../../%{name}-%{arcver} &&
  tar cf - `find ext \
   -mindepth 1 \
   \( -path '*/sample/*' -o -path '*/demo/*' \) -o \
   \( -name '*.rb' -not -path '*/lib/*' -not -name extconf.rb \) -o \
-  \( -name 'README*' -o -name '*.txt*' -o -name 'MANUAL*' \)`) | tar xvf -
+  \( -name 'README*' -o -name '*.txt*' -o -name 'MANUAL*' \)`) | tar xf -
 cd ..
 
 # for irb
@@ -243,7 +244,7 @@ cd ruby-tcltk
 for target in tcltklib tk
 do
  (cd ../ruby-libs &&
-  tar cf - `find . -path "*/$target/*"`) | tar xvf -
+  tar cf - `find . -path "*/$target/*"`) | tar xf -
  (cd ../ruby-libs &&
   rm -rf `find . -name "$target" -type d`)
 done
@@ -252,9 +253,9 @@ cd ..
 # for ruby-docs
 cd ruby-docs
 mkdir refm-ja faq-en faq-ja
-(cd ../../ruby-refm-ja && tar cf - .) | (cd refm-ja && tar xvf -)
-(cd ../../rubyfaq && tar cf - .) | (cd faq-en && tar xvf -)
-(cd ../../rubyfaq-jp && tar cf - .) | (cd faq-ja && tar xvf -)
+(cd ../../ruby-refm-ja && tar cf - .) | (cd refm-ja && tar xf -)
+(cd ../../rubyfaq && tar cf - .) | (cd faq-en && tar xf -)
+(cd ../../rubyfaq-jp && tar cf - .) | (cd faq-ja && tar xf -)
 
 (cd faq-ja &&
  for f in rubyfaq-jp*.html
@@ -286,10 +287,6 @@ for i in `find -type f`; do
 	if [ $? != 0 ]; then
 		iconv -f iso8859-1 -t utf-8 $i > $.new && mv $i.new $i || exit 1
 	fi
-	if [ -f $i.new ]; then
-		echo "Failed to convert with iconv."
-		exit 1
-	fi
 done
 
 # done
@@ -303,14 +300,15 @@ rm $RPM_BUILD_ROOT%{_libdir}/libruby-static.a
 
 # generate ri doc
 rubybuilddir=$RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{arcver}
+rm -rf %{name}-%{arcver}/.ext/rdoc
 LD_LIBRARY_PATH=$RPM_BUILD_ROOT%{_libdir} RUBYLIB=$RPM_BUILD_ROOT%{_libdir}/ruby/%{rubyxver}:$RPM_BUILD_ROOT%{_libdir}/ruby/%{rubyxver}/%{_normalized_cpu}-%{_target_os} make -C $rubybuilddir DESTDIR=$RPM_BUILD_ROOT install-doc
 #DESTDIR=$RPM_BUILD_ROOT LD_LIBRARY_PATH=$RPM_BUILD_ROOT%{_libdir} $RPM_BUILD_ROOT%{_bindir}/ruby -I $rubybuilddir -I $RPM_BUILD_ROOT%{_libdir}/ruby/%{rubyxver}/%{_normalized_cpu}-%{_target_os}/ -I $rubybuilddir/lib $RPM_BUILD_ROOT%{_bindir}/rdoc --all --ri-system $rubybuilddir
 
-%{__mkdir_p} $RPM_BUILD_ROOT%{sitedir2}/%{rubyxver}
-%{__mkdir_p} $RPM_BUILD_ROOT%{sitedir}/%{rubyxver}/%{_normalized_cpu}-%{_target_os}
+mkdir -p $RPM_BUILD_ROOT%{sitedir2}/%{rubyxver}
+mkdir -p $RPM_BUILD_ROOT%{sitedir}/%{rubyxver}/%{_normalized_cpu}-%{_target_os}
 
 # XXX: installing irb
-install -m 0644 %{SOURCE4} $RPM_BUILD_ROOT%{_mandir}/man1/
+install -p -m 0644 %{SOURCE4} $RPM_BUILD_ROOT%{_mandir}/man1/
 
 %ifnarch ppc64
 # installing ruby-mode
@@ -325,7 +323,7 @@ EOF
 emacs --no-site-file -q -batch -l path.el -f batch-byte-compile *.el
 rm -f path.el*
 popd
-install -m 644 %{SOURCE10} \
+install -p -m 644 %{SOURCE10} \
 	$RPM_BUILD_ROOT%{_datadir}/emacs/site-lisp/site-start.d
 
 cd ..
@@ -384,12 +382,14 @@ rm -rf tmp-ruby-docs
 %doc %{name}-%{arcver}/GPL
 %doc %{name}-%{arcver}/LEGAL
 %doc %{name}-%{arcver}/LGPL
-%dir %{_libdir}/ruby
 %dir %{_prefix}/lib/ruby
-%dir %{_libdir}/ruby/%{rubyxver}
 %dir %{_prefix}/lib/ruby/%{rubyxver}
+%ifarch ppc64 s390x sparc64 x86_64
+%dir %{_libdir}/ruby
+%dir %{_libdir}/ruby/%{rubyxver}
 %dir %{_libdir}/ruby/%{rubyxver}/%{_normalized_cpu}-%{_target_os}
 %{sitedir}
+%endif
 %{sitedir2}
 ## the following files should goes into ruby-tcltk package.
 %exclude %{_prefix}/lib/ruby/%{rubyxver}/*tk.rb
@@ -510,6 +510,9 @@ rm -rf tmp-ruby-docs
 %endif
 
 %changelog
+* Fri Dec 28 2007 Akira TAGOH <tagoh@redhat.com> - 1.8.6.111-4
+- Clean up again.
+
 * Fri Dec 21 2007 Akira TAGOH <tagoh@redhat.com> - 1.8.6.111-3
 - Clean up the spec file.
 - Remove ruby-man-1.4.6 stuff. this is entirely the out-dated document.
