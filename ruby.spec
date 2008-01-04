@@ -12,7 +12,7 @@
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	Ruby or GPL+
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -510,6 +510,9 @@ rm -rf tmp-ruby-docs
 %endif
 
 %changelog
+* Fri Jan  4 2008 Akira TAGOH <tagoh@redhat.com> - 1.8.6.111-5
+- Rebuild.
+
 * Fri Dec 28 2007 Akira TAGOH <tagoh@redhat.com> - 1.8.6.111-4
 - Clean up again.
 
