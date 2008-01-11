@@ -12,7 +12,7 @@
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	Ruby or GPL+
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -331,7 +331,7 @@ cd ..
 
 # remove shebang
 for i in $RPM_BUILD_ROOT%{_prefix}/lib/ruby/1.8/{abbrev,generator,irb/{cmd/subirb,ext/save-history},matrix,rdoc/{markup/sample/rdoc2latex,parsers/parse_rb},set,tsort}.rb; do
-	sed -i -e '/#![ 	]*/{D}' $i
+	sed -i -e '/^#!.*/,1D' $i
 done
 
 %clean
@@ -510,6 +510,9 @@ rm -rf tmp-ruby-docs
 %endif
 
 %changelog
+* Fri Jan 11 2008 Akira TAGOH <tagoh@redhat.com> - 1.8.6.111-6
+- Fix an unnecessary replacement for shebang. (#426835)
+
 * Fri Jan  4 2008 Akira TAGOH <tagoh@redhat.com> - 1.8.6.111-5
 - Rebuild.
 
