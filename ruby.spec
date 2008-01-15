@@ -12,7 +12,7 @@
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	Ruby or GPL+
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -63,6 +63,7 @@ This package includes the libruby, necessary to run Ruby.
 Summary:	A Ruby development environment
 Group:		Development/Languages
 Requires:	%{name}-libs = %{version}-%{release}
+Provides:	%{name}-libs-static = %{version}-%{release}
 
 %description devel
 Header files and libraries for building a extension library for the
@@ -295,9 +296,6 @@ cd ..
 # installing binaries ...
 make -C $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{arcver} DESTDIR=$RPM_BUILD_ROOT install
 
-# remove the static library
-rm $RPM_BUILD_ROOT%{_libdir}/libruby-static.a
-
 # generate ri doc
 rubybuilddir=$RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{arcver}
 rm -rf %{name}-%{arcver}/.ext/rdoc
@@ -371,6 +369,7 @@ rm -rf tmp-ruby-docs
 %doc %{name}-%{arcver}/README.EXT
 %lang(ja) %doc %{name}-%{arcver}/README.EXT.ja
 %{_libdir}/libruby.so
+%{_libdir}/libruby-static.a
 %{_libdir}/ruby/%{rubyxver}/*/*.h
 
 %files libs
@@ -510,6 +509,9 @@ rm -rf tmp-ruby-docs
 %endif
 
 %changelog
+* Tue Jan 15 2008 Akira TAGOH <tagoh@redhat.com> - 1.8.6.111-7
+- Revert the change of libruby-static.a. (#428384)
+
 * Fri Jan 11 2008 Akira TAGOH <tagoh@redhat.com> - 1.8.6.111-6
 - Fix an unnecessary replacement for shebang. (#426835)
 
