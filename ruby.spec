@@ -12,7 +12,7 @@
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	7%{?dist}
+Release:	8%{?dist}
 License:	Ruby or GPL+
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -509,6 +509,9 @@ rm -rf tmp-ruby-docs
 %endif
 
 %changelog
+* Tue Feb 12 2008 Akira TAGOH <tagoh@redhat.com> - 1.8.6.111-8
+- Rebuild for gcc-4.3.
+
 * Tue Jan 15 2008 Akira TAGOH <tagoh@redhat.com> - 1.8.6.111-7
 - Revert the change of libruby-static.a. (#428384)
 
