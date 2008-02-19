@@ -36,6 +36,7 @@ Patch21:	ruby-deprecated-sitelib-search-path.patch
 Patch22:	ruby-deprecated-search-path.patch
 Patch23:	ruby-multilib.patch
 Patch24:	ruby-1.8.6.111-CVE-2007-5162.patch
+Patch25:	ruby-1.8.6.111-gcc43.patch
 
 Summary:	An interpreter of object-oriented scripting language
 Group:		Development/Languages
@@ -156,6 +157,7 @@ pushd %{name}-%{arcver}
 %patch23 -p1
 %endif
 %patch24 -p1
+%patch25 -p1
 popd
 
 %build
@@ -509,7 +511,7 @@ rm -rf tmp-ruby-docs
 %endif
 
 %changelog
-* Tue Feb 12 2008 Akira TAGOH <tagoh@redhat.com> - 1.8.6.111-8
+* Tue Feb 19 2008 Akira TAGOH <tagoh@redhat.com> - 1.8.6.111-8
 - Rebuild for gcc-4.3.
 
 * Tue Jan 15 2008 Akira TAGOH <tagoh@redhat.com> - 1.8.6.111-7
