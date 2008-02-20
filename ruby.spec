@@ -12,7 +12,7 @@
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	8%{?dist}
+Release:	9%{?dist}
 License:	Ruby or GPL+
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -511,6 +511,9 @@ rm -rf tmp-ruby-docs
 %endif
 
 %changelog
+* Tue Feb 19 2008 Fedora Release Engineering <rel-eng@fedoraproject.org> - 1.8.6.111-9
+- Autorebuild for GCC 4.3
+
 * Tue Feb 19 2008 Akira TAGOH <tagoh@redhat.com> - 1.8.6.111-8
 - Rebuild for gcc-4.3.
 
