@@ -1,6 +1,6 @@
 %define	rubyxver	1.8
 %define	rubyver		1.8.6
-%define _patchlevel	111
+%define _patchlevel	114
 %define dotpatchlevel	%{?_patchlevel:.%{_patchlevel}}
 %define patchlevel	%{?_patchlevel:-p%{_patchlevel}}
 %define	arcver		%{rubyver}%{?patchlevel}
@@ -12,8 +12,8 @@
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	9%{?dist}
-License:	Ruby or GPL+
+Release:	1%{?dist}
+License:	Ruby or GPLv2
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:	readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl-devel tk-devel libX11-devel autoconf gcc unzip openssl-devel db4-devel byacc
@@ -313,7 +313,7 @@ install -p -m 0644 %{SOURCE4} $RPM_BUILD_ROOT%{_mandir}/man1/
 %ifnarch ppc64
 # installing ruby-mode
 cd %{name}-%{arcver}
-cp misc/*.el $RPM_BUILD_ROOT%{_datadir}/emacs/site-lisp/ruby-mode
+cp -p misc/*.el $RPM_BUILD_ROOT%{_datadir}/emacs/site-lisp/ruby-mode
 
 ## for ruby-mode
 pushd $RPM_BUILD_ROOT%{_datadir}/emacs/site-lisp/ruby-mode
@@ -385,6 +385,7 @@ rm -rf tmp-ruby-docs
 %doc %{name}-%{arcver}/LGPL
 %dir %{_prefix}/lib/ruby
 %dir %{_prefix}/lib/ruby/%{rubyxver}
+%dir %{_prefix}/lib/ruby/%{rubyxver}/%{_normalized_cpu}-%{_target_os}
 %ifarch ppc64 s390x sparc64 x86_64
 %dir %{_libdir}/ruby
 %dir %{_libdir}/ruby/%{rubyxver}
@@ -511,6 +512,13 @@ rm -rf tmp-ruby-docs
 %endif
 
 %changelog
+* Tue Mar  4 2008 Akira TAGOH <tagoh@redhat.com> - 1.8.6.114-1
+- Security fix for CVE-2008-1145.
+- Improve a spec file. (#226381)
+  - Correct License tag.
+  - Fix a timestamp issue.
+  - Own a arch-specific directory.
+
 * Tue Feb 19 2008 Fedora Release Engineering <rel-eng@fedoraproject.org> - 1.8.6.111-9
 - Autorebuild for GCC 4.3
 
