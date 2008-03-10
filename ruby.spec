@@ -385,7 +385,9 @@ rm -rf tmp-ruby-docs
 %doc %{name}-%{arcver}/LGPL
 %dir %{_prefix}/lib/ruby
 %dir %{_prefix}/lib/ruby/%{rubyxver}
+%ifnarch ppc64 s390x sparc64 x86_64
 %dir %{_prefix}/lib/ruby/%{rubyxver}/%{_normalized_cpu}-%{_target_os}
+%endif
 %ifarch ppc64 s390x sparc64 x86_64
 %dir %{_libdir}/ruby
 %dir %{_libdir}/ruby/%{rubyxver}
