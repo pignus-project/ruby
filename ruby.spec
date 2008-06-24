@@ -1,6 +1,6 @@
 %define	rubyxver	1.8
 %define	rubyver		1.8.6
-%define _patchlevel	114
+%define _patchlevel	230
 %define dotpatchlevel	%{?_patchlevel:.%{_patchlevel}}
 %define patchlevel	%{?_patchlevel:-p%{_patchlevel}}
 %define	arcver		%{rubyver}%{?patchlevel}
@@ -17,9 +17,7 @@ License:	Ruby or GPLv2
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:	readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl-devel tk-devel libX11-devel autoconf gcc unzip openssl-devel db4-devel byacc
-%ifnarch ppc64
 BuildRequires:	emacs
-%endif
 
 Source0:	ftp://ftp.ruby-lang.org/pub/%{name}/%{rubyxver}/%{name}-%{arcver}.tar.bz2
 ## Dead link
@@ -35,7 +33,6 @@ Patch20:	ruby-rubyprefix.patch
 Patch21:	ruby-deprecated-sitelib-search-path.patch
 Patch22:	ruby-deprecated-search-path.patch
 Patch23:	ruby-multilib.patch
-Patch24:	ruby-1.8.6.111-CVE-2007-5162.patch
 Patch25:	ruby-1.8.6.111-gcc43.patch
 
 Summary:	An interpreter of object-oriented scripting language
@@ -115,7 +112,6 @@ Group:		Documentation
 Manuals and FAQs for the object-oriented scripting language Ruby.
 
 
-%ifnarch ppc64
 %package mode
 Summary:	Emacs Lisp ruby-mode for the scripting language Ruby
 Group:		Applications/Editors
@@ -123,7 +119,6 @@ Requires:	emacs-common
 
 %description mode
 Emacs Lisp ruby-mode for the object-oriented scripting language Ruby.
-%endif
 
 
 %package ri
@@ -156,7 +151,6 @@ pushd %{name}-%{arcver}
 %patch22 -p1
 %patch23 -p1
 %endif
-%patch24 -p1
 %patch25 -p1
 popd
 
@@ -203,10 +197,8 @@ popd
 %install
 rm -rf $RPM_BUILD_ROOT
 
-%ifnarch ppc64
 mkdir -p $RPM_BUILD_ROOT%{_datadir}/emacs/site-lisp/ruby-mode
 mkdir -p $RPM_BUILD_ROOT%{_datadir}/emacs/site-lisp/site-start.d
-%endif
 
 # installing documents and exapmles...
 rm -rf tmp-ruby-docs
@@ -310,7 +302,6 @@ mkdir -p $RPM_BUILD_ROOT%{sitedir}/%{rubyxver}/%{_normalized_cpu}-%{_target_os}
 # XXX: installing irb
 install -p -m 0644 %{SOURCE4} $RPM_BUILD_ROOT%{_mandir}/man1/
 
-%ifnarch ppc64
 # installing ruby-mode
 cd %{name}-%{arcver}
 cp -p misc/*.el $RPM_BUILD_ROOT%{_datadir}/emacs/site-lisp/ruby-mode
@@ -327,7 +318,6 @@ install -p -m 644 %{SOURCE10} \
 	$RPM_BUILD_ROOT%{_datadir}/emacs/site-lisp/site-start.d
 
 cd ..
-%endif
 
 # remove shebang
 for i in $RPM_BUILD_ROOT%{_prefix}/lib/ruby/1.8/{abbrev,generator,irb/{cmd/subirb,ext/save-history},matrix,rdoc/{markup/sample/rdoc2latex,parsers/parse_rb},set,tsort}.rb; do
@@ -500,7 +490,6 @@ rm -rf tmp-ruby-docs
 %doc tmp-ruby-docs/ruby-docs/*
 %doc tmp-ruby-docs/ruby-libs/*
 
-%ifnarch ppc64
 %files mode
 %defattr(-, root, root, -)
 %doc %{name}-%{arcver}/COPYING*
@@ -511,9 +500,20 @@ rm -rf tmp-ruby-docs
 %doc %{name}-%{arcver}/misc/README
 %{_datadir}/emacs/site-lisp/ruby-mode
 %{_datadir}/emacs/site-lisp/site-start.d/ruby-mode-init.el
-%endif
 
 %changelog
+* Tue Jun 24 2008 Akira TAGOH <tagoh@redhat.com> - 1.8.6.230-1
+- New upstream release.
+- Security fixes. (#452295)
+  - CVE-2008-1891: WEBrick CGI source disclosure.
+  - CVE-2008-2662: Integer overflow in rb_str_buf_append().
+  - CVE-2008-2663: Integer overflow in rb_ary_store().
+  - CVE-2008-2664: Unsafe use of alloca in rb_str_format().
+  - CVE-2008-2725: Integer overflow in rb_ary_splice().
+  - CVE-2008-2726: Integer overflow in rb_ary_splice().
+- ruby-1.8.6.111-CVE-2007-5162.patch: removed.
+- Build ruby-mode package for all archtectures.
+
 * Tue Mar  4 2008 Akira TAGOH <tagoh@redhat.com> - 1.8.6.114-1
 - Security fix for CVE-2008-1145.
 - Improve a spec file. (#226381)
