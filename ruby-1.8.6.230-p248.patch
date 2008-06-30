@@ -1,0 +1,16 @@
+diff -pruN ruby-1.8.6-p230.orig/array.c ruby-1.8.6-p230/array.c
+--- ruby-1.8.6-p230.orig/array.c	2008-06-20 15:53:16.000000000 +0900
++++ ruby-1.8.6-p230/array.c	2008-06-30 11:33:00.000000000 +0900
+@@ -2272,10 +2272,10 @@ rb_ary_fill(argc, argv, ary)
+ 	break;
+     }
+     rb_ary_modify(ary);
+-    end = beg + len;
+-    if (end < 0) {
++    if (len > ARY_MAX_SIZE - beg) {
+ 	rb_raise(rb_eArgError, "argument too big");
+     }
++    end = beg + len;
+     if (end > RARRAY(ary)->len) {
+ 	if (end >= RARRAY(ary)->aux.capa) {
+ 	    REALLOC_N(RARRAY(ary)->ptr, VALUE, end);

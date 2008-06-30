@@ -1,0 +1,58 @@
+diff -pruN ruby-1.8.6-p230.orig/class.c ruby-1.8.6-p230/class.c
+--- ruby-1.8.6-p230.orig/class.c	2008-06-15 21:06:33.000000000 +0900
++++ ruby-1.8.6-p230/class.c	2008-06-30 11:21:41.000000000 +0900
+@@ -62,10 +62,7 @@ clone_method(mid, body, data)
+     NODE *fbody = body->nd_body;
+ 
+     if (fbody && nd_type(fbody) == NODE_SCOPE) {
+-	VALUE cref = data->klass ?
+-	    (VALUE)NEW_NODE(NODE_CREF,data->klass,0,fbody->nd_rval) :
+-	    fbody->nd_rval;
+-	fbody = NEW_NODE(NODE_SCOPE, fbody->nd_tbl, cref, fbody->nd_next);
++	fbody = rb_copy_node_scope(fbody, ruby_cref);
+     }
+     st_insert(data->tbl, mid, (st_data_t)NEW_METHOD(fbody, body->nd_noex));
+     return ST_CONTINUE;
+diff -pruN ruby-1.8.6-p230.orig/eval.c ruby-1.8.6-p230/eval.c
+--- ruby-1.8.6-p230.orig/eval.c	2008-06-16 15:43:48.000000000 +0900
++++ ruby-1.8.6-p230/eval.c	2008-06-30 11:19:15.000000000 +0900
+@@ -2239,8 +2239,8 @@ rb_mod_alias_method(mod, newname, oldnam
+     return mod;
+ }
+ 
+-static NODE*
+-copy_node_scope(node, rval)
++NODE*
++rb_copy_node_scope(node, rval)
+     NODE *node;
+     NODE *rval;
+ {
+@@ -3948,7 +3948,7 @@ rb_eval(self, n)
+ 		noex |= NOEX_NOSUPER;
+ 	    }
+ 
+-	    defn = copy_node_scope(node->nd_defn, ruby_cref);
++	    defn = rb_copy_node_scope(node->nd_defn, ruby_cref);
+ 	    rb_add_method(ruby_class, node->nd_mid, defn, noex);
+ 	    if (scope_vmode == SCOPE_MODFUNC) {
+ 		rb_add_method(rb_singleton_class(ruby_class),
+@@ -3984,7 +3984,7 @@ rb_eval(self, n)
+ 		    rb_warning("redefine %s", rb_id2name(node->nd_mid));
+ 		}
+ 	    }
+-	    defn = copy_node_scope(node->nd_defn, ruby_cref);
++	    defn = rb_copy_node_scope(node->nd_defn, ruby_cref);
+ 	    rb_add_method(klass, node->nd_mid, defn,
+ 			  NOEX_PUBLIC|(body?body->nd_noex&NOEX_UNDEF:0));
+ 	    result = Qnil;
+diff -pruN ruby-1.8.6-p230.orig/node.h ruby-1.8.6-p230/node.h
+--- ruby-1.8.6-p230.orig/node.h	2007-05-23 00:01:22.000000000 +0900
++++ ruby-1.8.6-p230/node.h	2008-06-30 11:20:06.000000000 +0900
+@@ -371,6 +371,7 @@ typedef unsigned int rb_event_t;
+ #define RUBY_EVENT_ALL      0xff
+ 
+ typedef void (*rb_event_hook_func_t) _((rb_event_t,NODE*,VALUE,ID,VALUE));
++NODE *rb_copy_node_scope _((NODE *, NODE *));
+ void rb_add_event_hook _((rb_event_hook_func_t,rb_event_t));
+ int rb_remove_event_hook _((rb_event_hook_func_t));
+ 
