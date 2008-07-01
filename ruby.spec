@@ -37,7 +37,7 @@ Patch25:	ruby-1.8.6.111-gcc43.patch
 Patch26:	ruby-1.8.6.230-string-str_buf_cat.patch
 Patch27:	ruby-1.8.6.230-p238.patch
 Patch28:	ruby-1.8.6.230-p248.patch
-patch29:	ruby-1.8.6.230-p257.patch
+Patch29:	ruby-1.8.6.230-p257.patch
 
 Summary:	An interpreter of object-oriented scripting language
 Group:		Development/Languages
