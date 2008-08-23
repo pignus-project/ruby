@@ -1,6 +1,6 @@
 %define	rubyxver	1.8
 %define	rubyver		1.8.6
-%define _patchlevel	230
+%define _patchlevel	287
 %define dotpatchlevel	%{?_patchlevel:.%{_patchlevel}}
 %define patchlevel	%{?_patchlevel:-p%{_patchlevel}}
 %define	arcver		%{rubyver}%{?patchlevel}
@@ -12,7 +12,7 @@
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	5%{?dist}
+Release:	1%{?dist}
 License:	Ruby or GPLv2
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -34,10 +34,6 @@ Patch21:	ruby-deprecated-sitelib-search-path.patch
 Patch22:	ruby-deprecated-search-path.patch
 Patch23:	ruby-multilib.patch
 Patch25:	ruby-1.8.6.111-gcc43.patch
-Patch26:	ruby-1.8.6.230-string-str_buf_cat.patch
-Patch27:	ruby-1.8.6.230-p238.patch
-Patch28:	ruby-1.8.6.230-p248.patch
-Patch29:	ruby-1.8.6.230-p257.patch
 
 Summary:	An interpreter of object-oriented scripting language
 Group:		Development/Languages
@@ -156,10 +152,6 @@ pushd %{name}-%{arcver}
 %patch23 -p1
 %endif
 %patch25 -p1
-%patch26 -p1
-%patch27 -p1
-%patch28 -p1
-%patch29 -p1
 popd
 
 %build
@@ -510,6 +502,17 @@ rm -rf tmp-ruby-docs
 %{_datadir}/emacs/site-lisp/site-start.d/ruby-mode-init.el
 
 %changelog
+* Sat Aug 23 2008 Akira TAGOH <tagoh@redhat.com> - 1.8.6.287-1
+- New upstream release.
+- Security fixes.
+  - CVE-2008-3655: Ruby does not properly restrict access to critical
+                   variables and methods at various safe levels.
+  - CVE-2008-3656: DoS vulnerability in WEBrick.
+  - CVE-2008-3657: Lack of taintness check in dl.
+  - CVE-2008-1447: DNS spoofing vulnerability in resolv.rb.
+  - CVE-2008-3443: Memory allocation failure in Ruby regex engine.
+- Remove the unnecessary backported patches.
+
 * Thu Jul 10 2008 Tom "spot" Callaway <tcallawa@redhat.com> - 1.8.6.230-5
 - rebuild against db4-4.7
 
