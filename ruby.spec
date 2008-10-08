@@ -12,7 +12,7 @@
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Ruby or GPLv2
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -34,6 +34,7 @@ Patch21:	ruby-deprecated-sitelib-search-path.patch
 Patch22:	ruby-deprecated-search-path.patch
 Patch23:	ruby-multilib.patch
 Patch25:	ruby-1.8.6.111-gcc43.patch
+Patch26:	ruby-1.8.6-rexml-CVE-2008-3790.patch
 
 Summary:	An interpreter of object-oriented scripting language
 Group:		Development/Languages
@@ -152,6 +153,7 @@ pushd %{name}-%{arcver}
 %patch23 -p1
 %endif
 %patch25 -p1
+%patch26 -p1
 popd
 
 %build
@@ -502,6 +504,9 @@ rm -rf tmp-ruby-docs
 %{_datadir}/emacs/site-lisp/site-start.d/ruby-mode-init.el
 
 %changelog
+* Wed Oct  8 2008 Akira TAGOH <tagoh@redhat.com> - 1.8.6.287-2
+- CVE-2008-3790: DoS vulnerability in the REXML module.
+
 * Sat Aug 23 2008 Akira TAGOH <tagoh@redhat.com> - 1.8.6.287-1
 - New upstream release.
 - Security fixes.
