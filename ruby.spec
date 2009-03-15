@@ -12,7 +12,7 @@
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	Ruby or GPLv2
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -510,7 +510,7 @@ rm -rf tmp-ruby-docs
 %{_datadir}/emacs/site-lisp/site-start.d/ruby-mode-init.el
 
 %changelog
-* Thu Mar 05 2009 Jeroen van Meeuwen <kanarip@fedoraproject.org> - 1.8.6.287-4
+* Thu Mar 05 2009 Jeroen van Meeuwen <kanarip@fedoraproject.org> - 1.8.6.287-5
 - Rebuild for gcc4.4
 
 * Fri Feb 27 2009 Jeroen van Meeuwen <kanarip@fedoraproject.org> - 1.8.6.287-3
