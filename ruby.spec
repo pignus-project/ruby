@@ -8,11 +8,11 @@
 # This is required to ensure that noarch files puts under /usr/lib/... for
 # multilib because ruby library is installed under /usr/{lib,lib64}/ruby anyway.
 %define	sitedir2	%{_prefix}/lib/ruby/site_ruby
-%define	_normalized_cpu	%(echo `echo %{_target_cpu} | sed 's/^ppc/powerpc/'`)
+%define	_normalized_cpu	%(echo `echo %{_target_cpu} | sed 's/^ppc/powerpc/' | sed -e 's|i.86|i386|'`)
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	Ruby or GPLv2
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -37,6 +37,7 @@ Patch25:	ruby-1.8.6.111-gcc43.patch
 Patch26:        ruby-1.8.6-rexml-CVE-2008-3790.patch
 Patch27:        ruby-1.8.6-p287-CVE-2008-5189.patch
 Patch28:        ruby-1.8.6-p287-remove-ssl-rand-range.patch
+Patch29:	ruby-always-use-i386.patch
 
 Summary:	An interpreter of object-oriented scripting language
 Group:		Development/Languages
@@ -158,6 +159,7 @@ pushd %{name}-%{arcver}
 %patch26 -p1
 %patch27 -p0
 %patch28 -p1
+%patch29 -p1
 popd
 
 %build
@@ -169,7 +171,7 @@ autoconf
 
 rb_cv_func_strtod=no
 export rb_cv_func_strtod
-CFLAGS="$RPM_OPT_FLAGS -Wall -O0 -fno-strict-aliasing"
+CFLAGS="$RPM_OPT_FLAGS -fno-strict-aliasing"
 export CFLAGS
 %configure \
   --with-sitedir='%{sitedir}' \
@@ -510,6 +512,10 @@ rm -rf tmp-ruby-docs
 %{_datadir}/emacs/site-lisp/site-start.d/ruby-mode-init.el
 
 %changelog
+* Mon Mar 16 2009 Mamoru Tasaka <mtasaka@ioa.s.u-tokyo.ac.jp> - 1.8.6.287-6
+- Again use -O2 optimization level
+- i586 should search i386-linux directory
+
 * Thu Mar 05 2009 Jeroen van Meeuwen <kanarip@fedoraproject.org> - 1.8.6.287-5
 - Rebuild for gcc4.4
 
