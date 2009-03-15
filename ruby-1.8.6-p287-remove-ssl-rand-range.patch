@@ -1,0 +1,113 @@
+diff -ur ruby-1.8.6-p287.orig/ext/openssl/openssl_missing.c ruby-1.8.6-p287/ext/openssl/openssl_missing.c
+--- ruby-1.8.6-p287.orig/ext/openssl/openssl_missing.c	2007-02-13 00:01:19.000000000 +0100
++++ ruby-1.8.6-p287/ext/openssl/openssl_missing.c	2009-03-15 05:32:31.000000000 +0100
+@@ -43,7 +43,7 @@
+ {
+     return CRYPTO_set_ex_data(&str->ex_data, idx, data);
+ }
+- 
++
+ void *X509_STORE_get_ex_data(X509_STORE *str, int idx)
+ {
+     return CRYPTO_get_ex_data(&str->ex_data, idx);
+@@ -113,7 +113,7 @@
+ #endif
+ 
+ #if !defined(HAVE_EVP_CIPHER_CTX_COPY)
+-/* 
++/*
+  * this function does not exist in OpenSSL yet... or ever?.
+  * a future version may break this function.
+  * tested on 0.9.7d.
+@@ -182,12 +182,12 @@
+ 		(ASN1_STRING *)(*a)->serialNumber,
+ 		(ASN1_STRING *)(*b)->serialNumber));
+ }
+-		    
++
+ int
+ X509_CRL_add0_revoked(X509_CRL *crl, X509_REVOKED *rev)
+ {
+     X509_CRL_INFO *inf;
+-    
++
+     inf = crl->crl;
+     if (!inf->revoked)
+ 	inf->revoked = sk_X509_REVOKED_new(OSSL_X509_REVOKED_cmp);
+@@ -233,54 +233,6 @@
+ }
+ #endif
+ 
+-#if !defined(HAVE_BN_RAND_RANGE) || !defined(HAVE_BN_PSEUDO_RAND_RANGE)
+-static int
+-bn_rand_range(int pseudo, BIGNUM *r, BIGNUM *range)
+-{
+-    int (*bn_rand)(BIGNUM *, int, int, int) = pseudo ? BN_pseudo_rand : BN_rand;
+-    int n;
+-
+-    if (range->neg || BN_is_zero(range)) return 0;
+-
+-    n = BN_num_bits(range);
+-
+-    if (n == 1) {
+-	if (!BN_zero(r)) return 0;
+-    } else if (!BN_is_bit_set(range, n - 2) && !BN_is_bit_set(range, n - 3)) {
+-	do {
+-	    if (!bn_rand(r, n + 1, -1, 0)) return 0;
+-	    if (BN_cmp(r ,range) >= 0) {
+-		if (!BN_sub(r, r, range)) return 0;
+-		if (BN_cmp(r, range) >= 0)
+-		    if (!BN_sub(r, r, range)) return 0;
+-	    }
+-	} while (BN_cmp(r, range) >= 0);
+-    } else {
+-	do {
+-	    if (!bn_rand(r, n, -1, 0)) return 0;
+-	} while (BN_cmp(r, range) >= 0);
+-    }
+-
+-    return 1;
+-}
+-#endif
+-
+-#if !defined(HAVE_BN_RAND_RANGE)
+-int
+-BN_rand_range(BIGNUM *r, BIGNUM *range)
+-{
+-    return bn_rand_range(0, r, range);
+-}
+-#endif
+-
+-#if !defined(HAVE_BN_PSEUDO_RAND_RANGE)
+-int
+-BN_pseudo_rand_range(BIGNUM *r, BIGNUM *range)
+-{
+-    return bn_rand_range(1, r, range);
+-}
+-#endif
+-
+ #if !defined(HAVE_CONF_GET1_DEFAULT_CONFIG_FILE)
+ #define OPENSSL_CONF "openssl.cnf"
+ char *
+@@ -315,7 +267,7 @@
+ {
+     int i,j;
+     const char *prompt;
+-    
++
+     if (key) {
+ 	i = strlen(key);
+ 	i = (i > num) ? num : i;
+diff -ur ruby-1.8.6-p287.orig/ext/openssl/openssl_missing.h ruby-1.8.6-p287/ext/openssl/openssl_missing.h
+--- ruby-1.8.6-p287.orig/ext/openssl/openssl_missing.h	2008-08-04 06:43:34.000000000 +0200
++++ ruby-1.8.6-p287/ext/openssl/openssl_missing.h	2009-03-15 05:33:56.000000000 +0100
+@@ -120,8 +120,6 @@
+ int BN_mod_sqr(BIGNUM *r, const BIGNUM *a, const BIGNUM *m, BN_CTX *ctx);
+ int BN_mod_add(BIGNUM *r, const BIGNUM *a, const BIGNUM *b, const BIGNUM *m, BN_CTX *ctx);
+ int BN_mod_sub(BIGNUM *r, const BIGNUM *a, const BIGNUM *b, const BIGNUM *m, BN_CTX *ctx);
+-int BN_rand_range(BIGNUM *r, BIGNUM *range);
+-int BN_pseudo_rand_range(BIGNUM *r, BIGNUM *range);
+ char *CONF_get1_default_config_file(void);
+ int PEM_def_callback(char *buf, int num, int w, void *key);
+ 
+Only in ruby-1.8.6-p287/ext/openssl: .openssl_missing.h.swp
