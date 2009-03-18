@@ -12,7 +12,7 @@
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	Ruby or GPLv2
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -512,6 +512,9 @@ rm -rf tmp-ruby-docs
 %{_datadir}/emacs/site-lisp/site-start.d/ruby-mode-init.el
 
 %changelog
+* Wed Mar 18 2009 Jeroen van Meeuwen <j.van.meeuwen@ogd.nl> - 1.8.6.287-7
+- Fix regression in CVE-2008-3790 (#485383)
+
 * Mon Mar 16 2009 Mamoru Tasaka <mtasaka@ioa.s.u-tokyo.ac.jp> - 1.8.6.287-6
 - Again use -O2 optimization level
 - i586 should search i386-linux directory
