@@ -10,9 +10,13 @@
 %define	sitedir2	%{_prefix}/lib/ruby/site_ruby
 %define	_normalized_cpu	%(echo `echo %{_target_cpu} | sed 's/^ppc/powerpc/' | sed -e 's|i.86|i386|'`)
 
+# emacs sitelisp directory
+%{!?_emacs_sitelispdir: %global _emacs_sitelispdir %{_datadir}/emacs/site-lisp}
+%{!?_emacs_sitestartdir: %global _emacs_sitelispdir %{_datadir}/emacs/site-lisp/site-start.d}
+
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	7%{?dist}
+Release:	8%{?dist}
 License:	Ruby or GPLv2
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -22,7 +26,8 @@ BuildRequires:	emacs
 Source0:	ftp://ftp.ruby-lang.org/pub/%{name}/%{rubyxver}/%{name}-%{arcver}.tar.bz2
 ## Dead link
 ##Source1:	http://www7.tok2.com/home/misc/files/%{name}/%{name}-refm-rdp-1.8.1-ja-html.tar.gz
-Source1:	%{name}-refm-rdp-1.8.1-ja-html.tar.gz
+#Source1:	%{name}-refm-rdp-1.8.1-ja-html.tar.gz
+Source1:	http://elbereth-hp.hp.infoseek.co.jp/files/ruby/refm/old/2005/%{name}-refm-rdp-1.8.2-ja-html.tar.gz
 Source2:	ftp://ftp.ruby-lang.org/pub/%{name}/doc/rubyfaq-990927.tar.gz
 Source3:	ftp://ftp.ruby-lang.org/pub/%{name}/doc/rubyfaq-jp-990927.tar.gz
 Source4:	irb.1
@@ -53,6 +58,9 @@ straight-forward, and extensible.
 %package libs
 Summary:	Libraries necessary to run Ruby
 Group:		Development/Libraries
+# ext/bigdecimal/bigdecimal.{c,h} are under (GPL+ or Artistic) which
+# are used for bigdecimal.so
+License:	(Ruby or GPLv2) and (GPL+ or Artistic)
 Provides:	ruby(abi) = %{rubyxver}
 Provides:	libruby = %{version}-%{release}
 Obsoletes:	libruby <= %{version}-%{release}
@@ -75,6 +83,8 @@ Ruby or an application embedded Ruby.
 %package tcltk
 Summary:	Tcl/Tk interface for scripting language Ruby
 Group:		Development/Languages
+# Many files under ext/tk/sample/ are under TCL
+License:	(Ruby or GPLv2) and TCL
 Requires:	%{name}-libs = %{version}-%{release}
 
 %description tcltk
@@ -96,6 +106,8 @@ from the terminal.
 %package rdoc
 Summary:	A tool to generate documentation from Ruby source files
 Group:		Development/Languages
+# generators/template/html/html.rb is under CC-BY
+License:	(GPLv2 or Ruby) and CC-BY
 ## ruby-irb requires ruby
 #Requires:	%{name} = %{version}-%{release}
 Requires:	%{name}-irb = %{version}-%{release}
@@ -197,7 +209,9 @@ popd
 
 %check
 pushd %{name}-%{arcver}
-%ifnarch ppc64
+%ifarch ppc64
+make test || :
+%else
 make test
 %endif
 popd
@@ -205,8 +219,8 @@ popd
 %install
 rm -rf $RPM_BUILD_ROOT
 
-mkdir -p $RPM_BUILD_ROOT%{_datadir}/emacs/site-lisp/ruby-mode
-mkdir -p $RPM_BUILD_ROOT%{_datadir}/emacs/site-lisp/site-start.d
+mkdir -p $RPM_BUILD_ROOT%{_emacs_sitelispdir}/ruby-mode
+mkdir -p $RPM_BUILD_ROOT%{_emacs_sitestartdir}
 
 # installing documents and exapmles...
 rm -rf tmp-ruby-docs
@@ -286,10 +300,15 @@ find -type f | xargs chmod 0644
 
 # convert to utf-8
 for i in `find -type f ! -name "*.gif"`; do
-    sh -c "iconv -f utf-8 -t utf-8 $i > /dev/null 2>&1 || (iconv -f euc-jp -t utf-8 $i > $i.new && mv $i.new $i || exit 1)
-    if [ $? != 0 ]; then
-        iconv -f iso8859-1 -t utf-8 $i > $.new && mv $i.new $i || exit 1
-    fi"
+    status=0
+    iconv -f utf-8 -t utf-8 $i >/dev/null || { iconv -f euc-jp -t utf-8 $i > $i.new && mv $i.new $i || status=1 ; }
+    if [ $status = 0 ]; then
+        if dirname $i | grep -q refm-ja ; then
+          sed -i -e '/encoding/s|EUC-JP|UTF-8|' -e '/charset/s|EUC-JP|UTF-8|' $i
+        fi
+    else
+        iconv -f iso8859-1 -t utf-8 $i > $.new && mv $i.new $i || rm -f $i.new
+    fi
 done
 
 # done
@@ -312,10 +331,10 @@ install -p -m 0644 %{SOURCE4} $RPM_BUILD_ROOT%{_mandir}/man1/
 
 # installing ruby-mode
 cd %{name}-%{arcver}
-cp -p misc/*.el $RPM_BUILD_ROOT%{_datadir}/emacs/site-lisp/ruby-mode
+cp -p misc/*.el $RPM_BUILD_ROOT%{_emacs_sitelispdir}/ruby-mode
 
 ## for ruby-mode
-pushd $RPM_BUILD_ROOT%{_datadir}/emacs/site-lisp/ruby-mode
+pushd $RPM_BUILD_ROOT%{_emacs_sitelispdir}/ruby-mode
 cat <<EOF > path.el
 (setq load-path (cons "." load-path) byte-compile-warnings nil)
 EOF
@@ -323,7 +342,7 @@ emacs --no-site-file -q -batch -l path.el -f batch-byte-compile *.el
 rm -f path.el*
 popd
 install -p -m 644 %{SOURCE10} \
-	$RPM_BUILD_ROOT%{_datadir}/emacs/site-lisp/site-start.d
+	$RPM_BUILD_ROOT%{_emacs_sitestartdir}
 
 cd ..
 
@@ -336,7 +355,6 @@ find $RPM_BUILD_ROOT/ -name "*.so" -exec chmod 755 {} \;
 
 %clean
 rm -rf $RPM_BUILD_ROOT
-rm -rf tmp-ruby-docs
 
 %post libs -p /sbin/ldconfig
 
@@ -508,16 +526,19 @@ rm -rf tmp-ruby-docs
 %doc %{name}-%{arcver}/LEGAL
 %doc %{name}-%{arcver}/LGPL
 %doc %{name}-%{arcver}/misc/README
-%{_datadir}/emacs/site-lisp/ruby-mode
-%{_datadir}/emacs/site-lisp/site-start.d/ruby-mode-init.el
+%{_emacs_sitelispdir}/ruby-mode
+%{_emacs_sitestartdir}/ruby-mode-init.el
 
 %changelog
+* Sat Apr 11 2009 Mamoru Tasaka <mtasaka@ioa.s.u-tokyo.ac.jp> - 1.8.6.287-8
+- Merge Review fix (#226381)
+
 * Wed Mar 18 2009 Jeroen van Meeuwen <j.van.meeuwen@ogd.nl> - 1.8.6.287-7
 - Fix regression in CVE-2008-3790 (#485383)
 
 * Mon Mar 16 2009 Mamoru Tasaka <mtasaka@ioa.s.u-tokyo.ac.jp> - 1.8.6.287-6
 - Again use -O2 optimization level
-- i586 should search i386-linux directory
+- i586 should search i386-linux directory (on <= F-11)
 
 * Thu Mar 05 2009 Jeroen van Meeuwen <kanarip@fedoraproject.org> - 1.8.6.287-5
 - Rebuild for gcc4.4
