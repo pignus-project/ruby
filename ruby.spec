@@ -12,7 +12,7 @@
 
 # emacs sitelisp directory
 %{!?_emacs_sitelispdir: %global _emacs_sitelispdir %{_datadir}/emacs/site-lisp}
-%{!?_emacs_sitestartdir: %global _emacs_sitelispdir %{_datadir}/emacs/site-lisp/site-start.d}
+%{!?_emacs_sitestartdir: %global _emacs_sitestartdir %{_datadir}/emacs/site-lisp/site-start.d}
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
