@@ -98,16 +98,3 @@ diff -ur ruby-1.8.6-p287.orig/ext/openssl/openssl_missing.c ruby-1.8.6-p287/ext/
      if (key) {
  	i = strlen(key);
  	i = (i > num) ? num : i;
-diff -ur ruby-1.8.6-p287.orig/ext/openssl/openssl_missing.h ruby-1.8.6-p287/ext/openssl/openssl_missing.h
---- ruby-1.8.6-p287.orig/ext/openssl/openssl_missing.h	2008-08-04 06:43:34.000000000 +0200
-+++ ruby-1.8.6-p287/ext/openssl/openssl_missing.h	2009-03-15 05:33:56.000000000 +0100
-@@ -120,8 +120,6 @@
- int BN_mod_sqr(BIGNUM *r, const BIGNUM *a, const BIGNUM *m, BN_CTX *ctx);
- int BN_mod_add(BIGNUM *r, const BIGNUM *a, const BIGNUM *b, const BIGNUM *m, BN_CTX *ctx);
- int BN_mod_sub(BIGNUM *r, const BIGNUM *a, const BIGNUM *b, const BIGNUM *m, BN_CTX *ctx);
--int BN_rand_range(BIGNUM *r, BIGNUM *range);
--int BN_pseudo_rand_range(BIGNUM *r, BIGNUM *range);
- char *CONF_get1_default_config_file(void);
- int PEM_def_callback(char *buf, int num, int w, void *key);
- 
-Only in ruby-1.8.6-p287/ext/openssl: .openssl_missing.h.swp

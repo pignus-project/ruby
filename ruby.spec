@@ -1,6 +1,6 @@
 %define	rubyxver	1.8
 %define	rubyver		1.8.6
-%define _patchlevel	287
+%define _patchlevel	368
 %define dotpatchlevel	%{?_patchlevel:.%{_patchlevel}}
 %define patchlevel	%{?_patchlevel:-p%{_patchlevel}}
 %define	arcver		%{rubyver}%{?patchlevel}
@@ -16,7 +16,7 @@
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	8%{?dist}
+Release:	1%{?dist}
 License:	Ruby or GPLv2
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -38,7 +38,8 @@ Patch20:	ruby-rubyprefix.patch
 Patch21:	ruby-deprecated-sitelib-search-path.patch
 Patch22:	ruby-deprecated-search-path.patch
 Patch23:	ruby-multilib.patch
-Patch25:	ruby-1.8.6.111-gcc43.patch
+# Needed in 1.8.6-p287, no longer needed in 1.8.6-p368?
+#Patch25:	ruby-1.8.6.111-gcc43.patch
 Patch26:        ruby-1.8.6-rexml-CVE-2008-3790.patch
 Patch27:        ruby-1.8.6-p287-CVE-2008-5189.patch
 Patch28:        ruby-1.8.6-p287-remove-ssl-rand-range.patch
@@ -167,8 +168,8 @@ pushd %{name}-%{arcver}
 %patch22 -p1
 %patch23 -p1
 %endif
-%patch25 -p1
-%patch26 -p1
+#%patch25 -p1
+#%patch26 -p1
 %patch27 -p0
 %patch28 -p1
 %patch29 -p1
@@ -530,6 +531,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_emacs_sitestartdir}/ruby-mode-init.el
 
 %changelog
+* Sun May 31 2009 Jeroen van Meeuwen <j.van.meeuwen@ogd.nl> - 1.8.6.368-1
+- New upstream release (p368)
+
 * Sat Apr 11 2009 Mamoru Tasaka <mtasaka@ioa.s.u-tokyo.ac.jp> - 1.8.6.287-8
 - Merge Review fix (#226381)
 
