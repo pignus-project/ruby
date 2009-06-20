@@ -16,7 +16,7 @@
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Ruby or GPLv2
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -130,7 +130,7 @@ Manuals and FAQs for the object-oriented scripting language Ruby.
 
 
 %package mode
-Summary:	Emacs Lisp ruby-mode for the scripting language Ruby
+Summary:	Emacs Lisp for the scripting language Ruby
 Group:		Applications/Editors
 Requires:	emacs-common
 
@@ -405,7 +405,11 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_prefix}/lib/ruby
 %dir %{_prefix}/lib/ruby/%{rubyxver}
 %ifnarch ppc64 s390x sparc64 x86_64
+%if "%{_gnu}" == "-gnueabi"
+%dir %{_prefix}/lib/ruby/%{rubyxver}/%{_normalized_cpu}-%{_target_os}-eabi
+%else
 %dir %{_prefix}/lib/ruby/%{rubyxver}/%{_normalized_cpu}-%{_target_os}
+%endif
 %endif
 %ifarch ppc64 s390x sparc64 x86_64
 %dir %{_libdir}/ruby
@@ -531,6 +535,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_emacs_sitestartdir}/ruby-mode-init.el
 
 %changelog
+* Sat Jun 20 2009  Jeroen van Meeuwen <kanarip@fedoraproject.org> - 1.8.6.368-2
+- Fix directory on ARM (#506233, Kedar Sovani)
+
 * Sun May 31 2009 Jeroen van Meeuwen <j.van.meeuwen@ogd.nl> - 1.8.6.368-1
 - New upstream release (p368)
 
