@@ -16,11 +16,16 @@
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Ruby or GPLv2
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-BuildRequires:	readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl-devel tk-devel libX11-devel autoconf gcc unzip openssl-devel db4-devel byacc
+%if 0%{?fedora} >= 12
+BuildRequires:  compat-readline5-devel
+%else
+BuildRequires:	readline readline-devel
+%endif
+BuildRequires:  ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl-devel tk-devel libX11-devel autoconf gcc unzip openssl-devel db4-devel byacc
 BuildRequires:	emacs
 
 Source0:	ftp://ftp.ruby-lang.org/pub/%{name}/%{rubyxver}/%{name}-%{arcver}.tar.bz2
@@ -197,6 +202,10 @@ export CFLAGS
   --enable-pthread \
   --with-lookup-order-hack=INET \
   --disable-rpath \
+%if 0%{?fedora} >= 12
+  --with-readline-include=%{_includedir}/readline5 \
+  --with-readline-lib=%{_libdir}/readline5 \
+%endif
   --with-ruby-prefix=%{_prefix}/lib
 
 make RUBY_INSTALL_NAME=ruby %{?_smp_mflags} COPY="cp -p" %{?_smp_mflags}
@@ -535,6 +544,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_emacs_sitestartdir}/ruby-mode-init.el
 
 %changelog
+* Thu Jul 23 2009 Mamoru Tasaka <mtasaka@ioa.s.u-tokyo.ac.jp> - 1.8.6.369-2
+- Make sure that readline.so is linked against readline 5 because
+  Ruby is under GPLv2 
+
 * Sat Jun 20 2009  Jeroen van Meeuwen <kanarip@fedoraproject.org> - 1.8.6.369-1
 - New patchlevel fixing CVE-2009-1904
 - Fix directory on ARM (#506233, Kedar Sovani)
