@@ -49,6 +49,7 @@ Patch26:        ruby-1.8.6-rexml-CVE-2008-3790.patch
 Patch27:        ruby-1.8.6-p287-CVE-2008-5189.patch
 Patch28:        ruby-1.8.6-p287-remove-ssl-rand-range.patch
 Patch29:	ruby-always-use-i386.patch
+Patch30:	ruby-openssl-1.0.patch
 
 Summary:	An interpreter of object-oriented scripting language
 Group:		Development/Languages
@@ -178,6 +179,7 @@ pushd %{name}-%{arcver}
 %patch27 -p0
 %patch28 -p1
 %patch29 -p1
+%patch30 -p2
 popd
 
 %build

@@ -1,0 +1,64 @@
+diff -up ruby-1.8.6.369/ruby-1.8.6-p369/ext/openssl/ossl.c.ossl10 ruby-1.8.6.369/ruby-1.8.6-p369/ext/openssl/ossl.c
+--- ruby-1.8.6.369/ruby-1.8.6-p369/ext/openssl/ossl.c.ossl10	2007-02-13 00:01:19.000000000 +0100
++++ ruby-1.8.6.369/ruby-1.8.6-p369/ext/openssl/ossl.c	2009-08-26 12:00:27.000000000 +0200
+@@ -90,6 +90,10 @@ ossl_x509_ary2sk(VALUE ary)
+     return sk;
+ }
+ 
++#if OPENSSL_VERSION_NUMBER >= 0x10000000L
++#define STACK _STACK
++#endif
++
+ #define OSSL_IMPL_SK2ARY(name, type)	        \
+ VALUE						\
+ ossl_##name##_sk2ary(STACK *sk)			\
+diff -up ruby-1.8.6.369/ruby-1.8.6-p369/ext/openssl/ossl_ssl.c.ossl10 ruby-1.8.6.369/ruby-1.8.6-p369/ext/openssl/ossl_ssl.c
+--- ruby-1.8.6.369/ruby-1.8.6-p369/ext/openssl/ossl_ssl.c.ossl10	2007-03-12 05:12:32.000000000 +0100
++++ ruby-1.8.6.369/ruby-1.8.6-p369/ext/openssl/ossl_ssl.c	2009-08-26 12:08:48.000000000 +0200
+@@ -89,12 +89,18 @@ static char *ossl_sslctx_attrs[] = {
+ static char *ossl_ssl_attr_readers[] = { "io", "context", };
+ static char *ossl_ssl_attrs[] = { "sync_close", };
+ 
++#if OPENSSL_VERSION_NUMBER >= 0x10000000L
++#define OSSL_MORE_CONST const
++#define STACK _STACK
++#else
++#define OSSL_MORE_CONST
++#endif
+ /*
+  * SSLContext class
+  */
+ struct {
+     const char *name;
+-    SSL_METHOD *(*func)(void);
++    OSSL_MORE_CONST SSL_METHOD *(*func)(void);
+ } ossl_ssl_method_tab[] = {
+ #define OSSL_SSL_METHOD_ENTRY(name) { #name, name##_method }
+     OSSL_SSL_METHOD_ENTRY(TLSv1),
+@@ -144,7 +150,7 @@ static VALUE
+ ossl_sslctx_initialize(int argc, VALUE *argv, VALUE self)
+ {
+     VALUE ssl_method;
+-    SSL_METHOD *method = NULL;
++    OSSL_MORE_CONST SSL_METHOD *method = NULL;
+     SSL_CTX *ctx;
+     int i;
+     char *s;
+@@ -407,7 +413,7 @@ ossl_sslctx_setup(VALUE self)
+ }
+ 
+ static VALUE
+-ossl_ssl_cipher_to_ary(SSL_CIPHER *cipher)
++ossl_ssl_cipher_to_ary(OSSL_MORE_CONST SSL_CIPHER *cipher)
+ {
+     VALUE ary;
+     int bits, alg_bits;
+@@ -805,7 +811,7 @@ static VALUE
+ ossl_ssl_get_cipher(VALUE self)
+ {
+     SSL *ssl;
+-    SSL_CIPHER *cipher;
++    OSSL_MORE_CONST SSL_CIPHER *cipher;
+ 
+     Data_Get_Struct(self, SSL, ssl);
+     if (!ssl) {
