@@ -1,17 +1,33 @@
 diff -up ruby-1.8.6.369/ruby-1.8.6-p369/ext/openssl/ossl.c.ossl10 ruby-1.8.6.369/ruby-1.8.6-p369/ext/openssl/ossl.c
 --- ruby-1.8.6.369/ruby-1.8.6-p369/ext/openssl/ossl.c.ossl10	2007-02-13 00:01:19.000000000 +0100
-+++ ruby-1.8.6.369/ruby-1.8.6-p369/ext/openssl/ossl.c	2009-08-26 12:00:27.000000000 +0200
-@@ -90,6 +90,10 @@ ossl_x509_ary2sk(VALUE ary)
-     return sk;
- }
++++ ruby-1.8.6.369/ruby-1.8.6-p369/ext/openssl/ossl.c	2009-08-26 12:29:41.000000000 +0200
+@@ -92,7 +92,7 @@ ossl_x509_ary2sk(VALUE ary)
  
-+#if OPENSSL_VERSION_NUMBER >= 0x10000000L
-+#define STACK _STACK
-+#endif
-+
  #define OSSL_IMPL_SK2ARY(name, type)	        \
  VALUE						\
- ossl_##name##_sk2ary(STACK *sk)			\
+-ossl_##name##_sk2ary(STACK *sk)			\
++ossl_##name##_sk2ary(STACK_OF(type) *sk)	\
+ {						\
+     type *t;					\
+     int i, num;					\
+@@ -102,7 +102,7 @@ ossl_##name##_sk2ary(STACK *sk)			\
+ 	OSSL_Debug("empty sk!");		\
+ 	return Qnil;				\
+     }						\
+-    num = sk_num(sk);				\
++    num = sk_##type##_num(sk);			\
+     if (num < 0) {				\
+ 	OSSL_Debug("items in sk < -1???");	\
+ 	return rb_ary_new();			\
+@@ -110,7 +110,7 @@ ossl_##name##_sk2ary(STACK *sk)			\
+     ary = rb_ary_new2(num);			\
+ 						\
+     for (i=0; i<num; i++) {			\
+-	t = (type *)sk_value(sk, i);		\
++	t = sk_##type##_value(sk, i);		\
+ 	rb_ary_push(ary, ossl_##name##_new(t));	\
+     }						\
+     return ary;					\
 diff -up ruby-1.8.6.369/ruby-1.8.6-p369/ext/openssl/ossl_ssl.c.ossl10 ruby-1.8.6.369/ruby-1.8.6-p369/ext/openssl/ossl_ssl.c
 --- ruby-1.8.6.369/ruby-1.8.6-p369/ext/openssl/ossl_ssl.c.ossl10	2007-03-12 05:12:32.000000000 +0100
 +++ ruby-1.8.6.369/ruby-1.8.6-p369/ext/openssl/ossl_ssl.c	2009-08-26 12:08:48.000000000 +0200
