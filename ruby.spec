@@ -16,7 +16,7 @@
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	Ruby or GPLv2
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -544,6 +544,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_emacs_sitestartdir}/ruby-mode-init.el
 
 %changelog
+* Wed Aug 26 2009 Tomas Mraz <tmraz@redhat.com> - 1.8.6.369-3
+- Rebuild against new openssl
+
 * Thu Jul 23 2009 Mamoru Tasaka <mtasaka@ioa.s.u-tokyo.ac.jp> - 1.8.6.369-2
 - Make sure that readline.so is linked against readline 5 because
   Ruby is under GPLv2 
