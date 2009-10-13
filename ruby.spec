@@ -16,7 +16,7 @@
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	Ruby or GPLv2
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -50,6 +50,7 @@ Patch27:        ruby-1.8.6-p287-CVE-2008-5189.patch
 Patch28:        ruby-1.8.6-p287-remove-ssl-rand-range.patch
 Patch29:	ruby-always-use-i386.patch
 Patch30:	ruby-openssl-1.0.patch
+Patch31:	ruby-1.8.6-p369-ri-gem_multipath.patch
 
 Summary:	An interpreter of object-oriented scripting language
 Group:		Development/Languages
@@ -180,6 +181,7 @@ pushd %{name}-%{arcver}
 %patch28 -p1
 %patch29 -p1
 %patch30 -p2
+%patch31 -p1
 popd
 
 %build
@@ -546,6 +548,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_emacs_sitestartdir}/ruby-mode-init.el
 
 %changelog
+* Wed Oct 14 2009 Mamoru Tasaka <mtasaka@ioa.s.u-tokyo.ac.jp> - 1.8.6.369-4
+- Fix the search path of ri command for ri manuals installed with gem
+  (bug 528787)
+
 * Wed Aug 26 2009 Tomas Mraz <tmraz@redhat.com> - 1.8.6.369-3
 - Rebuild against new openssl
 
