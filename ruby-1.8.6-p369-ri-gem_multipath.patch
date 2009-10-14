@@ -1,11 +1,11 @@
 --- ruby-1.8.6-p369/lib/rdoc/ri/ri_options.rb.gemmulti	2007-02-13 08:01:19.000000000 +0900
-+++ ruby-1.8.6-p369/lib/rdoc/ri/ri_options.rb	2009-10-14 01:08:42.000000000 +0900
++++ ruby-1.8.6-p369/lib/rdoc/ri/ri_options.rb	2009-10-14 23:51:09.000000000 +0900
 @@ -63,7 +63,7 @@
  
          [ "--gems",         nil,    nil,
            "Include documentation from Rubygems:\n  " +
 -          (RI::Paths::GEMDIRS ? "#{Gem.path}/doc/*/ri" :
-+          (RI::Paths::GEMDIRS ? ( tmppath=""; Gem.path.each {|path| tmppath += "#{path}/doc/*/ri "}; tmppath) :
++          (RI::Paths::GEMDIRS ? Gem.path.map {|path| "#{path}/doc/*/ri" }.join(', ') :
                                  "No Rubygems ri found.") ],
                                                             
          [ "--format",       "-f",   "<name>",
@@ -23,33 +23,13 @@
          directories = directories.join("\n    ")
  
 --- ruby-1.8.6-p369/lib/rdoc/ri/ri_paths.rb.gemmulti	2007-02-13 08:01:19.000000000 +0900
-+++ ruby-1.8.6-p369/lib/rdoc/ri/ri_paths.rb	2009-10-13 19:58:07.000000000 +0900
-@@ -43,9 +43,14 @@
-     PATH = [ SYSDIR, SITEDIR, HOMEDIR ].find_all {|p| p && File.directory?(p)}
++++ ruby-1.8.6-p369/lib/rdoc/ri/ri_paths.rb	2009-10-15 00:02:05.000000000 +0900
+@@ -44,7 +44,7 @@
  
      begin
--      require 'rubygems'
+       require 'rubygems'
 -      GEMDIRS = Dir["#{Gem.path}/doc/*/ri"]
--      GEMDIRS.each { |path| RI::Paths::PATH << path }
-+      require 'rubygems'  
-+      gemdirs = []
-+      Gem.path.each{ |gempath| 
-+         ripath = Dir["#{gempath}/doc/*/ri"]
-+         ripath.each { |path| RI::Paths::PATH << path }
-+         gemdirs << gempath
-+      }
-+      GEMDIRS = gemdirs
++      GEMDIRS = Gem.path.map {|path| Dir["#{path}/doc/*/ri"]}.flatten
+       GEMDIRS.each { |path| RI::Paths::PATH << path }
      rescue LoadError
        GEMDIRS = nil
-     end
-@@ -71,7 +76,9 @@
-       path << RI::Paths::SYSDIR if use_system
-       path << RI::Paths::SITEDIR if use_site
-       path << RI::Paths::HOMEDIR if use_home
--      path << RI::Paths::GEMDIRS if use_gems
-+      if use_gems
-+         RI::Paths::GEMDIRS.each {|gemdirs| path << gemdirs }
-+      end
- 
-       return path.flatten.compact
-     end
