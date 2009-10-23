@@ -1,7 +1,7 @@
-diff -pruN ruby-1.8.6-p287.orig/configure.in ruby-1.8.6-p287/configure.in
---- ruby-1.8.6-p287.orig/configure.in	2008-07-13 00:03:28.000000000 +0900
-+++ ruby-1.8.6-p287/configure.in	2008-08-14 01:08:00.000000000 +0900
-@@ -1608,6 +1608,13 @@ case "$target_os" in
+diff -ur ruby-1.8.6-p383.0-deadcode/configure.in ruby-1.8.6-p383/configure.in
+--- ruby-1.8.6-p383.0-deadcode/configure.in	2009-07-20 15:24:22.000000000 +0200
++++ ruby-1.8.6-p383/configure.in	2009-10-22 16:37:13.729623476 +0200
+@@ -1613,6 +1613,13 @@
      rubyw_install_name="$RUBYW_INSTALL_NAME"
      ;;
  esac
@@ -15,12 +15,12 @@ diff -pruN ruby-1.8.6-p287.orig/configure.in ruby-1.8.6-p287/configure.in
  case "$target_os" in
    cygwin*|mingw*|*djgpp*|os2-emx*)
      RUBY_LIB_PREFIX="/lib/ruby"
-@@ -1616,20 +1623,29 @@ case "$target_os" in
-     RUBY_LIB_PREFIX="${prefix}/lib/ruby"
+@@ -1621,20 +1628,30 @@
+     RUBY_LIB_PREFIX="`eval "echo ${libdir}"`/ruby"
      ;;
  esac
 +else
-+	RUBY_LIB_PREFIX="${with_ruby_prefix}/ruby"
++    RUBY_LIB_PREFIX="${with_ruby_prefix}/ruby"
 +fi
  RUBY_LIB_PATH="${RUBY_LIB_PREFIX}/${MAJOR}.${MINOR}"
 +RUBY_LIB_PATH2="${libdir}/ruby/${MAJOR}.${MINOR}"
@@ -28,12 +28,13 @@ diff -pruN ruby-1.8.6-p287.orig/configure.in ruby-1.8.6-p287/configure.in
  AC_ARG_WITH(sitedir,
  	    [  --with-sitedir=DIR      site libraries in DIR [PREFIX/lib/ruby/site_ruby]],
              [sitedir=$withval],
-             [sitedir='${prefix}/lib/ruby/site_ruby'])
+             [sitedir="`eval "echo ${libdir}"`/ruby/site_ruby"])
 -SITE_DIR=`eval echo \\"${sitedir}\\"`
 +SITE_DIR=`eval echo \\"${sitedir}\\" | sed -e "s/lib64/lib/"`
 +_fc_sitedir="\$(DESTDIR)${sitedir}"
 +SITE_DIR2=`eval echo \\"${_fc_sitedir}\\"`
 +sitedir=`eval echo \\"${sitedir}\\" | sed -e "s/lib64/lib/"`
++
  case "$target_os" in
    cygwin*|mingw*|*djgpp*|os2-emx*)
      RUBY_SITE_LIB_PATH="`expr "$SITE_DIR" : "$prefix\(/.*\)"`" ||
@@ -47,7 +48,7 @@ diff -pruN ruby-1.8.6-p287.orig/configure.in ruby-1.8.6-p287/configure.in
  RUBY_SITE_LIB_PATH2="${RUBY_SITE_LIB_PATH}/${MAJOR}.${MINOR}"
  
  AC_DEFINE_UNQUOTED(RUBY_LIB, "${RUBY_LIB_PATH}")
-@@ -1639,6 +1655,7 @@ AC_DEFINE_UNQUOTED(RUBY_SITE_LIB2, "${RU
+@@ -1644,6 +1661,7 @@
  AC_SUBST(arch)dnl
  AC_SUBST(sitearch)dnl
  AC_SUBST(sitedir)dnl
@@ -55,7 +56,7 @@ diff -pruN ruby-1.8.6-p287.orig/configure.in ruby-1.8.6-p287/configure.in
  
  configure_args=$ac_configure_args
  AC_SUBST(configure_args)dnl
-@@ -1647,7 +1664,7 @@ if test "$fat_binary" != no ; then
+@@ -1652,7 +1670,7 @@
      arch="fat-${target_os}"
  
      AC_DEFINE_UNQUOTED(RUBY_THIN_ARCHLIB,
@@ -64,7 +65,7 @@ diff -pruN ruby-1.8.6-p287.orig/configure.in ruby-1.8.6-p287/configure.in
  
      AC_DEFINE_UNQUOTED(RUBY_SITE_THIN_ARCHLIB,
                   "${RUBY_SITE_LIB_PATH}/" __ARCHITECTURE__ "-${target_os}")
-@@ -1662,8 +1679,8 @@ case "$target_os" in
+@@ -1667,8 +1685,8 @@
    *) sitearch="${arch}" ;;
  esac
  
@@ -75,10 +76,12 @@ diff -pruN ruby-1.8.6-p287.orig/configure.in ruby-1.8.6-p287/configure.in
  
  AC_ARG_WITH(search-path,
  		[  --with-search-path=DIR specify the additional search path],
-diff -pruN ruby-1.8.6-p287.orig/mkconfig.rb ruby-1.8.6-p287/mkconfig.rb
---- ruby-1.8.6-p287.orig/mkconfig.rb	2008-06-08 01:37:10.000000000 +0900
-+++ ruby-1.8.6-p287/mkconfig.rb	2008-08-14 01:08:00.000000000 +0900
-@@ -139,10 +139,10 @@ print(*v_fast)
+Only in ruby-1.8.6-p383/: configure.in.orig
+Only in ruby-1.8.6-p383/: configure.in.rej
+diff -ur ruby-1.8.6-p383.0-deadcode/mkconfig.rb ruby-1.8.6-p383/mkconfig.rb
+--- ruby-1.8.6-p383.0-deadcode/mkconfig.rb	2008-06-07 18:37:10.000000000 +0200
++++ ruby-1.8.6-p383/mkconfig.rb	2009-10-22 16:30:55.776872493 +0200
+@@ -139,10 +139,10 @@
  print(*v_others)
  print <<EOS
    CONFIG["ruby_version"] = "$(MAJOR).$(MINOR)"

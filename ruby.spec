@@ -1,6 +1,6 @@
 %define	rubyxver	1.8
 %define	rubyver		1.8.6
-%define _patchlevel	369
+%define _patchlevel	383
 %define dotpatchlevel	%{?_patchlevel:.%{_patchlevel}}
 %define patchlevel	%{?_patchlevel:-p%{_patchlevel}}
 %define	arcver		%{rubyver}%{?patchlevel}
@@ -16,7 +16,7 @@
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	5%{?dist}
+Release:	2%{?dist}
 License:	Ruby or GPLv2
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -39,7 +39,7 @@ Source4:	irb.1
 Source10:	ruby-mode-init.el
 
 Patch1:		ruby-deadcode.patch
-Patch20:	ruby-rubyprefix.patch
+Patch20:	ruby-1.8.6-p383-rubyprefix.patch
 Patch21:	ruby-deprecated-sitelib-search-path.patch
 Patch22:	ruby-deprecated-search-path.patch
 Patch23:	ruby-multilib.patch
@@ -548,6 +548,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_emacs_sitestartdir}/ruby-mode-init.el
 
 %changelog
+* Sat Oct 24 2009 Mamoru Tasaka <mtasaka@ioa.s.u-tokyo.ac.jp> - 1.8.6.383-2
+- Update to 1.8.6 patchlevel 383 (bug 520063)
+
 * Wed Oct 14 2009 Mamoru Tasaka <mtasaka@ioa.s.u-tokyo.ac.jp> - 1.8.6.369-5
 - Much better idea for Patch31 provided by Akira TAGOH <tagoh@redhat.com>
 
