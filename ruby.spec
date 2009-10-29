@@ -16,7 +16,7 @@
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	Ruby or GPLv2
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -26,6 +26,8 @@ BuildRequires:  compat-readline5-devel
 BuildRequires:	readline readline-devel
 %endif
 BuildRequires:  ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl-devel tk-devel libX11-devel autoconf gcc unzip openssl-devel db4-devel byacc
+# Use bison to recreate parse.c (ref: bug 530275 comment 4)
+BuildRequires:	bison
 BuildRequires:	emacs
 
 Source0:	ftp://ftp.ruby-lang.org/pub/%{name}/%{rubyxver}/%{name}-%{arcver}.tar.bz2
@@ -551,6 +553,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_emacs_sitestartdir}/ruby-mode-init.el
 
 %changelog
+* Thu Oct 29 2009 Mamoru Tasaka <mtasaka@ioa.s.u-tokyo.ac.jp> - 1.8.6.383-4
+- Use bison to regenerate parse.c to keep the original format of error
+  messages (bug 530275 comment 4)
+
 * Sun Oct 25 2009 Mamoru Tasaka <mtasaka@ioa.s.u-tokyo.ac.jp> - 1.8.6.383-3
 - Patch so that irb saves its history (bug 518584, ruby issue 1556)
 
