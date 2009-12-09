@@ -16,7 +16,7 @@
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	Ruby or GPLv2
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -53,8 +53,9 @@ Patch28:        ruby-1.8.6-p287-remove-ssl-rand-range.patch
 Patch29:	ruby-always-use-i386.patch
 Patch30:	ruby-openssl-1.0.patch
 Patch31:	ruby-1.8.6-p369-ri-gem_multipath.patch
-# Patch from ruby_1_8 branch
+# Patch32 from ruby_1_8 branch
 Patch32:	ruby-1.8head-irb-save-history.patch
+Patch33:	ruby-1.8.6-p383-mkmf-use-shared.patch
 
 Summary:	An interpreter of object-oriented scripting language
 Group:		Development/Languages
@@ -85,12 +86,20 @@ This package includes the libruby, necessary to run Ruby.
 Summary:	A Ruby development environment
 Group:		Development/Languages
 Requires:	%{name}-libs = %{version}-%{release}
-Provides:	%{name}-libs-static = %{version}-%{release}
+#Provides:	%{name}-libs-static = %{version}-%{release}
 
 %description devel
 Header files and libraries for building a extension library for the
 Ruby or an application embedded Ruby.
 
+%package static
+Summary:	Static libraries for Ruby development environment
+Group:		Development/Languages
+Requires:	%{name}-devel = %{version}-%{release}
+
+%description static
+Static libraries for for building a extension library for the
+Ruby or an application embedded Ruby.
 
 %package tcltk
 Summary:	Tcl/Tk interface for scripting language Ruby
@@ -187,6 +196,7 @@ pushd %{name}-%{arcver}
 %patch30 -p2
 %patch31 -p1
 %patch32 -p0
+%patch33 -p1
 popd
 
 %build
@@ -216,6 +226,11 @@ export CFLAGS
   --with-readline-lib=%{_libdir}/readline5 \
 %endif
   --with-ruby-prefix=%{_prefix}/lib
+
+# For example ext/socket/extconf.rb uses try_run (for getaddrinfo test),
+# which executes conftest and setting LD_LIBRARY_PATH for libruby.so is
+# needed.
+export LD_LIBRARY_PATH=$(pwd)
 
 make RUBY_INSTALL_NAME=ruby %{?_smp_mflags} COPY="cp -p" %{?_smp_mflags}
 %ifarch ia64
@@ -408,8 +423,12 @@ rm -rf $RPM_BUILD_ROOT
 %doc %{name}-%{arcver}/README.EXT
 %lang(ja) %doc %{name}-%{arcver}/README.EXT.ja
 %{_libdir}/libruby.so
-%{_libdir}/libruby-static.a
+#%%{_libdir}/libruby-static.a
 %{_libdir}/ruby/%{rubyxver}/*/*.h
+
+%files static
+%defattr(-, root, root, -)
+%{_libdir}/libruby-static.a
 
 %files libs
 %defattr(-, root, root, -)
@@ -553,6 +572,11 @@ rm -rf $RPM_BUILD_ROOT
 %{_emacs_sitestartdir}/ruby-mode-init.el
 
 %changelog
+* Wed Dec  9 2009 Mamoru Tasaka <mtasaka@ioa.s.u-tokyo.ac.jp> - 1.8.6.383-5
+- Change mkmf.rb to use LIBRUBYARG_SHARED so that have_library() works
+  without libruby-static.a (bug 428384)
+- And move libruby-static.a to -static subpackage
+
 * Thu Oct 29 2009 Mamoru Tasaka <mtasaka@ioa.s.u-tokyo.ac.jp> - 1.8.6.383-4
 - Use bison to regenerate parse.c to keep the original format of error
   messages (bug 530275 comment 4)
