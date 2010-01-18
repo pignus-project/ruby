@@ -20,7 +20,7 @@ Release:	6%{?dist}
 License:	Ruby or GPLv2
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-%if 0%{?fedora} >= 12
+%if 0%{?fedora} >= 12 || 0%{?rhel} >= 6
 BuildRequires:  compat-readline5-devel
 %else
 BuildRequires:	readline readline-devel
@@ -224,7 +224,7 @@ export CFLAGS
   --enable-pthread \
   --with-lookup-order-hack=INET \
   --disable-rpath \
-%if 0%{?fedora} >= 12
+%if 0%{?fedora} >= 12 || 0%{?rhel} >= 6
   --with-readline-include=%{_includedir}/readline5 \
   --with-readline-lib=%{_libdir}/readline5 \
 %endif
@@ -575,6 +575,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_emacs_sitestartdir}/ruby-mode-init.el
 
 %changelog
+* Mon Jan 18 2010 Akira TAGOH <tagoh@redhat.com>
+- Add conditional for RHEL.
+
 * Wed Jan 13 2010 Mamoru Tasaka <mtasaka@ioa.s.u-tokyo.ac.jp> - 1.8.6.383-6
 - CVE-2009-4492 ruby WEBrick log escape sequence (bug 554485)
 
