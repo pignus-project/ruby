@@ -1,6 +1,6 @@
 %define	rubyxver	1.8
 %define	rubyver		1.8.6
-%define _patchlevel	383
+%define _patchlevel	388
 %define dotpatchlevel	%{?_patchlevel:.%{_patchlevel}}
 %define patchlevel	%{?_patchlevel:-p%{_patchlevel}}
 %define	arcver		%{rubyver}%{?patchlevel}
@@ -56,8 +56,6 @@ Patch31:	ruby-1.8.6-p369-ri-gem_multipath.patch
 # Patch32 from ruby_1_8 branch
 Patch32:	ruby-1.8head-irb-save-history.patch
 Patch33:	ruby-1.8.6-p383-mkmf-use-shared.patch
-# Patch34 already applied in 1.8.6p388
-Patch34:	ruby-1.8.6.x-CVE-2009-4492.patch
 
 Summary:	An interpreter of object-oriented scripting language
 Group:		Development/Languages
@@ -199,7 +197,6 @@ pushd %{name}-%{arcver}
 %patch31 -p1
 %patch32 -p0
 %patch33 -p1
-%patch34 -p0
 popd
 
 %build
