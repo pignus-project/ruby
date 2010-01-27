@@ -16,7 +16,7 @@
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	7%{?dist}
+Release:	8%{?dist}
 License:	Ruby or GPLv2
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -56,6 +56,8 @@ Patch31:	ruby-1.8.6-p369-ri-gem_multipath.patch
 # Patch32 from ruby_1_8 branch
 Patch32:	ruby-1.8head-irb-save-history.patch
 Patch33:	ruby-1.8.6-p383-mkmf-use-shared.patch
+# Testing
+Patch34:    ruby-1.8.6-simplify-openssl-digest.patch
 
 Summary:	An interpreter of object-oriented scripting language
 Group:		Development/Languages
@@ -197,6 +199,8 @@ pushd %{name}-%{arcver}
 %patch31 -p1
 %patch32 -p0
 %patch33 -p1
+
+%patch34 -p1
 popd
 
 %build
@@ -572,7 +576,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_emacs_sitestartdir}/ruby-mode-init.el
 
 %changelog
-* Wed Jan 27 2010 Jeroen van Meeuwen <j.van.meeuwen@ogd.nl> - 1.8.6.388-7
+* Wed Jan 27 2010 Jeroen van Meeuwen <j.van.meeuwen@ogd.nl> - 1.8.6.388-8
+- Backport openssl/digest functions providing digest and hexdigest functions
+  directly in OpenSSL::Digest.methods
 - Make sure that Red Hat people version their changelog entries
 - This is actually release #1, but now needs to be release #7
 
