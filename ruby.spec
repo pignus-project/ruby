@@ -16,7 +16,8 @@
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	8%{?dist}
+# 8.1 is not built yet (not needed because 8 is already untagged)
+Release:	8%{?dist}.1
 License:	Ruby or GPLv2
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -200,7 +201,8 @@ pushd %{name}-%{arcver}
 %patch32 -p0
 %patch33 -p1
 
-%patch34 -p1
+# Once kill patch34 due to build failure on actionpack
+#%%patch34 -p1
 popd
 
 %build
@@ -576,6 +578,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_emacs_sitestartdir}/ruby-mode-init.el
 
 %changelog
+* Thu Jan 28 2010 Mamoru Tasaka <mtasaka@ioa.s.u-tokyo.ac.jp>
+- Once revert the previous change (patch34)
+
 * Wed Jan 27 2010 Jeroen van Meeuwen <j.van.meeuwen@ogd.nl> - 1.8.6.388-8
 - Backport openssl/digest functions providing digest and hexdigest functions
   directly in OpenSSL::Digest.methods
