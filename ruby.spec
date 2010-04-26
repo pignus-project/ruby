@@ -1,6 +1,6 @@
 %define	rubyxver	1.8
 %define	rubyver		1.8.6
-%define _patchlevel	388
+%define _patchlevel	399
 %define dotpatchlevel	%{?_patchlevel:.%{_patchlevel}}
 %define patchlevel	%{?_patchlevel:-p%{_patchlevel}}
 %define	arcver		%{rubyver}%{?patchlevel}
@@ -16,7 +16,7 @@
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	9%{?dist}
+Release:	1%{?dist}
 License:	Ruby or GPLv2
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -57,7 +57,10 @@ Patch31:	ruby-1.8.6-p369-ri-gem_multipath.patch
 Patch32:	ruby-1.8head-irb-save-history.patch
 Patch33:	ruby-1.8.6-p383-mkmf-use-shared.patch
 # Testing
-Patch34:    ruby-1.8.6-simplify-openssl-digest.patch
+# Patch34 disabled for now
+Patch34:	ruby-1.8.6-simplify-openssl-digest.patch
+# bz 580993
+Patch35:	ruby_1_8_7-gc-open4_096segv.patch
 
 Summary:	An interpreter of object-oriented scripting language
 Group:		Development/Languages
@@ -199,9 +202,9 @@ pushd %{name}-%{arcver}
 %patch31 -p1
 %patch32 -p0
 %patch33 -p1
-
 # Once kill patch34 due to build failure on actionpack
 #%%patch34 -p1
+%patch35 -p1
 popd
 
 %build
@@ -577,6 +580,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_emacs_sitestartdir}/ruby-mode-init.el
 
 %changelog
+* Tue Apr 27 2010 Mamoru Tasaka <mtasaka@ioa.s.u-tokyo.ac.jp> - 1.8.6.399-1
+- Update to 1.8.6 p 399 (bug 579675)
+- Patch to fix gc bug causing open4 crash (bug 580993)
+
 * Fri Mar 12 2010 Mamoru Tasaka <mtasaka@ioa.s.u-tokyo.ac.jp> - 1.8.6.388-9
 - F-14: rebuild against new gdbm
 
