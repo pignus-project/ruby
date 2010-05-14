@@ -1,35 +1,130 @@
---- ruby-1.8.6-p369/lib/rdoc/ri/ri_options.rb.gemmulti	2007-02-13 08:01:19.000000000 +0900
-+++ ruby-1.8.6-p369/lib/rdoc/ri/ri_options.rb	2009-10-14 23:51:09.000000000 +0900
-@@ -63,7 +63,7 @@
+Mon Dec 24 16:18:57 2007  Eric Hodel  <drbrain@segment7.net>
+
+	* lib/rdoc/ri/ri_options.rb:  Fix ri --help listing of gem ri paths.
+	Merge of r14567 and r14569 from trunk.
+
+	* lib/rdoc/ri/ri_paths.rb:  Fix duplication of ri data for multiple
+	gems.  Merge of r14567 from trunk
+
+Index: ruby_1_8/lib/rdoc/ri/ri_options.rb
+===================================================================
+--- ruby_1_8/lib/rdoc/ri/ri_options.rb	(revision 14581)
++++ ruby_1_8/lib/rdoc/ri/ri_options.rb	(revision 14582)
+@@ -62,10 +62,11 @@
+           (RI::Paths::HOMEDIR || "No ~/.rdoc found") ],
  
          [ "--gems",         nil,    nil,
-           "Include documentation from Rubygems:\n  " +
+-          "Include documentation from Rubygems:\n  " +
 -          (RI::Paths::GEMDIRS ? "#{Gem.path}/doc/*/ri" :
-+          (RI::Paths::GEMDIRS ? Gem.path.map {|path| "#{path}/doc/*/ri" }.join(', ') :
-                                 "No Rubygems ri found.") ],
-                                                            
+-                                "No Rubygems ri found.") ],
+-                                                           
++          "Include documentation from RubyGems:\n" +
++          (RI::Paths::GEMDIRS ?
++           Gem.path.map { |dir| "  #{dir}/doc/*/ri" }.join("\n") :
++           "No Rubygems ri found.") ],
++
          [ "--format",       "-f",   "<name>",
-@@ -136,7 +136,11 @@
+           "Format to use when displaying output:\n" +
+           "   " + RI::TextFormatter.list + "\n" +
+@@ -116,7 +117,8 @@
+       def OptionList.error(msg)
+         $stderr.puts
+         $stderr.puts msg
+-        $stderr.puts "\nFor help on options, try 'ri --help'\n\n"
++        name = File.basename $PROGRAM_NAME
++        $stderr.puts "\nFor help on options, try '#{name} --help'\n\n"
+         exit 1
+       end
+       
+@@ -136,7 +138,11 @@
            RI::Paths::HOMEDIR
          ]
  
 -        directories << "#{Gem.path}/doc/*/ri" if RI::Paths::GEMDIRS
-+        if RI::Paths::GEMDIRS
-+          Gem.path.each {|gempath|
-+            directories << "#{gempath}/doc/*/ri"
-+          }
++        if RI::Paths::GEMDIRS then
++          Gem.path.each do |dir|
++            directories << "#{dir}/doc/*/ri"
++          end
 +        end
  
          directories = directories.join("\n    ")
  
---- ruby-1.8.6-p369/lib/rdoc/ri/ri_paths.rb.gemmulti	2007-02-13 08:01:19.000000000 +0900
-+++ ruby-1.8.6-p369/lib/rdoc/ri/ri_paths.rb	2009-10-15 00:02:05.000000000 +0900
-@@ -44,7 +44,7 @@
+@@ -157,16 +163,16 @@
+ 
+           For example:
+ 
+-              ri  File
+-              ri  File.new
+-              ri  F.n
+-              ri  zip
++              #{name}  File
++              #{name}  File.new
++              #{name}  F.n
++              #{name}  zip
+ 
+           Note that shell quoting may be required for method names
+           containing punctuation:
+ 
+-              ri 'Array.[]'
+-              ri compact\\!
++              #{name} 'Array.[]'
++              #{name} compact\\!
+ 
+           By default ri searches for documentation in the following
+           directories:
+@@ -180,8 +186,8 @@
+         EOT
+ 
+         if short_form
+-          puts "For help on options, type 'ri -h'"
+-          puts "For a list of classes I know about, type 'ri -c'"
++          puts "For help on options, type '#{name} -h'"
++          puts "For a list of classes I know about, type '#{name} -c'"
+         else
+           puts "Options:\n\n"
+           OPTION_LIST.each do|long, short, arg, desc|
+Index: ruby_1_8/lib/rdoc/ri/ri_paths.rb
+===================================================================
+--- ruby_1_8/lib/rdoc/ri/ri_paths.rb	(revision 14581)
++++ ruby_1_8/lib/rdoc/ri/ri_paths.rb	(revision 14582)
+@@ -44,8 +44,29 @@
  
      begin
        require 'rubygems'
 -      GEMDIRS = Dir["#{Gem.path}/doc/*/ri"]
-+      GEMDIRS = Gem.path.map {|path| Dir["#{path}/doc/*/ri"]}.flatten
-       GEMDIRS.each { |path| RI::Paths::PATH << path }
+-      GEMDIRS.each { |path| RI::Paths::PATH << path }
++
++      # HACK dup'd from Gem.latest_partials and friends
++      all_paths = []
++
++      all_paths = Gem.path.map do |dir|
++        Dir[File.join(dir, 'doc', '*', 'ri')]
++      end.flatten
++
++      ri_paths = {}
++
++      all_paths.each do |dir|
++        base = File.basename File.dirname(dir)
++        if base =~ /(.*)-((\d+\.)*\d+)/ then
++          name, version = $1, $2
++          ver = Gem::Version.new version
++          if ri_paths[name].nil? or ver > ri_paths[name][0] then
++            ri_paths[name] = [ver, dir]
++          end
++        end
++      end
++
++      GEMDIRS = ri_paths.map { |k,v| v.last }.sort
++      GEMDIRS.each { |dir| RI::Paths::PATH << dir }
      rescue LoadError
        GEMDIRS = nil
+     end
+@@ -55,7 +76,7 @@
+ 
+     def self.path(use_system, use_site, use_home, use_gems, *extra_dirs)
+       path = raw_path(use_system, use_site, use_home, use_gems, *extra_dirs)
+-      return path.select { |path| File.directory? path }
++      return path.select { |directory| File.directory? directory }
+     end
+ 
+     # Returns the selected documentation directories including nonexistent

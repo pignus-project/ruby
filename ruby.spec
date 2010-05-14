@@ -10,13 +10,15 @@
 %define	sitedir2	%{_prefix}/lib/ruby/site_ruby
 %define	_normalized_cpu	%(echo `echo %{_target_cpu} | sed 's/^ppc/powerpc/' | sed -e 's|i.86|i386|'`)
 
+%define       tk_using_svn_number  27738
+
 # emacs sitelisp directory
 %{!?_emacs_sitelispdir: %global _emacs_sitelispdir %{_datadir}/emacs/site-lisp}
 %{!?_emacs_sitestartdir: %global _emacs_sitestartdir %{_datadir}/emacs/site-lisp/site-start.d}
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	1%{?dist}
+Release:	3%{?dist}
 License:	Ruby or GPLv2
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -39,7 +41,14 @@ Source2:	ftp://ftp.ruby-lang.org/pub/%{name}/doc/rubyfaq-990927.tar.gz
 Source3:	ftp://ftp.ruby-lang.org/pub/%{name}/doc/rubyfaq-jp-990927.tar.gz
 Source4:	irb.1
 Source10:	ruby-mode-init.el
+#
+# Source100: contains ext/tk directory of the head of ruby_1_8 branch
+# i.e. http://svn.ruby-lang.org/repos/ruby/branches/ruby_1_8
+# see bug 560053, 590503, and
+# http://lists.fedoraproject.org/pipermail/ruby-sig/2010-May/000096.html
+Source100:      ruby-1.8-rev%{tk_using_svn_number}_trunk-ext_tk.tar.gz
 
+# Patch1 - Patch23 are Fedora specific
 Patch1:		ruby-deadcode.patch
 Patch20:	ruby-1.8.6-p383-rubyprefix.patch
 Patch21:	ruby-deprecated-sitelib-search-path.patch
@@ -47,20 +56,40 @@ Patch22:	ruby-deprecated-search-path.patch
 Patch23:	ruby-multilib.patch
 # Needed in 1.8.6-p287, no longer needed in 1.8.6-p368?
 #Patch25:	ruby-1.8.6.111-gcc43.patch
+# ruby_1_8 branch rev 19320, 20121, bug 460134
 Patch26:        ruby-1.8.6-rexml-CVE-2008-3790.patch
+# Patch27, 28 could not be found in the upstream VCS
+# Need checking??
 Patch27:        ruby-1.8.6-p287-CVE-2008-5189.patch
 Patch28:        ruby-1.8.6-p287-remove-ssl-rand-range.patch
+# Fedora specific
+# Change the directory of sitearchdir from i?86 to i386 for upgrade path
 Patch29:	ruby-always-use-i386.patch
+# By Tomas Mraz, "seems" already in ruby_1_8 branch head
+# (but have not checked yet in detail)
 Patch30:	ruby-openssl-1.0.patch
+# bug 528787, patch from in ruby_1_8 branch
 Patch31:	ruby-1.8.6-p369-ri-gem_multipath.patch
-# Patch32 from ruby_1_8 branch
+# bug 518584, ruby issue 1556, patch from ruby_1_8??? branch
 Patch32:	ruby-1.8head-irb-save-history.patch
+# bug 428384, Fedora specific, however needed for Fedora's static
+# archive policy
 Patch33:	ruby-1.8.6-p383-mkmf-use-shared.patch
-# Testing
-# Patch34 disabled for now
+# Testing (bug 559158)
+# Patch34 disabled for now as this breaks rubygem-actionpack rake test,
+# need investigating
 Patch34:	ruby-1.8.6-simplify-openssl-digest.patch
-# bz 580993
+# bug 580993, patch from ruby_1_8_7 branch
 Patch35:	ruby_1_8_7-gc-open4_096segv.patch
+#
+# Patch36, 37: needed to use the head of ext/tk directory of ruby_1_8 branch head
+# Patch36: taken from ruby_1_8 branch
+Patch36:        ruby-1.8.x-RHASH_SIZE-def.patch
+# Patch37: flatten(level) feature is in >= 1.8.7, reverting
+Patch37:        ruby-1.8.x-ext_tk-flatten-level-revert.patch
+# From ruby_1_8 branch: bz 530407
+# bz 530407 reproducible with 1.8.7p174, not with 1.8.7p249
+Patch38:        ruby-1.8.x-null-class-must-be-Qnil.patch
 
 Summary:	An interpreter of object-oriented scripting language
 Group:		Development/Languages
@@ -180,12 +209,19 @@ along with a list of the methods the class or module implements.
 
 
 %prep
-%setup -q -c -a 2 -a 3
+%setup -q -c -a 2 -a 3 -a 100
 mkdir -p ruby-refm-ja
 pushd ruby-refm-ja
 tar fxz %{SOURCE1}
 popd
 pushd %{name}-%{arcver}
+
+( cd ext
+  mv tk .tk.old
+  cp -a ../../ruby-1.8-rev*/ext/tk tk
+  find tk -type d -name \.svn | sort -r | xargs rm -rf
+)
+
 %patch1 -p1
 %patch20 -p1
 %patch21 -p1
@@ -205,6 +241,9 @@ pushd %{name}-%{arcver}
 # Once kill patch34 due to build failure on actionpack
 #%%patch34 -p1
 %patch35 -p1
+%patch36 -p1
+%patch37 -p1
+%patch38 -p1
 popd
 
 %build
@@ -216,7 +255,10 @@ autoconf
 
 rb_cv_func_strtod=no
 export rb_cv_func_strtod
+
+# bug 489990
 CFLAGS="$RPM_OPT_FLAGS -fno-strict-aliasing"
+
 export CFLAGS
 %configure \
   --with-sitedir='%{sitedir}' \
@@ -352,6 +394,18 @@ for i in `find -type f ! -name "*.gif"`; do
         iconv -f iso8859-1 -t utf-8 $i > $.new && mv $i.new $i || rm -f $i.new
     fi
 done
+
+# fix Japanese encoding strings for ruby-tcltk/ext/tk/sample/
+pushd ruby-tcltk/ext/tk/
+cd sample
+find . -path ./demos-jp/\*.rb -or -path ./tkoptdb\*.rb -or -path ./msgs_rb2/ja.msg | \
+    xargs sed -i -e 's|euc-jp|utf-8|'
+sed -i \
+    -e '/KCODE =/s|euc|utf-8|' -e 's|EUC-JP|UTF-8|' \
+    demos-jp/widget
+cd ..
+sed -i -e 's|EUC-JP|UTF-8|' README.1st
+popd
 
 # done
 cd ..
@@ -580,6 +634,18 @@ rm -rf $RPM_BUILD_ROOT
 %{_emacs_sitestartdir}/ruby-mode-init.el
 
 %changelog
+* Thu May 13 2010 Mamoru Tasaka <mtasaka@ioa.s.u-tokyo.ac.jp> - 1.8.6.399-3
+- ruby-1.8.x-null-class-must-be-Qnil.patch (bug 530407)
+- Recreate some patches using upstream svn when available, and
+  add some comments for patches
+
+* Tue May 11 2010 Mamoru Tasaka <mtasaka@ioa.s.u-tokyo.ac.jp> - 1.8.6.399-2
+- tcltk: Give up using potentially unmaintained ruby_1_8_6 branch
+  and instead completely replace with ruby_1_8 branch head
+  (at this time, using rev 27738)
+  (seems to fix 560053, 590503)
+- Fix Japanese encoding strings under ruby-tcltk/ext/tk/sample/
+
 * Tue Apr 27 2010 Mamoru Tasaka <mtasaka@ioa.s.u-tokyo.ac.jp> - 1.8.6.399-1
 - Update to 1.8.6 p 399 (bug 579675)
 - Patch to fix gc bug causing open4 crash (bug 580993)

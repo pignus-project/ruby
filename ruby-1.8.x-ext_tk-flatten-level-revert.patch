@@ -1,0 +1,58 @@
+Index: ruby-1.8-rev27736_trunk/ext/tk/lib/tk/pack.rb
+===================================================================
+--- ruby-1.8-rev27736_trunk/ext/tk/lib/tk/pack.rb	(revision 27738)
++++ ruby-1.8-rev27736_trunk/ext/tk/lib/tk/pack.rb	(working copy)
+@@ -39,7 +39,23 @@
+     end
+     fail ArgumentError, 'no widget is given' if args.empty?
+     params = []
+-    args.flatten(1).each{|win| params.push(_epath(win))}
++
++    #args.flatten(1).each{|win| params.push(_epath(win))}
++    #
++    # flatten(level) is ruby >=1.8.7 feature, substituting
++    #
++    args_flatten_one = []
++    args.each {|args1|
++      if args1.is_a? Array then
++        args1.each {|args2|
++          args_flatten_one << args2
++        }
++      else
++        args_flatten_one << args1
++      end
++    }
++    args_flatten_one.each{|win| params.push(_epath(win))}
++
+     opts.each{|k, v|
+       params.push("-#{k}")
+       params.push(_epath(v))  # have to use 'epath' (hash_kv() is unavailable)
+Index: ruby-1.8-rev27736_trunk/ext/tk/lib/tk/grid.rb
+===================================================================
+--- ruby-1.8-rev27736_trunk/ext/tk/lib/tk/grid.rb	(revision 27738)
++++ ruby-1.8-rev27736_trunk/ext/tk/lib/tk/grid.rb	(working copy)
+@@ -63,7 +63,23 @@
+     end
+     fail ArgumentError, 'no widget is given' if args.empty?
+     params = []
+-    args.flatten(1).each{|win|
++
++    #args.flatten(1).each{|win|
++    #
++    # flatten(level) is ruby >=1.8.7 feature, substituting
++    #
++
++    args_flatten_one = []
++    args.each {|args1|
++      if args1.is_a? Array then
++        args1.each {|args2|
++          args_flatten_one << args2
++        }
++      else
++        args_flatten_one << args1
++      end
++    }
++    args_flatten_one.each{|win|
+       case win
+       when '-', ?-              # RELATIVE PLACEMENT (increase columnspan)
+         params.push('-')
