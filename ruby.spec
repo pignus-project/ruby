@@ -18,7 +18,7 @@
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	3%{?dist}
+Release:	3.1%{?dist}
 License:	Ruby or GPLv2
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -83,8 +83,11 @@ Patch34:	ruby-1.8.6-simplify-openssl-digest.patch
 Patch35:	ruby_1_8_7-gc-open4_096segv.patch
 #
 # Patch36, 37: needed to use the head of ext/tk directory of ruby_1_8 branch head
-# Patch36: taken from ruby_1_8 branch
-Patch36:        ruby-1.8.x-RHASH_SIZE-def.patch
+# Patch36: taken from ruby_1_8 branch, RHASH_SIZE definition is needed
+# for ruby_1_8 head ext/tk
+# With this change, rb_hash_lookup becomes also needed for rubygem-nokogiri
+# (bug 592936)
+Patch36:        ruby-1.8.x-RHASH_SIZE-rb_hash_lookup-def.patch
 # Patch37: flatten(level) feature is in >= 1.8.7, reverting
 Patch37:        ruby-1.8.x-ext_tk-flatten-level-revert.patch
 # From ruby_1_8 branch: bz 530407
@@ -634,6 +637,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_emacs_sitestartdir}/ruby-mode-init.el
 
 %changelog
+* Mon May 17 2010 Mamoru Tasaka <mtasaka@ioa.s.u-tokyo.ac.jp> - 1.8.6.399-4
+- Patch36 (ruby-1.8.x-RHASH_SIZE-rb_hash_lookup-def.patch)
+  also backport rb_hash_lookup definition (bug 592936)
+
 * Thu May 13 2010 Mamoru Tasaka <mtasaka@ioa.s.u-tokyo.ac.jp> - 1.8.6.399-3
 - ruby-1.8.x-null-class-must-be-Qnil.patch (bug 530407)
 - Recreate some patches using upstream svn when available, and
