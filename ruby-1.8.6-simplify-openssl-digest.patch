@@ -1,7 +1,25 @@
-diff --git a/ext/openssl/lib/openssl/digest.rb b/ext/openssl/lib/openssl/digest.rb
-index b3e4484..4810f01 100644
---- a/ext/openssl/lib/openssl/digest.rb
-+++ b/ext/openssl/lib/openssl/digest.rb
+Mon Feb 25 17:30:29 2008  Technorama Ltd.  <oss-ruby@technorama.net>
+	* ext/openssl/digest.c ext/openssl/lib/openssl/digest.rb:
+	  Commit patch #9280 from Akinori MUSHA.
+	  Simplify the OpenSSL::Digest class and make use of the
+	  existing Digest framework.
+	  Enhance performance.
+
+Thu Apr  5 14:58:49 2007  Technorama Ltd. <oss-ruby@technorama.net>
+	* ext/openssl/ossl_pkcs5.c: New module.
+
+	* ext/openssl/ossl_{cipher,digest,pkcs7,pkcs12}.c:
+	  Remove redundant module namespace.
+
+	* ext/openssl/lib/openssl/{cipher,digest}.rb
+	  Add backwards compatibile classes for rearranged classes.
+
+	* ext/openssl/ossl_{pkcs7,pkcs12}.c: Add documentation.
+
+Index: ruby_1_8/ext/openssl/lib/openssl/digest.rb
+===================================================================
+--- ruby_1_8/ext/openssl/lib/openssl/digest.rb	(revision 11708)
++++ ruby_1_8/ext/openssl/lib/openssl/digest.rb	(revision 15600)
 @@ -19,13 +19,17 @@
  #require 'openssl'
  
@@ -21,7 +39,7 @@ index b3e4484..4810f01 100644
      alg.each{|name|
        klass = Class.new(Digest){
          define_method(:initialize){|*data|
-@@ -44,6 +48,14 @@ module OpenSSL
+@@ -44,6 +48,14 @@
        const_set(name, klass)
      }
  
@@ -36,20 +54,46 @@ index b3e4484..4810f01 100644
    end # Digest
  end # OpenSSL
  
-diff --git a/ext/openssl/ossl_digest.c b/ext/openssl/ossl_digest.c
-index 4096b09..b0308f0 100644
---- a/ext/openssl/ossl_digest.c
-+++ b/ext/openssl/ossl_digest.c
-@@ -40,7 +40,7 @@ GetDigestPtr(VALUE obj)
+Index: ruby_1_8/ext/openssl/ossl_digest.c
+===================================================================
+--- ruby_1_8/ext/openssl/ossl_digest.c	(revision 11708)
++++ ruby_1_8/ext/openssl/ossl_digest.c	(revision 15600)
+@@ -24,7 +24,6 @@
+ /*
+  * Classes
+  */
+-VALUE mDigest;
+ VALUE cDigest;
+ VALUE eDigestError;
  
-     SafeGetDigest(obj, ctx);
+@@ -36,11 +35,23 @@
+ const EVP_MD *
+ GetDigestPtr(VALUE obj)
+ {
+-    EVP_MD_CTX *ctx;
++    const EVP_MD *md;
+ 
+-    SafeGetDigest(obj, ctx);
++    if (TYPE(obj) == T_STRING) {
++    	const char *name = STR2CSTR(obj);
  
 -    return EVP_MD_CTX_md(ctx); /*== ctx->digest*/
-+    return EVP_MD_CTX_md(ctx);
++        md = EVP_get_digestbyname(name);
++        if (!md)
++            ossl_raise(rb_eRuntimeError, "Unsupported digest algorithm (%s).", name);
++    } else {
++        EVP_MD_CTX *ctx;
++
++        SafeGetDigest(obj, ctx);
++
++        md = EVP_MD_CTX_md(ctx);
++    }
++
++    return md;
  }
  
  VALUE
-@@ -51,7 +51,6 @@ ossl_digest_new(const EVP_MD *md)
+@@ -51,7 +62,6 @@
  
      ret = ossl_digest_alloc(cDigest);
      GetDigest(ret, ctx);
@@ -57,7 +101,7 @@ index 4096b09..b0308f0 100644
      EVP_DigestInit_ex(ctx, md, NULL);
     
      return ret;
-@@ -69,9 +68,8 @@ ossl_digest_alloc(VALUE klass)
+@@ -69,14 +79,18 @@
      ctx = EVP_MD_CTX_create();
      if (ctx == NULL)
  	ossl_raise(rb_eRuntimeError, "EVP_MD_CTX_create() failed");
@@ -68,7 +112,17 @@ index 4096b09..b0308f0 100644
      return obj;
  }
  
-@@ -86,14 +84,9 @@ ossl_digest_initialize(int argc, VALUE *argv, VALUE self)
+ VALUE ossl_digest_update(VALUE, VALUE);
+ 
++/*
++ *  call-seq:
++ *     Digest.new(string) -> digest
++ *
++ */
+ static VALUE
+ ossl_digest_initialize(int argc, VALUE *argv, VALUE self)
+ {
+@@ -86,14 +100,9 @@
      VALUE type, data;
  
      rb_scan_args(argc, argv, "11", &type, &data);
@@ -85,7 +139,37 @@ index 4096b09..b0308f0 100644
      GetDigest(self, ctx);
      EVP_DigestInit_ex(ctx, md, NULL);
      
-@@ -141,75 +134,25 @@ ossl_digest_update(VALUE self, VALUE data)
+@@ -118,6 +127,11 @@
+     return self;
+ }
+ 
++/*
++ *  call-seq:
++ *     digest.reset -> self
++ *
++ */
+ static VALUE
+ ossl_digest_reset(VALUE self)
+ {
+@@ -129,6 +143,11 @@
+     return self;
+ }
+ 
++/*
++ *  call-seq:
++ *     digest.update(string) -> aString
++ *
++ */
+ VALUE
+ ossl_digest_update(VALUE self, VALUE data)
+ {
+@@ -136,126 +155,77 @@
+ 
+     StringValue(data);
+     GetDigest(self, ctx);
+-    EVP_DigestUpdate(ctx, RSTRING(data)->ptr, RSTRING(data)->len);
++    EVP_DigestUpdate(ctx, RSTRING_PTR(data), RSTRING_LEN(data));
+ 
      return self;
  }
  
@@ -105,10 +189,16 @@ index 4096b09..b0308f0 100644
 -    EVP_MD_CTX_cleanup(&final);
 -}
 -
--static VALUE
++/*
++ *  call-seq:
++ *      digest.finish -> aString
++ *
++ */
+ static VALUE
 -ossl_digest_digest(VALUE self)
--{
--    EVP_MD_CTX *ctx;
++ossl_digest_finish(int argc, VALUE *argv, VALUE self)
+ {
+     EVP_MD_CTX *ctx;
 -    char *buf;
 -    int buf_len;
 -    VALUE digest;
@@ -119,16 +209,15 @@ index 4096b09..b0308f0 100644
 -	
 -    return digest;
 -}
--
- static VALUE
++    VALUE str;
+ 
+-static VALUE
 -ossl_digest_hexdigest(VALUE self)
-+ossl_digest_finish(int argc, VALUE *argv, VALUE self)
- {
-     EVP_MD_CTX *ctx;
+-{
+-    EVP_MD_CTX *ctx;
 -    char *buf, *hexbuf;
 -    int buf_len;
 -    VALUE hexdigest;
-+    VALUE str;
 +    rb_scan_args(argc, argv, "01", &str);
  
      GetDigest(self, ctx);
@@ -136,6 +225,7 @@ index 4096b09..b0308f0 100644
 -    if (string2hex(buf, buf_len, &hexbuf, NULL) != 2 * buf_len) {
 -	OPENSSL_free(buf);
 -	ossl_raise(eDigestError, "Memory alloc error");
++
 +    if (NIL_P(str)) {
 +        str = rb_str_new(NULL, EVP_MD_CTX_size(ctx));
 +    } else {
@@ -147,67 +237,112 @@ index 4096b09..b0308f0 100644
  
 -    return hexdigest;
 -}
--
++    EVP_DigestFinal_ex(ctx, RSTRING_PTR(str), NULL);
+ 
 -static VALUE
 -ossl_digest_s_digest(VALUE klass, VALUE str, VALUE data)
 -{
 -    VALUE obj = rb_class_new_instance(1, &str, klass);
-+    EVP_DigestFinal_ex(ctx, RSTRING_PTR(str), NULL);
- 
--    ossl_digest_update(obj, data);
-+    return str;
- 
--    return ossl_digest_digest(obj);
--}
 -
--static VALUE
+-    ossl_digest_update(obj, data);
+-
+-    return ossl_digest_digest(obj);
++    return str;
+ }
+ 
++/*
++ *  call-seq:
++ *      digest.name -> string
++ *
++ */
+ static VALUE
 -ossl_digest_s_hexdigest(VALUE klass, VALUE str, VALUE data)
--{
++ossl_digest_name(VALUE self)
+ {
 -    VALUE obj = rb_class_new_instance(1, &str, klass);
 -
 -    ossl_digest_update(obj, data);
 -
 -    return ossl_digest_hexdigest(obj);
+-}
+-
+-static VALUE
+-ossl_digest_equal(VALUE self, VALUE other)
+-{
+     EVP_MD_CTX *ctx;
+-    VALUE str1, str2;
+ 
+-    if (rb_obj_is_kind_of(other, cDigest) == Qtrue) {
+-	str2 = ossl_digest_digest(other);
+-    } else {
+-	StringValue(other);
+-	str2 = other;
+-    }
+     GetDigest(self, ctx);
+-    if (RSTRING(str2)->len == EVP_MD_CTX_size(ctx)) {
+-	str1 = ossl_digest_digest(self);
+-    } else {
+-	str1 = ossl_digest_hexdigest(self);
+-    }
+-    if (RSTRING(str1)->len == RSTRING(str2)->len
+-	&& rb_str_cmp(str1, str2) == 0) {
+-	return Qtrue;
+-    }
+ 
+-    return Qfalse;
++    return rb_str_new2(EVP_MD_name(EVP_MD_CTX_md(ctx)));
+ }
+ 
++/*
++ *  call-seq:
++ *      digest.digest_size -> integer
++ *
++ *  Returns the output size of the digest.
++ */
+ static VALUE
+-ossl_digest_name(VALUE self)
++ossl_digest_size(VALUE self)
+ {
+     EVP_MD_CTX *ctx;
+ 
+     GetDigest(self, ctx);
+ 
+-    return rb_str_new2(EVP_MD_name(EVP_MD_CTX_md(ctx)));
++    return INT2NUM(EVP_MD_CTX_size(ctx));
  }
  
  static VALUE
-@@ -258,41 +201,44 @@ ossl_digest_size(VALUE self)
-     return INT2NUM(EVP_MD_CTX_size(ctx));
+-ossl_digest_size(VALUE self)
++ossl_digest_block_length(VALUE self)
+ {
+     EVP_MD_CTX *ctx;
+ 
+     GetDigest(self, ctx);
+ 
+-    return INT2NUM(EVP_MD_CTX_size(ctx));
++    return INT2NUM(EVP_MD_CTX_block_size(ctx));
  }
  
-+static VALUE
-+ossl_digest_block_length(VALUE self)
-+{
-+    EVP_MD_CTX *ctx;
-+ 
-+    GetDigest(self, ctx);
-+ 
-+    return INT2NUM(EVP_MD_CTX_block_size(ctx));
-+}
-+
-+
  /*
-  * INIT
-  */
+@@ -264,31 +234,26 @@
  void
  Init_ossl_digest()
  {
+-    mDigest = rb_define_module_under(mOSSL, "Digest");
 +    rb_require("openssl");
 +    rb_require("digest");
 +
- #if 0 /* let rdoc know about mOSSL */
-     mOSSL = rb_define_module("OpenSSL");
- #endif
- 
--    mDigest = rb_define_module_under(mOSSL, "Digest");
--	
++#if 0 /* let rdoc know about mOSSL */
++    mOSSL = rb_define_module("OpenSSL");
++#endif
++
++    cDigest = rb_define_class_under(mOSSL, "Digest", rb_path2class("Digest::Class"));
++    eDigestError = rb_define_class_under(cDigest, "DigestError", eOSSLError);
+ 	
 -    eDigestError = rb_define_class_under(mDigest, "DigestError", eOSSLError);
 -	
 -    cDigest = rb_define_class_under(mDigest, "Digest", rb_cObject);
 -	
-+    cDigest = rb_define_class_under(mOSSL, "Digest", rb_path2class("Digest::Class"));
-+    eDigestError = rb_define_class_under(cDigest, "DigestError", eOSSLError);
-+
      rb_define_alloc_func(cDigest, ossl_digest_alloc);
 -    rb_define_singleton_method(cDigest, "digest", ossl_digest_s_digest, 2);
 -    rb_define_singleton_method(cDigest, "hexdigest", ossl_digest_s_hexdigest, 2);
@@ -236,4 +371,3 @@ index 4096b09..b0308f0 100644
      rb_define_method(cDigest, "name", ossl_digest_name, 0);
 -    rb_define_method(cDigest, "size", ossl_digest_size, 0);
  }
-+

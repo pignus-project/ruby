@@ -1,0 +1,15 @@
+Index: ruby_1_8_6/ext/openssl/ossl_digest.c
+===================================================================
+--- ruby_1_8_6/ext/openssl/ossl_digest.c	(revision 12042)
++++ ruby_1_8_6/ext/openssl/ossl_digest.c	(revision 12043)
+@@ -264,6 +264,10 @@
+ void
+ Init_ossl_digest()
+ {
++#if 0 /* let rdoc know about mOSSL */
++    mOSSL = rb_define_module("OpenSSL");
++#endif
++
+     mDigest = rb_define_module_under(mOSSL, "Digest");
+ 	
+     eDigestError = rb_define_class_under(mDigest, "DigestError", eOSSLError);

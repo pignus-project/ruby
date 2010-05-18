@@ -18,7 +18,7 @@
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	Ruby or GPLv2
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -57,7 +57,8 @@ Patch23:	ruby-multilib.patch
 # Needed in 1.8.6-p287, no longer needed in 1.8.6-p368?
 #Patch25:	ruby-1.8.6.111-gcc43.patch
 # ruby_1_8 branch rev 19320, 20121, bug 460134
-Patch26:        ruby-1.8.6-rexml-CVE-2008-3790.patch
+# Included in 1.8.6 p368
+#Patch26:        ruby-1.8.6-rexml-CVE-2008-3790.patch
 # Patch27, 28 could not be found in the upstream VCS
 # Need checking??
 Patch27:        ruby-1.8.6-p287-CVE-2008-5189.patch
@@ -75,9 +76,8 @@ Patch32:	ruby-1.8head-irb-save-history.patch
 # bug 428384, Fedora specific, however needed for Fedora's static
 # archive policy
 Patch33:	ruby-1.8.6-p383-mkmf-use-shared.patch
-# Testing (bug 559158)
-# Patch34 disabled for now as this breaks rubygem-actionpack rake test,
-# need investigating
+# bug 559158, Simplify the OpenSSL::Digest class
+# Applying Patch34 needs reversing Patch39 part
 Patch34:	ruby-1.8.6-simplify-openssl-digest.patch
 # bug 580993, patch from ruby_1_8_7 branch
 Patch35:	ruby_1_8_7-gc-open4_096segv.patch
@@ -93,6 +93,8 @@ Patch37:        ruby-1.8.x-ext_tk-flatten-level-revert.patch
 # From ruby_1_8 branch: bz 530407
 # bz 530407 reproducible with 1.8.7p174, not with 1.8.7p249
 Patch38:        ruby-1.8.x-null-class-must-be-Qnil.patch
+# Once revert this patch to apply Patch34 cleanly
+Patch39:        ruby-1.8.6-openssl-digest-once-revert-for-simplify-patch.patch
 
 Summary:	An interpreter of object-oriented scripting language
 Group:		Development/Languages
@@ -232,8 +234,8 @@ pushd %{name}-%{arcver}
 %patch22 -p1
 %patch23 -p1
 %endif
-#%patch25 -p1
-#%patch26 -p1
+#%%patch25 -p1
+#%%patch26 -p1
 %patch27 -p0
 %patch28 -p1
 %patch29 -p1
@@ -241,8 +243,9 @@ pushd %{name}-%{arcver}
 %patch31 -p1
 %patch32 -p0
 %patch33 -p1
-# Once kill patch34 due to build failure on actionpack
-#%%patch34 -p1
+# To apply patch34, patch39 part must once be reverted
+%patch39 -p1 -R
+%patch34 -p1
 %patch35 -p1
 %patch36 -p1
 %patch37 -p1
@@ -637,6 +640,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_emacs_sitestartdir}/ruby-mode-init.el
 
 %changelog
+* Wed May 19 2010 Mamoru Tasaka <mtasaka@ioa.s.u-tokyo.ac.jp> - 1.8.6.399-5
+- Retry for bug 559158, Simplify the OpenSSL::Digest class
+  pull more change commits from ruby_1_8 branch
+
 * Mon May 17 2010 Mamoru Tasaka <mtasaka@ioa.s.u-tokyo.ac.jp> - 1.8.6.399-4
 - Patch36 (ruby-1.8.x-RHASH_SIZE-rb_hash_lookup-def.patch)
   also backport rb_hash_lookup definition (bug 592936)
