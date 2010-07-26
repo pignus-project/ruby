@@ -1,104 +1,76 @@
-%define	rubyxver	1.8
-%define	rubyver		1.8.6
-%define _patchlevel	399
-%define dotpatchlevel	%{?_patchlevel:.%{_patchlevel}}
-%define patchlevel	%{?_patchlevel:-p%{_patchlevel}}
-%define	arcver		%{rubyver}%{?patchlevel}
-%define	sitedir		%{_libdir}/ruby/site_ruby
-# This is required to ensure that noarch files puts under /usr/lib/... for
-# multilib because ruby library is installed under /usr/{lib,lib64}/ruby anyway.
-%define	sitedir2	%{_prefix}/lib/ruby/site_ruby
-%define	_normalized_cpu	%(echo `echo %{_target_cpu} | sed 's/^ppc/powerpc/' | sed -e 's|i.86|i386|'`)
+%global	rubyxver	1.8
+%global	rubyver	1.8.7
+%global	_patchlevel	299
 
-%define       tk_using_svn_number  27738
+%global	dotpatchlevel	%{?_patchlevel:.%{_patchlevel}}
+%global	patchlevel	%{?_patchlevel:-p%{_patchlevel}}
+%global	arcver		%{rubyver}%{?patchlevel}
 
-# emacs sitelisp directory
-%{!?_emacs_sitelispdir: %global _emacs_sitelispdir %{_datadir}/emacs/site-lisp}
-%{!?_emacs_sitestartdir: %global _emacs_sitestartdir %{_datadir}/emacs/site-lisp/site-start.d}
+%{!?vendorlibbase:	%global vendorlibbase	%{_prefix}/lib/ruby}
+%{!?vendorarchbase:	%global vendorarchbase	%{_libdir}/ruby}
+%{!?sitelibbase:	%global sitelibbase	%{vendorlibbase}/site_ruby}
+%{!?sitearchbase:	%global sitearchbase	%{vendorarchbase}/site_ruby}
+
+%global	_normalized_cpu	%(echo %{_target_cpu} | sed 's/^ppc/powerpc/;s/i.86/i386/')
+%global	ruby_tk_git_revision	415a3ef9ab82c65a7abc
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	5%{?dist}
+Release:	4%{?dist}
+# Please check if ruby upstream changes this to "Ruby or GPLv2+"
 License:	Ruby or GPLv2
 URL:		http://www.ruby-lang.org/
-BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-%if 0%{?fedora} >= 12 || 0%{?rhel} >= 6
-BuildRequires:  compat-readline5-devel
-%else
-BuildRequires:	readline readline-devel
-%endif
-BuildRequires:  ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl-devel tk-devel libX11-devel autoconf gcc unzip openssl-devel db4-devel byacc
-# Use bison to recreate parse.c (ref: bug 530275 comment 4)
+
+BuildRequires:	compat-readline5-devel
+BuildRequires:	db4-devel
+BuildRequires:	gdbm-devel
+BuildRequires:	libX11-devel
+BuildRequires:	ncurses-devel
+BuildRequires:	openssl-devel
+BuildRequires:	tcl-devel
+BuildRequires:	tk-devel
+
+BuildRequires:	autoconf
 BuildRequires:	bison
-BuildRequires:	emacs
+BuildRequires:	byacc
 
+# Official ruby source release tarball
 Source0:	ftp://ftp.ruby-lang.org/pub/%{name}/%{rubyxver}/%{name}-%{arcver}.tar.bz2
-## Dead link
-##Source1:	http://www7.tok2.com/home/misc/files/%{name}/%{name}-refm-rdp-1.8.1-ja-html.tar.gz
-#Source1:	%{name}-refm-rdp-1.8.1-ja-html.tar.gz
-Source1:	http://elbereth-hp.hp.infoseek.co.jp/files/ruby/refm/old/2005/%{name}-refm-rdp-1.8.2-ja-html.tar.gz
-Source2:	ftp://ftp.ruby-lang.org/pub/%{name}/doc/rubyfaq-990927.tar.gz
-Source3:	ftp://ftp.ruby-lang.org/pub/%{name}/doc/rubyfaq-jp-990927.tar.gz
-Source4:	irb.1
-Source10:	ruby-mode-init.el
-#
-# Source100: contains ext/tk directory of the head of ruby_1_8 branch
-# i.e. http://svn.ruby-lang.org/repos/ruby/branches/ruby_1_8
-# see bug 560053, 590503, and
-# http://lists.fedoraproject.org/pipermail/ruby-sig/2010-May/000096.html
-Source100:      ruby-1.8-rev%{tk_using_svn_number}_trunk-ext_tk.tar.gz
 
-# Patch1 - Patch23 are Fedora specific
-Patch1:		ruby-deadcode.patch
-Patch20:	ruby-1.8.6-p383-rubyprefix.patch
-Patch21:	ruby-deprecated-sitelib-search-path.patch
-Patch22:	ruby-deprecated-search-path.patch
-Patch23:	ruby-multilib.patch
-# Needed in 1.8.6-p287, no longer needed in 1.8.6-p368?
-#Patch25:	ruby-1.8.6.111-gcc43.patch
-# ruby_1_8 branch rev 19320, 20121, bug 460134
-# Included in 1.8.6 p368
-#Patch26:        ruby-1.8.6-rexml-CVE-2008-3790.patch
-# Patch27, 28 could not be found in the upstream VCS
-# Need checking??
-Patch27:        ruby-1.8.6-p287-CVE-2008-5189.patch
-Patch28:        ruby-1.8.6-p287-remove-ssl-rand-range.patch
-# Fedora specific
-# Change the directory of sitearchdir from i?86 to i386 for upgrade path
-Patch29:	ruby-always-use-i386.patch
-# By Tomas Mraz, "seems" already in ruby_1_8 branch head
-# (but have not checked yet in detail)
-Patch30:	ruby-openssl-1.0.patch
-# bug 528787, patch from in ruby_1_8 branch
-Patch31:	ruby-1.8.6-p369-ri-gem_multipath.patch
-# bug 518584, ruby issue 1556, patch from ruby_1_8??? branch
-Patch32:	ruby-1.8head-irb-save-history.patch
-# bug 428384, Fedora specific, however needed for Fedora's static
-# archive policy
-Patch33:	ruby-1.8.6-p383-mkmf-use-shared.patch
-# bug 559158, Simplify the OpenSSL::Digest class
-# Applying Patch34 needs reversing Patch39 part
-Patch34:	ruby-1.8.6-simplify-openssl-digest.patch
-# bug 580993, patch from ruby_1_8_7 branch
-Patch35:	ruby_1_8_7-gc-open4_096segv.patch
-#
-# Patch36, 37: needed to use the head of ext/tk directory of ruby_1_8 branch head
-# Patch36: taken from ruby_1_8 branch, RHASH_SIZE definition is needed
-# for ruby_1_8 head ext/tk
-# With this change, rb_hash_lookup becomes also needed for rubygem-nokogiri
-# (bug 592936)
-Patch36:        ruby-1.8.x-RHASH_SIZE-rb_hash_lookup-def.patch
-# Patch37: flatten(level) feature is in >= 1.8.7, reverting
-Patch37:        ruby-1.8.x-ext_tk-flatten-level-revert.patch
-# From ruby_1_8 branch: bz 530407
-# bz 530407 reproducible with 1.8.7p174, not with 1.8.7p249
-Patch38:        ruby-1.8.x-null-class-must-be-Qnil.patch
-# Once revert this patch to apply Patch34 cleanly
-Patch39:        ruby-1.8.6-openssl-digest-once-revert-for-simplify-patch.patch
+# Source100: contains ext/tk directory of the ruby source head
+# see http://lists.fedoraproject.org/pipermail/ruby-sig/2010-May/000096.html 
+# and bug 560053, 590503.
+# To checkout, run the following commands
+# (replacing 'ruby_tk_git_revision' with the value of the macro above):
+# *  git clone http://github.com/ruby/ruby.git
+# *  cd ruby
+# *  git checkout %%{ruby_tk_git_revision} ext/tk
+# *  tar czvf ruby-rev%%{ruby_tk_git_revision}-ext_tk.tar.gz ext/tk
+Source100:	ruby-rev%{ruby_tk_git_revision}-ext_tk.tar.gz
+
+# Patches 23, 29, and 33 brought over from ruby 1.8.6
+#  (updated to apply against 1.8.7 source)
+# If building against a 64bit arch, use 64bit libdir
+Patch23:	ruby-1.8.7-multilib.patch
+# Mark all i.86 arch's (eg i586, i686, etc) as i386
+Patch29:	ruby-1.8.7-always-use-i386.patch
+# Use shared libs as opposed to static for mkmf
+# See bug 428384
+Patch33:	ruby-1.8.7-p249-mkmf-use-shared.patch
+# Change ruby load path to conform to Fedora/ruby
+# library placement (various 1.8.6 patches consolidated into this)
+Patch100:	ruby-1.8.7-lib-paths.patch
 
 Summary:	An interpreter of object-oriented scripting language
 Group:		Development/Languages
-Requires:	%{name}-libs = %{version}-%{release}
+Requires:	%{name}-libs%{?_isa} = %{version}-%{release}
+
+# emacs-23.2.x itself now provides the ruby mode
+# And no Provides here
+Obsoletes:	%{name}-mode < 1.8.7
+# remove old documentation
+# And no Provides here
+Obsoletes:	%{name}-docs < 1.8.7
 
 %description
 Ruby is the interpreted scripting language for quick and easy
@@ -107,7 +79,7 @@ files and to do system management tasks (as in Perl).  It is simple,
 straight-forward, and extensible.
 
 
-%package libs
+%package	libs
 Summary:	Libraries necessary to run Ruby
 Group:		Development/Libraries
 # ext/bigdecimal/bigdecimal.{c,h} are under (GPL+ or Artistic) which
@@ -115,64 +87,54 @@ Group:		Development/Libraries
 License:	(Ruby or GPLv2) and (GPL+ or Artistic)
 Provides:	ruby(abi) = %{rubyxver}
 Provides:	libruby = %{version}-%{release}
-Obsoletes:	libruby <= %{version}-%{release}
+Obsoletes:	libruby < %{version}-%{release}
 
 %description libs
 This package includes the libruby, necessary to run Ruby.
 
 
-%package devel
+%package	devel
 Summary:	A Ruby development environment
 Group:		Development/Languages
-Requires:	%{name}-libs = %{version}-%{release}
-#Provides:	%{name}-libs-static = %{version}-%{release}
+Requires:	%{name}-libs%{?_isa} = %{version}-%{release}
 
-%description devel
+%description	devel
 Header files and libraries for building a extension library for the
 Ruby or an application embedded Ruby.
 
-%package static
+%package	static
 Summary:	Static libraries for Ruby development environment
 Group:		Development/Languages
-Requires:	%{name}-devel = %{version}-%{release}
+Requires:	%{name}-devel%{?_isa} = %{version}-%{release}
 
-%description static
+%description	static
 Static libraries for for building a extension library for the
 Ruby or an application embedded Ruby.
 
-%package tcltk
-Summary:	Tcl/Tk interface for scripting language Ruby
-Group:		Development/Languages
-# Many files under ext/tk/sample/ are under TCL
-License:	(Ruby or GPLv2) and TCL
-Requires:	%{name}-libs = %{version}-%{release}
-
-%description tcltk
-Tcl/Tk interface for the object-oriented scripting language Ruby.
-
-
-%package irb
+%package	irb
 Summary:	The Interactive Ruby
 Group:		Development/Languages
+# No isa specific
 Requires:	%{name} = %{version}-%{release}
 Provides:	irb = %{version}-%{release}
-Obsoletes:	irb <= %{version}-%{release}
+Obsoletes:	irb < %{version}-%{release}
+BuildArch:	noarch
 
 %description irb
 The irb is acronym for Interactive Ruby.  It evaluates ruby expression
 from the terminal.
 
 
-%package rdoc
+%package	rdoc
 Summary:	A tool to generate documentation from Ruby source files
 Group:		Development/Languages
 # generators/template/html/html.rb is under CC-BY
 License:	(GPLv2 or Ruby) and CC-BY
-## ruby-irb requires ruby
-#Requires:	%{name} = %{version}-%{release}
+# No isa specific
 Requires:	%{name}-irb = %{version}-%{release}
 Provides:	rdoc = %{version}-%{release}
-Obsoletes:	rdoc <= %{version}-%{release}
+Obsoletes:	rdoc < %{version}-%{release}
+BuildArch:	noarch
 
 %description rdoc
 The rdoc is a tool to generate the documentation from Ruby source files.
@@ -180,31 +142,17 @@ It supports some output formats, like HTML, Ruby interactive reference (ri),
 XML and Windows Help file (chm).
 
 
-%package docs
-Summary:	Manuals and FAQs for scripting language Ruby
-Group:		Documentation
-
-%description docs
-Manuals and FAQs for the object-oriented scripting language Ruby.
-
-
-%package mode
-Summary:	Emacs Lisp for the scripting language Ruby
-Group:		Applications/Editors
-Requires:	emacs-common
-
-%description mode
-Emacs Lisp ruby-mode for the object-oriented scripting language Ruby.
-
-
-%package ri
+%package	ri
 Summary:	Ruby interactive reference
 Group:		Documentation
 ## ruby-irb requires ruby, which ruby-rdoc requires
-#Requires:	%{name} = %{version}-%{release}
+#Requires: %%{name} = %%{version}-%%{release}
+# No isa specific
 Requires:	%{name}-rdoc = %{version}-%{release}
 Provides:	ri = %{version}-%{release}
-Obsoletes:	ri <= %{version}-%{release}
+Obsoletes:	ri < %{version}-%{release}
+# FIXME: Make ruby-ri really arch independent
+# BuildArch:	noarch # Currently commented out
 
 %description ri
 ri is a command line tool that displays descriptions of built-in
@@ -212,50 +160,38 @@ Ruby methods, classes and modules. For methods, it shows you the calling
 sequence and a description. For classes and modules, it shows a synopsis
 along with a list of the methods the class or module implements.
 
+##
+## ruby-tcltk
+##
+%package	tcltk
+Summary:	Tcl/Tk interface for scripting language Ruby
+Group:		Development/Languages
+Requires:	%{name}-libs%{?_isa} = %{version}-%{release}
+
+%description tcltk
+Tcl/Tk interface for the object-oriented scripting language Ruby.
 
 %prep
-%setup -q -c -a 2 -a 3 -a 100
-mkdir -p ruby-refm-ja
-pushd ruby-refm-ja
-tar fxz %{SOURCE1}
-popd
+%setup -q -c -a 100
 pushd %{name}-%{arcver}
-
-( cd ext
-  mv tk .tk.old
-  cp -a ../../ruby-1.8-rev*/ext/tk tk
-  find tk -type d -name \.svn | sort -r | xargs rm -rf
-)
-
-%patch1 -p1
-%patch20 -p1
-%patch21 -p1
-%ifarch ppc64 s390x sparc64 x86_64
-%patch22 -p1
 %patch23 -p1
-%endif
-#%%patch25 -p1
-#%%patch26 -p1
-%patch27 -p0
-%patch28 -p1
 %patch29 -p1
-%patch30 -p2
-%patch31 -p1
-%patch32 -p0
 %patch33 -p1
-# To apply patch34, patch39 part must once be reverted
-%patch39 -p1 -R
-%patch34 -p1
-%patch35 -p1
-%patch36 -p1
-%patch37 -p1
-%patch38 -p1
+%patch100 -p1
+
+( 
+	cd ext
+	rm -rf tk
+	cp -a ../../ext/tk tk
+	find tk -type d -name \.svn | sort -r | xargs rm -rf
+) 
+
 popd
 
 %build
 pushd %{name}-%{arcver}
 for i in config.sub config.guess; do
-	test -f %{_datadir}/libtool/$i && cp %{_datadir}/libtool/$i .
+	test -f %{_datadir}/libtool/$i && cp -p %{_datadir}/libtool/$i .
 done
 autoconf
 
@@ -264,35 +200,33 @@ export rb_cv_func_strtod
 
 # bug 489990
 CFLAGS="$RPM_OPT_FLAGS -fno-strict-aliasing"
-
 export CFLAGS
+
 %configure \
-  --with-sitedir='%{sitedir}' \
-  --with-default-kcode=none \
-  --with-bundled-sha1 \
-  --with-bundled-md5 \
-  --with-bundled-rmd160 \
-  --enable-shared \
-  --enable-ipv6 \
-  --enable-pthread \
-  --with-lookup-order-hack=INET \
-  --disable-rpath \
-%if 0%{?fedora} >= 12 || 0%{?rhel} >= 6
-  --with-readline-include=%{_includedir}/readline5 \
-  --with-readline-lib=%{_libdir}/readline5 \
-%endif
-  --with-ruby-prefix=%{_prefix}/lib
+	--with-default-kcode=none \
+	--enable-shared \
+	--enable-pthread \
+	--disable-rpath \
+	--with-readline-include=%{_includedir}/readline5 \
+	--with-readline-lib=%{_libdir}/readline5 \
+	--with-sitedir='%{sitelibbase}' \
+	--with-sitearchdir='%{sitearchbase}' \
+	--with-vendordir='%{vendorlibbase}' \
+	--with-vendorarchdir='%{vendorarchbase}'
 
 # For example ext/socket/extconf.rb uses try_run (for getaddrinfo test),
 # which executes conftest and setting LD_LIBRARY_PATH for libruby.so is
 # needed.
 export LD_LIBRARY_PATH=$(pwd)
 
-make RUBY_INSTALL_NAME=ruby %{?_smp_mflags} COPY="cp -p" %{?_smp_mflags}
+make RUBY_INSTALL_NAME=ruby \
+	COPY="cp -p" \
+	%{?_smp_mflags}
 %ifarch ia64
 # Miscompilation? Buggy code?
 rm -f parse.o
-make OPT=-O0 RUBY_INSTALL_NAME=ruby %{?_smp_mflags}
+make OPT=-O0 RUBY_INSTALL_NAME=ruby \
+	%{?_smp_mflags}
 %endif
 
 popd
@@ -300,158 +234,115 @@ popd
 %check
 pushd %{name}-%{arcver}
 %ifarch ppc64
-make test || :
+make test || true
 %else
 make test
 %endif
 popd
 
 %install
-rm -rf $RPM_BUILD_ROOT
-
-mkdir -p $RPM_BUILD_ROOT%{_emacs_sitelispdir}/ruby-mode
-mkdir -p $RPM_BUILD_ROOT%{_emacs_sitestartdir}
-
-# installing documents and exapmles...
+# install documenation in tmp directory to be
+# picked up by %%doc macros in %%files sections
 rm -rf tmp-ruby-docs
 mkdir tmp-ruby-docs
-cd tmp-ruby-docs
+pushd tmp-ruby-docs
 
-# for ruby.rpm
-mkdir ruby ruby-libs ruby-devel ruby-tcltk ruby-docs irb
-cd ruby
-(cd ../../%{name}-%{arcver} && tar cf - sample) | tar xvf -
-cd ..
+mkdir \
+	ruby ruby-libs ruby-tcltk irb
 
-# for ruby-libs
+# First gather all samples
+cp -a  ../%{name}-%{arcver}/sample/ ruby
+cp -a \
+	../%{name}-%{arcver}/lib/README* ../%{name}-%{arcver}/doc/ \
+	ruby-libs
+# Use tar to keep directory hierarchy
 cd ruby-libs
-(cd ../../%{name}-%{arcver} && tar cf - lib/README*) | tar xf -
-(cd ../../%{name}-%{arcver}/doc && tar cf - .) | tar xf -
-(cd ../../%{name}-%{arcver} &&
- tar cf - `find ext \
-  -mindepth 1 \
-  \( -path '*/sample/*' -o -path '*/demo/*' \) -o \
-  \( -name '*.rb' -not -path '*/lib/*' -not -name extconf.rb \) -o \
-  \( -name 'README*' -o -name '*.txt*' -o -name 'MANUAL*' \)`) | tar xf -
+(
+	cd ../../%{name}-%{arcver} ; \
+	find ext \
+	-mindepth 1 \
+ 	\( -path '*/sample/*' -o -path '*/demo/*' \) -o \
+	\( -name '*.rb' -not -path '*/lib/*' -not -name extconf.rb \) -o \
+ 	\( -name 'README*' -o -name '*.txt*' -o -name 'MANUAL*' \) \
+	\
+	| xargs tar cf -
+) \
+	| tar xf -
 cd ..
 
-# for irb
-cd irb
-mv ../ruby-libs/irb/* .
-rmdir ../ruby-libs/irb
-cd ..
-
-# for ruby-devel
-cd ruby-devel
-
-cd ..
-
-# for ruby-tcltk
-cd ruby-tcltk
-for target in tcltklib tk
-do
- (cd ../ruby-libs &&
-  tar cf - `find . -path "*/$target/*"`) | tar xf -
- (cd ../ruby-libs &&
-  rm -rf `find . -name "$target" -type d`)
-done
-cd ..
-
-# for ruby-docs
-cd ruby-docs
-mkdir refm-ja faq-en faq-ja
-(cd ../../ruby-refm-ja && tar cf - .) | (cd refm-ja && tar xf -)
-(cd ../../rubyfaq && tar cf - .) | (cd faq-en && tar xf -)
-(cd ../../rubyfaq-jp && tar cf - .) | (cd faq-ja && tar xf -)
-
-(cd faq-ja &&
- for f in rubyfaq-jp*.html
- do
-  sed -e 's/\(<a href="rubyfaq\)-jp\(\|-[0-9]*\)\(.html\)/\1\2\3/g' \
-   < $f > `echo $f | sed -e's/-jp//'`
-  rm -f $f; \
- done)
-cd ..
-
-# fixing `#!' paths
-for f in `find . -type f`
-do
-  sed -e 's,^#![ 	]*\([^ 	]*\)/\(ruby\|wish\|perl\|env\),#!/usr/bin/\2,' < $f > $f.n
-  if ! cmp $f $f.n
-  then
-    mv -f $f.n $f
-  else
-    rm -f $f.n
-  fi
-done
-
-# make sure that all doc files are the world-readable
+# make sure that all doc files are the world-readable 
 find -type f | xargs chmod 0644
 
-# convert to utf-8
-for i in `find -type f ! -name "*.gif"`; do
-    status=0
-    iconv -f utf-8 -t utf-8 $i >/dev/null || { iconv -f euc-jp -t utf-8 $i > $i.new && mv $i.new $i || status=1 ; }
-    if [ $status = 0 ]; then
-        if dirname $i | grep -q refm-ja ; then
-          sed -i -e '/encoding/s|EUC-JP|UTF-8|' -e '/charset/s|EUC-JP|UTF-8|' $i
-        fi
-    else
-        iconv -f iso8859-1 -t utf-8 $i > $.new && mv $i.new $i || rm -f $i.new
-    fi
+# Fix shebang
+grep -rl '#![ \t]*%{_prefix}/local/bin' . | \
+	xargs sed -i -e 's|\(#![ \t]*\)%{_prefix}/local/bin|\1%{_bindir}|'
+# Fix encoding
+# Suppress message
+set +x
+find . -type f | while read f ; do
+	file $f | grep -q 'text' || continue
+	iconv -f UTF-8 -t UTF-8 $f &> /dev/null && continue
+	for encoding in \
+		EUC-JP ISO-8859-1
+	do
+		iconv -f $encoding -t UTF-8 $f -o $f.tmp 2>/dev/null && \
+			{ touch -r $f $f.tmp ; mv $f.tmp $f ; \
+				echo -e "$f\t: converted from $encoding -t UTF-8" ; continue 2; } || \
+			rm -f $f.tmp
+	done
 done
+# Enable message
+set -x
 
-# fix Japanese encoding strings for ruby-tcltk/ext/tk/sample/
-pushd ruby-tcltk/ext/tk/
+# irb
+mv ruby-libs/doc/irb/* irb
+rm -rf ruby-libs/doc/irb
+
+# tcltk
+mv ruby-libs/ext/tk/* ruby-tcltk/
+rmdir ruby-libs/ext/tk
+
+## Fix encodings
+pushd ruby-tcltk
 cd sample
 find . -path ./demos-jp/\*.rb -or -path ./tkoptdb\*.rb -or -path ./msgs_rb2/ja.msg | \
-    xargs sed -i -e 's|euc-jp|utf-8|'
+	xargs sed -i -e 's|euc-jp|utf-8|'
 sed -i \
-    -e '/KCODE =/s|euc|utf-8|' -e 's|EUC-JP|UTF-8|' \
-    demos-jp/widget
+	-e '/KCODE =/s|euc|utf-8|' -e 's|EUC-JP|UTF-8|' \
+	demos-jp/widget
 cd ..
 sed -i -e 's|EUC-JP|UTF-8|' README.1st
 popd
 
-# done
-cd ..
+# done w/ docs
+popd
 
 # installing binaries ...
-make -C $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{arcver} DESTDIR=$RPM_BUILD_ROOT install
+make \
+	-C $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{arcver} \
+	DESTDIR=$RPM_BUILD_ROOT \
+	install
 
 # generate ri doc
 rubybuilddir=$RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{arcver}
 rm -rf %{name}-%{arcver}/.ext/rdoc
-LD_LIBRARY_PATH=$RPM_BUILD_ROOT%{_libdir} RUBYLIB=$RPM_BUILD_ROOT%{_libdir}/ruby/%{rubyxver}:$RPM_BUILD_ROOT%{_libdir}/ruby/%{rubyxver}/%{_normalized_cpu}-%{_target_os} make -C $rubybuilddir DESTDIR=$RPM_BUILD_ROOT install-doc
-#DESTDIR=$RPM_BUILD_ROOT LD_LIBRARY_PATH=$RPM_BUILD_ROOT%{_libdir} $RPM_BUILD_ROOT%{_bindir}/ruby -I $rubybuilddir -I $RPM_BUILD_ROOT%{_libdir}/ruby/%{rubyxver}/%{_normalized_cpu}-%{_target_os}/ -I $rubybuilddir/lib $RPM_BUILD_ROOT%{_bindir}/rdoc --all --ri-system $rubybuilddir
+env \
+	LD_LIBRARY_PATH=$RPM_BUILD_ROOT%{_libdir} \
+	RUBYLIB=$RPM_BUILD_ROOT%{vendorarchbase}/%{rubyxver}:$RPM_BUILD_ROOT%{vendorarchbase}/%{rubyxver}/%{_normalized_cpu}-%{_target_os} \
+	make \
+		-C $rubybuilddir DESTDIR=$RPM_BUILD_ROOT \
+		install-doc
 
-mkdir -p $RPM_BUILD_ROOT%{sitedir2}/%{rubyxver}
-mkdir -p $RPM_BUILD_ROOT%{sitedir}/%{rubyxver}/%{_normalized_cpu}-%{_target_os}
-
-# XXX: installing irb
-install -p -m 0644 %{SOURCE4} $RPM_BUILD_ROOT%{_mandir}/man1/
-
-# installing ruby-mode
-cd %{name}-%{arcver}
-cp -p misc/*.el $RPM_BUILD_ROOT%{_emacs_sitelispdir}/ruby-mode
-
-## for ruby-mode
-pushd $RPM_BUILD_ROOT%{_emacs_sitelispdir}/ruby-mode
-cat <<EOF > path.el
-(setq load-path (cons "." load-path) byte-compile-warnings nil)
-EOF
-emacs --no-site-file -q -batch -l path.el -f batch-byte-compile *.el
-rm -f path.el*
-popd
-install -p -m 644 %{SOURCE10} \
-	$RPM_BUILD_ROOT%{_emacs_sitestartdir}
-
-cd ..
+mkdir -p $RPM_BUILD_ROOT%{sitelibbase}/%{rubyxver}
+mkdir -p $RPM_BUILD_ROOT%{sitearchbase}/%{rubyxver}/%{_normalized_cpu}-%{_target_os}
 
 # remove shebang
-for i in $RPM_BUILD_ROOT%{_prefix}/lib/ruby/1.8/{abbrev,generator,irb/{cmd/subirb,ext/save-history},matrix,rdoc/{markup/sample/rdoc2latex,parsers/parse_rb},set,tsort}.rb; do
+for i in \
+	$RPM_BUILD_ROOT%{vendorlibbase}/1.8/{abbrev,generator,irb/{cmd/subirb,ext/save-history},matrix,rdoc/{markup/sample/rdoc2latex,parsers/parse_rb},set,tsort}.rb; \
+	do
 	sed -i -e '/^#!.*/,1D' $i
 done
+chmod 0644 $RPM_BUILD_ROOT%{vendorarchbase}/%{rubyxver}/%{_normalized_cpu}-%{_target_os}/*.h
 
 find $RPM_BUILD_ROOT/ -name "*.so" -exec chmod 755 {} \;
 
@@ -464,182 +355,195 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-, root, root, -)
-%doc %{name}-%{arcver}/COPYING*
-%doc %{name}-%{arcver}/ChangeLog
-%doc %{name}-%{arcver}/GPL
-%doc %{name}-%{arcver}/LEGAL
-%doc %{name}-%{arcver}/LGPL
-%doc %{name}-%{arcver}/NEWS
-%doc %{name}-%{arcver}/README
-%lang(ja) %doc %{name}-%{arcver}/README.ja
-%doc %{name}-%{arcver}/ToDo
-%doc %{name}-%{arcver}/doc/ChangeLog-1.8.0
-%doc %{name}-%{arcver}/doc/NEWS-1.8.0
-%doc tmp-ruby-docs/ruby/*
+%doc	%{name}-%{arcver}/COPYING*
+%doc	%{name}-%{arcver}/ChangeLog
+%doc	%{name}-%{arcver}/GPL
+%doc	%{name}-%{arcver}/LEGAL
+%doc	%{name}-%{arcver}/LGPL
+%doc	%{name}-%{arcver}/NEWS
+%doc	%{name}-%{arcver}/README
+%lang(ja)	%doc	%{name}-%{arcver}/README.ja
+%doc	%{name}-%{arcver}/ToDo
+%doc	tmp-ruby-docs/ruby/*
 %{_bindir}/ruby
 %{_bindir}/erb
 %{_bindir}/testrb
 %{_mandir}/man1/ruby.1*
 
-%files devel
+%files	devel
 %defattr(-, root, root, -)
-%doc %{name}-%{arcver}/COPYING*
-%doc %{name}-%{arcver}/ChangeLog
-%doc %{name}-%{arcver}/GPL
-%doc %{name}-%{arcver}/LEGAL
-%doc %{name}-%{arcver}/LGPL
-%doc %{name}-%{arcver}/README.EXT
-%lang(ja) %doc %{name}-%{arcver}/README.EXT.ja
+%doc	%{name}-%{arcver}/COPYING*
+%doc	%{name}-%{arcver}/ChangeLog
+%doc	%{name}-%{arcver}/GPL
+%doc	%{name}-%{arcver}/LEGAL
+%doc	%{name}-%{arcver}/LGPL
+%doc	%{name}-%{arcver}/README.EXT
+%lang(ja)	%doc	%{name}-%{arcver}/README.EXT.ja
 %{_libdir}/libruby.so
-#%%{_libdir}/libruby-static.a
-%{_libdir}/ruby/%{rubyxver}/*/*.h
+%{vendorarchbase}/%{rubyxver}/%{_normalized_cpu}-%{_target_os}/*.h
 
-%files static
+%files	static
 %defattr(-, root, root, -)
 %{_libdir}/libruby-static.a
 
-%files libs
+%files	libs
 %defattr(-, root, root, -)
 %doc %{name}-%{arcver}/README
-%lang(ja) %doc %{name}-%{arcver}/README.ja
-%doc %{name}-%{arcver}/COPYING*
-%doc %{name}-%{arcver}/ChangeLog
-%doc %{name}-%{arcver}/GPL
-%doc %{name}-%{arcver}/LEGAL
-%doc %{name}-%{arcver}/LGPL
-%dir %{_prefix}/lib/ruby
-%dir %{_prefix}/lib/ruby/%{rubyxver}
-%ifnarch ppc64 s390x sparc64 x86_64
-%if "%{_gnu}" == "-gnueabi"
-%dir %{_prefix}/lib/ruby/%{rubyxver}/%{_normalized_cpu}-%{_target_os}-eabi
-%else
-%dir %{_prefix}/lib/ruby/%{rubyxver}/%{_normalized_cpu}-%{_target_os}
-%endif
-%endif
+%lang(ja)	%doc	%{name}-%{arcver}/README.ja
+%doc	%{name}-%{arcver}/COPYING*
+%doc	%{name}-%{arcver}/ChangeLog
+%doc	%{name}-%{arcver}/GPL
+%doc	%{name}-%{arcver}/LEGAL
+%doc	%{name}-%{arcver}/LGPL
+%doc	tmp-ruby-docs/ruby-libs/*
+%dir	%{vendorlibbase}
+%dir	%{vendorlibbase}/%{rubyxver}
+%{sitelibbase}
 %ifarch ppc64 s390x sparc64 x86_64
-%dir %{_libdir}/ruby
-%dir %{_libdir}/ruby/%{rubyxver}
-%dir %{_libdir}/ruby/%{rubyxver}/%{_normalized_cpu}-%{_target_os}
-%{sitedir}
+%dir	%{vendorarchbase}
+%dir	%{vendorarchbase}/%{rubyxver}
+%{sitearchbase}
 %endif
-%{sitedir2}
 ## the following files should goes into ruby-tcltk package.
-%exclude %{_prefix}/lib/ruby/%{rubyxver}/*tk.rb
-%exclude %{_prefix}/lib/ruby/%{rubyxver}/tcltk.rb
-%exclude %{_prefix}/lib/ruby/%{rubyxver}/tk
-%exclude %{_prefix}/lib/ruby/%{rubyxver}/tk*.rb
-%exclude %{_prefix}/lib/ruby/%{rubyxver}/tkextlib
-%exclude %{_libdir}/ruby/%{rubyxver}/*/tcltklib.so
-%exclude %{_libdir}/ruby/%{rubyxver}/*/tkutil.so
+%exclude	%{vendorlibbase}/%{rubyxver}/*tk.rb
+%exclude	%{vendorlibbase}/%{rubyxver}/tcltk.rb
+%exclude	%{vendorlibbase}/%{rubyxver}/tk
+%exclude	%{vendorlibbase}/%{rubyxver}/tk*.rb
+%exclude	%{vendorlibbase}/%{rubyxver}/tkextlib
+%exclude	%{vendorarchbase}/%{rubyxver}/%{_normalized_cpu}-%{_target_os}/tcltklib.so
+%exclude	%{vendorarchbase}/%{rubyxver}/%{_normalized_cpu}-%{_target_os}/tkutil.so
 ## the following files should goes into ruby-rdoc package.
-%exclude %{_prefix}/lib/ruby/%{rubyxver}/rdoc
+%exclude	%{vendorlibbase}/%{rubyxver}/rdoc
 ## the following files should goes into ruby-irb package.
-%exclude %{_prefix}/lib/ruby/%{rubyxver}/irb.rb
-%exclude %{_prefix}/lib/ruby/%{rubyxver}/irb
+%exclude	%{vendorlibbase}/%{rubyxver}/irb.rb
+%exclude	%{vendorlibbase}/%{rubyxver}/irb
 ## files in ruby-libs from here
-%{_prefix}/lib/ruby/%{rubyxver}/*.rb
-%{_prefix}/lib/ruby/%{rubyxver}/bigdecimal
-%{_prefix}/lib/ruby/%{rubyxver}/cgi
-%{_prefix}/lib/ruby/%{rubyxver}/date
-%{_prefix}/lib/ruby/%{rubyxver}/digest
-%{_prefix}/lib/ruby/%{rubyxver}/dl
-%{_prefix}/lib/ruby/%{rubyxver}/drb
-%{_prefix}/lib/ruby/%{rubyxver}/io
-%{_prefix}/lib/ruby/%{rubyxver}/net
-%{_prefix}/lib/ruby/%{rubyxver}/openssl
-%{_prefix}/lib/ruby/%{rubyxver}/optparse
-%{_prefix}/lib/ruby/%{rubyxver}/racc
-%{_prefix}/lib/ruby/%{rubyxver}/rexml
-%{_prefix}/lib/ruby/%{rubyxver}/rinda
-%{_prefix}/lib/ruby/%{rubyxver}/rss
-%{_prefix}/lib/ruby/%{rubyxver}/runit
-%{_prefix}/lib/ruby/%{rubyxver}/shell
-%{_prefix}/lib/ruby/%{rubyxver}/soap
-%{_prefix}/lib/ruby/%{rubyxver}/test
-%{_prefix}/lib/ruby/%{rubyxver}/uri
-%{_prefix}/lib/ruby/%{rubyxver}/webrick
-%{_prefix}/lib/ruby/%{rubyxver}/wsdl
-%{_prefix}/lib/ruby/%{rubyxver}/xmlrpc
-%{_prefix}/lib/ruby/%{rubyxver}/xsd
-%{_prefix}/lib/ruby/%{rubyxver}/yaml
+%{vendorlibbase}/%{rubyxver}/*.rb
+%{vendorlibbase}/%{rubyxver}/bigdecimal
+%{vendorlibbase}/%{rubyxver}/cgi
+%{vendorlibbase}/%{rubyxver}/date
+%{vendorlibbase}/%{rubyxver}/digest
+%{vendorlibbase}/%{rubyxver}/dl
+%{vendorlibbase}/%{rubyxver}/drb
+%{vendorlibbase}/%{rubyxver}/io
+%{vendorlibbase}/%{rubyxver}/net
+%{vendorlibbase}/%{rubyxver}/openssl
+%{vendorlibbase}/%{rubyxver}/optparse
+%{vendorlibbase}/%{rubyxver}/racc
+%{vendorlibbase}/%{rubyxver}/rexml
+%{vendorlibbase}/%{rubyxver}/rinda
+%{vendorlibbase}/%{rubyxver}/rss
+%{vendorlibbase}/%{rubyxver}/runit
+%{vendorlibbase}/%{rubyxver}/shell
+%{vendorlibbase}/%{rubyxver}/soap
+%{vendorlibbase}/%{rubyxver}/test
+%{vendorlibbase}/%{rubyxver}/uri
+%{vendorlibbase}/%{rubyxver}/webrick
+%{vendorlibbase}/%{rubyxver}/wsdl
+%{vendorlibbase}/%{rubyxver}/xmlrpc
+%{vendorlibbase}/%{rubyxver}/xsd
+%{vendorlibbase}/%{rubyxver}/yaml
 %{_libdir}/libruby.so.*
-%{_libdir}/ruby/%{rubyxver}/*/*.so
-%{_libdir}/ruby/%{rubyxver}/*/digest
-%{_libdir}/ruby/%{rubyxver}/*/io
-%{_libdir}/ruby/%{rubyxver}/*/racc
-%{_libdir}/ruby/%{rubyxver}/*/rbconfig.rb
+%{vendorarchbase}/%{rubyxver}/%{_normalized_cpu}-%{_target_os}/*.so
+%{vendorarchbase}/%{rubyxver}/%{_normalized_cpu}-%{_target_os}/digest
+%{vendorarchbase}/%{rubyxver}/%{_normalized_cpu}-%{_target_os}/io
+%{vendorarchbase}/%{rubyxver}/%{_normalized_cpu}-%{_target_os}/racc
+%{vendorarchbase}/%{rubyxver}/%{_normalized_cpu}-%{_target_os}/rbconfig.rb
 
 %files tcltk
 %defattr(-, root, root, -)
-%doc %{name}-%{arcver}/COPYING*
-%doc %{name}-%{arcver}/ChangeLog
-%doc %{name}-%{arcver}/GPL
-%doc %{name}-%{arcver}/LEGAL
-%doc %{name}-%{arcver}/LGPL
-%doc tmp-ruby-docs/ruby-tcltk/ext/*
-%{_prefix}/lib/ruby/%{rubyxver}/*-tk.rb
-%{_prefix}/lib/ruby/%{rubyxver}/tcltk.rb
-%{_prefix}/lib/ruby/%{rubyxver}/tk
-%{_prefix}/lib/ruby/%{rubyxver}/tk*.rb
-%{_prefix}/lib/ruby/%{rubyxver}/tkextlib
-%{_libdir}/ruby/%{rubyxver}/*/tcltklib.so
-%{_libdir}/ruby/%{rubyxver}/*/tkutil.so
+%doc	%{name}-%{arcver}/COPYING*
+%doc	%{name}-%{arcver}/ChangeLog
+%doc	%{name}-%{arcver}/GPL
+%doc	%{name}-%{arcver}/LEGAL
+%doc	%{name}-%{arcver}/LGPL
+%doc	tmp-ruby-docs/ruby-tcltk/*
+%{vendorlibbase}/%{rubyxver}/*-tk.rb
+%{vendorlibbase}/%{rubyxver}/tcltk.rb
+%{vendorlibbase}/%{rubyxver}/tk
+%{vendorlibbase}/%{rubyxver}/tk*.rb
+%{vendorlibbase}/%{rubyxver}/tkextlib
+%{vendorarchbase}/%{rubyxver}/%{_normalized_cpu}-%{_target_os}/tcltklib.so
+%{vendorarchbase}/%{rubyxver}/%{_normalized_cpu}-%{_target_os}/tkutil.so
 
-%files rdoc
+%files	rdoc
 %defattr(-, root, root, -)
-%doc %{name}-%{arcver}/COPYING*
-%doc %{name}-%{arcver}/ChangeLog
-%doc %{name}-%{arcver}/GPL
-%doc %{name}-%{arcver}/LEGAL
-%doc %{name}-%{arcver}/LGPL
+%doc	%{name}-%{arcver}/COPYING*
+%doc	%{name}-%{arcver}/ChangeLog
+%doc	%{name}-%{arcver}/GPL
+%doc	%{name}-%{arcver}/LEGAL
+%doc	%{name}-%{arcver}/LGPL
 %{_bindir}/rdoc
-%{_prefix}/lib/ruby/%{rubyxver}/rdoc
+%{vendorlibbase}/%{rubyxver}/rdoc
 
 %files irb
 %defattr(-, root, root, -)
-%doc %{name}-%{arcver}/COPYING*
-%doc %{name}-%{arcver}/ChangeLog
-%doc %{name}-%{arcver}/GPL
-%doc %{name}-%{arcver}/LEGAL
-%doc %{name}-%{arcver}/LGPL
-%doc tmp-ruby-docs/irb/*
+%doc	%{name}-%{arcver}/COPYING*
+%doc	%{name}-%{arcver}/ChangeLog
+%doc	%{name}-%{arcver}/GPL
+%doc	%{name}-%{arcver}/LEGAL
+%doc	%{name}-%{arcver}/LGPL
+%doc	tmp-ruby-docs/irb/*
 %{_bindir}/irb
-%{_prefix}/lib/ruby/%{rubyxver}/irb.rb
-%{_prefix}/lib/ruby/%{rubyxver}/irb
-%{_mandir}/man1/irb.1*
+%{vendorlibbase}/%{rubyxver}/irb.rb
+%{vendorlibbase}/%{rubyxver}/irb
 
 %files ri
 %defattr(-, root, root, -)
-%doc %{name}-%{arcver}/COPYING*
-%doc %{name}-%{arcver}/ChangeLog
-%doc %{name}-%{arcver}/GPL
-%doc %{name}-%{arcver}/LEGAL
-%doc %{name}-%{arcver}/LGPL
+%doc	%{name}-%{arcver}/COPYING*
+%doc	%{name}-%{arcver}/ChangeLog
+%doc	%{name}-%{arcver}/GPL
+%doc	%{name}-%{arcver}/LEGAL
+%doc	%{name}-%{arcver}/LGPL
 %{_bindir}/ri
 %{_datadir}/ri
 
-%files docs
-%defattr(-, root, root, -)
-%doc %{name}-%{arcver}/COPYING*
-%doc %{name}-%{arcver}/ChangeLog
-%doc %{name}-%{arcver}/GPL
-%doc %{name}-%{arcver}/LEGAL
-%doc %{name}-%{arcver}/LGPL
-%doc tmp-ruby-docs/ruby-docs/*
-%doc tmp-ruby-docs/ruby-libs/*
-
-%files mode
-%defattr(-, root, root, -)
-%doc %{name}-%{arcver}/COPYING*
-%doc %{name}-%{arcver}/ChangeLog
-%doc %{name}-%{arcver}/GPL
-%doc %{name}-%{arcver}/LEGAL
-%doc %{name}-%{arcver}/LGPL
-%doc %{name}-%{arcver}/misc/README
-%{_emacs_sitelispdir}/ruby-mode
-%{_emacs_sitestartdir}/ruby-mode-init.el
-
 %changelog
+* Mon Jul 26 2010 Mamoru Tasaka <mtasaka@ioa.s.u-tokyo.ac.jp> - 1.8.7.299-4
+- Cleanup spec file
+- Make -irb, -rdoc subpackage noarch
+- Make dependencies between arch-dependent subpackages isa specific
+- Improve sample documentation gathering
+
+* Mon Jul 12 2010 Mohammed Morsi <mmorsi@redhat.com> - 1.8.7.299-3
+- updated packaged based on feedback (from mtasaka)
+- added comments to all patches / sources
+- obsoleted ruby-mode, as it's now provided by the emacs package itself
+- readded missing documentation
+- various small compatability/regression fixes
+
+* Tue Jul 06 2010 Mohammed Morsi <mmorsi@redhat.com> - 1.8.7.299-2
+- readded bits to pull tk package from upstream source branch
+- removed unecessary .tk.old dir
+- renamed macros which may cause confusion, removed unused ones
+
+* Thu Jun 24 2010 Mohammed Morsi <mmorsi@redhat.com> - 1.8.7.299-1
+- integrate more of jmeyering's and mtaska's feedback
+- removed emacs bits that are now shipped with the emacs package
+- various patch and spec cleanup
+- rebased to ruby 1.8.7 patch 299, removed patches no longer needed:
+   ruby-1.8.7-openssl-1.0.patch, ruby-1.8.7-rb_gc_guard_ptr-optimization.patch
+
+* Wed Jun 23 2010 Mohammed Morsi <mmorsi@redhat.com> - 1.8.7.249-5
+- Various fixes
+
+* Wed Jun 23 2010 Mohammed Morsi <mmorsi@redhat.com> - 1.8.7.249-4
+- Fixed incorrect paths in 1.8.7 rpm
+
+* Tue Jun 22 2010 Mohammed Morsi <mmorsi@redhat.com> - 1.8.7.249-3
+- Integrated Jim Meyering's feedback and changes in to:
+- remove trailing blanks
+- placate rpmlint
+- ruby_* definitions: do not use trailing slashes in directory names
+- _normalized_cpu: simplify definition
+
+* Mon Jun 21 2010 Mohammed Morsi <mmorsi@redhat.com> - 1.8.7.249-2
+- Integrate mtasaka's feedback and changes
+- patch101 ruby_1_8_7-rb_gc_guard_ptr-optimization.patch
+
+* Tue Jun 15 2010 Mohammed Morsi <mmorsi@redhat.com> - 1.8.7.249-1
+- Initial Ruby 1.8.7 specfile
+
 * Wed May 19 2010 Mamoru Tasaka <mtasaka@ioa.s.u-tokyo.ac.jp> - 1.8.6.399-5
 - Retry for bug 559158, Simplify the OpenSSL::Digest class
   pull more change commits from ruby_1_8 branch
@@ -709,7 +613,7 @@ rm -rf $RPM_BUILD_ROOT
 
 * Thu Jul 23 2009 Mamoru Tasaka <mtasaka@ioa.s.u-tokyo.ac.jp> - 1.8.6.369-2
 - Make sure that readline.so is linked against readline 5 because
-  Ruby is under GPLv2 
+  Ruby is under GPLv2
 
 * Sat Jun 20 2009  Jeroen van Meeuwen <kanarip@fedoraproject.org> - 1.8.6.369-1
 - New patchlevel fixing CVE-2009-1904

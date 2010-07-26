@@ -1,6 +1,6 @@
---- ruby-1.8.6-p383/lib/mkmf.rb.static	2009-03-31 18:19:39.000000000 +0900
-+++ ruby-1.8.6-p383/lib/mkmf.rb	2009-12-09 15:03:19.000000000 +0900
-@@ -275,7 +275,7 @@
+--- ruby-1.8.7-p249/lib/mkmf.rb.orig	2010-06-15 12:04:06.000000000 -0400
++++ ruby-1.8.7-p249/lib/mkmf.rb	2010-06-15 12:05:05.000000000 -0400
+@@ -319,7 +319,7 @@ def link_command(ldflags, opt="", libpat
                                'LDFLAGS' => "#$LDFLAGS #{ldflags}",
                                'LIBPATH' => libpathflag(libpath),
                                'LOCAL_LIBS' => "#$LOCAL_LIBS #$libs",
