@@ -16,7 +16,7 @@
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	4%{?dist}
+Release:	5%{?dist}
 # Please check if ruby upstream changes this to "Ruby or GPLv2+"
 License:	Ruby or GPLv2
 URL:		http://www.ruby-lang.org/
@@ -229,6 +229,14 @@ make OPT=-O0 RUBY_INSTALL_NAME=ruby \
 	%{?_smp_mflags}
 %endif
 
+# Generate ri doc
+rm -rf .ext/rdoc
+rm -rf ./RI_TMPDIR
+mkdir ./RI_TMPDIR
+make \
+	DESTDIR=$(pwd)/RI_TMPDIR \
+	install-doc
+
 popd
 
 %check
@@ -261,9 +269,9 @@ cd ruby-libs
 	cd ../../%{name}-%{arcver} ; \
 	find ext \
 	-mindepth 1 \
- 	\( -path '*/sample/*' -o -path '*/demo/*' \) -o \
+	\( -path '*/sample/*' -o -path '*/demo/*' \) -o \
 	\( -name '*.rb' -not -path '*/lib/*' -not -name extconf.rb \) -o \
- 	\( -name 'README*' -o -name '*.txt*' -o -name 'MANUAL*' \) \
+	\( -name 'README*' -o -name '*.txt*' -o -name 'MANUAL*' \) \
 	\
 	| xargs tar cf -
 ) \
@@ -275,7 +283,10 @@ find -type f | xargs chmod 0644
 
 # Fix shebang
 grep -rl '#![ \t]*%{_prefix}/local/bin' . | \
-	xargs sed -i -e 's|\(#![ \t]*\)%{_prefix}/local/bin|\1%{_bindir}|'
+	xargs sed -i -e '1s|\(#![ \t]*\)%{_prefix}/local/bin|\1%{_bindir}|'
+grep -rl '#![ \t]*\./ruby' . | \
+	xargs sed -i -e '1s|\(#![ \t]*\)\./ruby|%{_bindir}/ruby|'
+
 # Fix encoding
 # Suppress message
 set +x
@@ -323,25 +334,20 @@ make \
 	DESTDIR=$RPM_BUILD_ROOT \
 	install
 
-# generate ri doc
-rubybuilddir=$RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{arcver}
-rm -rf %{name}-%{arcver}/.ext/rdoc
-env \
-	LD_LIBRARY_PATH=$RPM_BUILD_ROOT%{_libdir} \
-	RUBYLIB=$RPM_BUILD_ROOT%{vendorarchbase}/%{rubyxver}:$RPM_BUILD_ROOT%{vendorarchbase}/%{rubyxver}/%{_normalized_cpu}-%{_target_os} \
-	make \
-		-C $rubybuilddir DESTDIR=$RPM_BUILD_ROOT \
-		install-doc
+# install ri doc
+cp -a ./%{name}-%{arcver}/RI_TMPDIR/* $RPM_BUILD_ROOT
 
 mkdir -p $RPM_BUILD_ROOT%{sitelibbase}/%{rubyxver}
 mkdir -p $RPM_BUILD_ROOT%{sitearchbase}/%{rubyxver}/%{_normalized_cpu}-%{_target_os}
 
 # remove shebang
 for i in \
-	$RPM_BUILD_ROOT%{vendorlibbase}/1.8/{abbrev,generator,irb/{cmd/subirb,ext/save-history},matrix,rdoc/{markup/sample/rdoc2latex,parsers/parse_rb},set,tsort}.rb; \
+	$RPM_BUILD_ROOT%{vendorlibbase}/%{rubyxver}/{abbrev,generator,irb/{cmd/subirb,ext/save-history},matrix,rdoc/{markup/sample/rdoc2latex,parsers/parse_rb},set,tsort}.rb; \
 	do
 	sed -i -e '/^#!.*/,1D' $i
 done
+# The following can be executable
+chmod 0755 $RPM_BUILD_ROOT%{vendorlibbase}/%{rubyxver}/tkextlib/pkg_checker.rb
 chmod 0644 $RPM_BUILD_ROOT%{vendorarchbase}/%{rubyxver}/%{_normalized_cpu}-%{_target_os}/*.h
 
 find $RPM_BUILD_ROOT/ -name "*.so" -exec chmod 755 {} \;
@@ -499,6 +505,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/ri
 
 %changelog
+* Mon Aug  2 2010 Mamoru Tasaka <mtasaka@ioa.s.u-tokyo.ac.jp> - 1.8.7.299-5
+- More cleanup of spec file, expecially for rpmlint issue
+- build ri files in %%build
+
 * Mon Jul 26 2010 Mamoru Tasaka <mtasaka@ioa.s.u-tokyo.ac.jp> - 1.8.7.299-4
 - Cleanup spec file
 - Make -irb, -rdoc subpackage noarch
