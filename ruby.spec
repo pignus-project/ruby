@@ -1,6 +1,6 @@
 %global	rubyxver	1.8
 %global	rubyver	1.8.7
-%global	_patchlevel	299
+%global	_patchlevel	302
 
 %global	dotpatchlevel	%{?_patchlevel:.%{_patchlevel}}
 %global	patchlevel	%{?_patchlevel:-p%{_patchlevel}}
@@ -12,11 +12,12 @@
 %{!?sitearchbase:	%global sitearchbase	%{vendorarchbase}/site_ruby}
 
 %global	_normalized_cpu	%(echo %{_target_cpu} | sed 's/^ppc/powerpc/;s/i.86/i386/')
-%global	ruby_tk_git_revision	415a3ef9ab82c65a7abc
+# Sun Aug 22 15:24:07 2010 +0000
+%global	ruby_tk_git_revision	54f344095916f83a2755a177f94e65a1c390a612
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	5%{?dist}
+Release:	1%{?dist}
 # Please check if ruby upstream changes this to "Ruby or GPLv2+"
 License:	Ruby or GPLv2
 URL:		http://www.ruby-lang.org/
@@ -505,6 +506,11 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/ri
 
 %changelog
+* Mon Aug 23 2010 Mamoru Tasaka <mtasaka@ioa.s.u-tokyo.ac.jp> - 1.8.7.302-1
+- Update to 1.8.7.302
+- CVE-2010-0541 (bug 587731) is fixed in this version
+- Update ext/tk to the latest head
+
 * Mon Aug  2 2010 Mamoru Tasaka <mtasaka@ioa.s.u-tokyo.ac.jp> - 1.8.7.299-5
 - More cleanup of spec file, expecially for rpmlint issue
 - build ri files in %%build
