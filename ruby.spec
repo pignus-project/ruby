@@ -17,7 +17,7 @@
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	1%{?dist}
+Release:	2%{?dist}
 # Please check if ruby upstream changes this to "Ruby or GPLv2+"
 License:	Ruby or GPLv2
 URL:		http://www.ruby-lang.org/
@@ -229,6 +229,22 @@ rm -f parse.o
 make OPT=-O0 RUBY_INSTALL_NAME=ruby \
 	%{?_smp_mflags}
 %endif
+
+# Avoid multilib conflict on -libs (bug 649174)
+# Maybe dlconfig.rb is unneeded anyway, however for now moving
+# dlconfig.rb and add wrapper (need checking)
+CONFIGARCH=$(./miniruby -rrbconfig -e "puts Config::CONFIG['arch']")
+[ -z "$CONFIGARCH" ] && exit 1
+pushd ext/dl
+mkdir $CONFIGARCH
+mv dlconfig.rb $CONFIGARCH/
+cat > dlconfig.rb <<EOF
+require 'rbconfig'
+dlconfig_path=File.join(File.dirname(__FILE__), Config::CONFIG['arch'], 'dlconfig')
+require dlconfig_path
+EOF
+popd
+
 
 # Generate ri doc
 rm -rf .ext/rdoc
@@ -506,6 +522,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/ri
 
 %changelog
+* Thu Nov  4 2010 Mamoru Tasaka <mtasaka@ioa.s.u-tokyo.ac.jp> - 1.8.7.302-2
+- Avoid multilib conflict on -libs subpackage (bug 649174)
+
 * Mon Aug 23 2010 Mamoru Tasaka <mtasaka@ioa.s.u-tokyo.ac.jp> - 1.8.7.302-1
 - Update to 1.8.7.302
 - CVE-2010-0541 (bug 587731) is fixed in this version
