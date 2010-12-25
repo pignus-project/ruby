@@ -1,6 +1,6 @@
 %global	rubyxver	1.8
 %global	rubyver	1.8.7
-%global	_patchlevel	302
+%global	_patchlevel	330
 
 %global	dotpatchlevel	%{?_patchlevel:.%{_patchlevel}}
 %global	patchlevel	%{?_patchlevel:-p%{_patchlevel}}
@@ -12,12 +12,12 @@
 %{!?sitearchbase:	%global sitearchbase	%{vendorarchbase}/site_ruby}
 
 %global	_normalized_cpu	%(echo %{_target_cpu} | sed 's/^ppc/powerpc/;s/i.86/i386/')
-# Sun Aug 22 15:24:07 2010 +0000
-%global	ruby_tk_git_revision	54f344095916f83a2755a177f94e65a1c390a612
+# Sun Dec 25 17:00:00 2010 +0000
+%global	ruby_tk_git_revision	f30eca26639ce538339bc488c7ed1fd397b0c13f
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	2%{?dist}
+Release:	1%{?dist}
 # Please check if ruby upstream changes this to "Ruby or GPLv2+"
 License:	Ruby or GPLv2
 URL:		http://www.ruby-lang.org/
@@ -52,7 +52,7 @@ Source100:	ruby-rev%{ruby_tk_git_revision}-ext_tk.tar.gz
 # Patches 23, 29, and 33 brought over from ruby 1.8.6
 #  (updated to apply against 1.8.7 source)
 # If building against a 64bit arch, use 64bit libdir
-Patch23:	ruby-1.8.7-multilib.patch
+Patch23:	ruby-1.8.7-p330-multilib.patch
 # Mark all i.86 arch's (eg i586, i686, etc) as i386
 Patch29:	ruby-1.8.7-always-use-i386.patch
 # Use shared libs as opposed to static for mkmf
@@ -522,6 +522,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/ri
 
 %changelog
+* Sun Dec 26 2010 Mamoru Tasaka <mtasaka@ioa.s.u-tokyo.ac.jp> - 1.8.7.330-1
+- Update to 1.8.7 p330
+- ext/tk updated to the newest header
+
 * Thu Nov  4 2010 Mamoru Tasaka <mtasaka@ioa.s.u-tokyo.ac.jp> - 1.8.7.302-2
 - Avoid multilib conflict on -libs subpackage (bug 649174)
 
