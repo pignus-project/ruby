@@ -11,13 +11,13 @@
 %{!?sitelibbase:	%global sitelibbase	%{vendorlibbase}/site_ruby}
 %{!?sitearchbase:	%global sitearchbase	%{vendorarchbase}/site_ruby}
 
-%global	_normalized_cpu	%(echo %{_target_cpu} | sed 's/^ppc/powerpc/;s/i.86/i386/')
+%global	_normalized_cpu	%(echo %{_target_cpu} | sed 's/^ppc/powerpc/;s/i.86/i386/;s/sparcv./sparc/')
 # Sun Dec 25 17:00:00 2010 +0000
 %global	ruby_tk_git_revision	f30eca26639ce538339bc488c7ed1fd397b0c13f
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	1%{?dist}
+Release:	2%{?dist}
 # Please check if ruby upstream changes this to "Ruby or GPLv2+"
 License:	Ruby or GPLv2
 URL:		http://www.ruby-lang.org/
@@ -522,6 +522,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/ri
 
 %changelog
+* Sun Jan 02 2011 Dennis Gilmore <dennis@ausil.us> - 1.8.7.330-2
+- nomalise the 32 bit sparc archs to sparc
+
 * Sun Dec 26 2010 Mamoru Tasaka <mtasaka@ioa.s.u-tokyo.ac.jp> - 1.8.7.330-1
 - Update to 1.8.7 p330
 - ext/tk updated to the newest header
