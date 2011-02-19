@@ -1,6 +1,6 @@
 %global	rubyxver	1.8
 %global	rubyver	1.8.7
-%global	_patchlevel	330
+%global	_patchlevel	334
 
 %global	dotpatchlevel	%{?_patchlevel:.%{_patchlevel}}
 %global	patchlevel	%{?_patchlevel:-p%{_patchlevel}}
@@ -17,7 +17,7 @@
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	3%{?dist}
+Release:	1%{?dist}
 # Please check if ruby upstream changes this to "Ruby or GPLv2+"
 License:	Ruby or GPLv2
 URL:		http://www.ruby-lang.org/
@@ -522,6 +522,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/ri
 
 %changelog
+* Sat Feb 19 2011 Mamoru Tasaka <mtasaka@ioa.s.u-tokyo.ac.jp> - 1.8.7.334-1
+- Update to 1.8.7 p334
+
 * Wed Feb 09 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.8.7.330-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
 
