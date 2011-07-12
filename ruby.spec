@@ -11,13 +11,13 @@
 %{!?sitelibbase:	%global sitelibbase	%{vendorlibbase}/site_ruby}
 %{!?sitearchbase:	%global sitearchbase	%{vendorarchbase}/site_ruby}
 
-%global	_normalized_cpu	%(echo %{_target_cpu} | sed 's/^ppc/powerpc/;s/i.86/i386/;s/sparcv./sparc/')
+%global	_normalized_cpu	%(echo %{_target_cpu} | sed 's/^ppc/powerpc/;s/i.86/i386/;s/sparcv./sparc/;s/armv.*/arm/')
 # Sun Dec 25 17:00:00 2010 +0000
 %global	ruby_tk_git_revision	f30eca26639ce538339bc488c7ed1fd397b0c13f
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	2%{?dist}
+Release:	3%{?dist}
 # Please check if ruby upstream changes this to "Ruby or GPLv2+"
 License:	Ruby or GPLv2
 URL:		http://www.ruby-lang.org/
@@ -525,6 +525,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/ri
 
 %changelog
+* Mon Jul 11 2011 Dennis Gilmore <dennis@ausil.us> - 1.8.7.334-3
+- normalise arm cpus to arm
+
 * Mon May 30 2011 Mamoru Tasaka <mtasaka@fedoraproject.org> - 1.8.7.334-2
 - Own %%{_normalized_cpu}-%%{_target_os} directory (bug 708816)
 
