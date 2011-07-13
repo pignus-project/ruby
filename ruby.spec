@@ -17,7 +17,7 @@
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	3%{?dist}
+Release:	4%{?dist}
 # Please check if ruby upstream changes this to "Ruby or GPLv2+"
 License:	Ruby or GPLv2
 URL:		http://www.ruby-lang.org/
@@ -188,6 +188,11 @@ pushd %{name}-%{arcver}
 ) 
 
 popd
+
+# Once fix FTBTS issue (bug 716021). Remove the below
+# when it is no longer needed.
+sed -i.redirect  -e '\@RUBY@s@\.rb >@\.rb | cat >@' %{name}-%{arcver}/ext/dl/depend
+
 
 %build
 pushd %{name}-%{arcver}
@@ -525,6 +530,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/ri
 
 %changelog
+* Thu Jul 14 2011 Mamoru Tasaka <mtasaka@fedoraproject.org> - 1.8.7.334-4
+- Once fix FTBFS (bug 716021)
+
 * Mon Jul 11 2011 Dennis Gilmore <dennis@ausil.us> - 1.8.7.334-3
 - normalise arm cpus to arm
 
