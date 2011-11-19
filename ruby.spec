@@ -204,7 +204,7 @@ sed -i.redirect  -e '\@RUBY@s@\.rb >@\.rb | cat >@' %{name}-%{arcver}/ext/dl/dep
 
 # Disable gdbm support on F-17 for now
 %if 0%{?fedora} >= 17
-sed -i '\@dblib =@s|gdbm[^ ]*||g' ext/dbm/extconf.rb
+sed -i '\@dblib =@s|gdbm[^ ]*||g' %{name}-%{arcver}/ext/dbm/extconf.rb
 %endif
 
 
