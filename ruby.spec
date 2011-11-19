@@ -17,14 +17,16 @@
 
 Name:		ruby
 Version:	%{rubyver}%{?dotpatchlevel}
-Release:	2%{?dist}
+Release:	3%{?dist}
 # Please check if ruby upstream changes this to "Ruby or GPLv2+"
 License:	Ruby or GPLv2
 URL:		http://www.ruby-lang.org/
 
 BuildRequires:	compat-readline5-devel
 BuildRequires:	db4-devel
+%if 0%{?fedora} < 17
 BuildRequires:	gdbm-devel
+%endif
 BuildRequires:	libX11-devel
 BuildRequires:	ncurses-devel
 BuildRequires:	openssl-devel
@@ -199,6 +201,11 @@ popd
 # Once fix FTBTS issue (bug 716021). Remove the below
 # when it is no longer needed.
 sed -i.redirect  -e '\@RUBY@s@\.rb >@\.rb | cat >@' %{name}-%{arcver}/ext/dl/depend
+
+# Disable gdbm support on F-17 for now
+%if 0%{?fedora} >= 17
+sed -i '\@dblib =@s|gdbm[^ ]*||g' ext/dbm/extconf.rb
+%endif
 
 
 %build
@@ -537,6 +544,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/ri
 
 %changelog
+* Thu Nov 16 2011 Mamoru Tasaka <mtasaka@fedoraproject.org> - 1.8.7.352-3
+- F-17: kill gdbm support for now due to licensing compatibility issue
+
 * Sat Oct  1 2011 Mamoru Tasaka <mtasaka@fedoraproject.org> - 1.8.7.352-2
 - F-17: rebuild against new gdbm
 
