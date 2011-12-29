@@ -545,7 +545,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %changelog
 * Thu Dec 29 2011 Mamoru Tasaka <mtasaka@fedoraproject.org> - 1.8.7.357-1
-- Update to 1.8.7p352
+- Update to 1.8.7p357
 - Randomize hash on process startup (CVE-2011-4815, bug 750564)
 
 * Fri Dec 23 2011 Dennis Gilmore <dennis@ausil.us> - 1.8.7.352-2
