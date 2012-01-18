@@ -702,6 +702,7 @@ make check
 
 %changelog
 * Wed Jan 18 2012 Vít Ondruch <vondruch@redhat.com> - 1.9.3.0-5
+- Initial release of Ruby 1.9.3.
 - Add rubygems dependency on io-console for user interactions.
 - Gems license clarification.
 
@@ -710,18 +711,18 @@ make check
 - Create and own RubyGems directories for binary extensions.
 - Fix build with GCC 4.7.
 
-* Wed Jan 04 2012 Vít Ondruch <vondruch@redhat.com> - 1.9.3.0-3
+* Wed Jan 16 2012 Vít Ondruch <vondruch@redhat.com> - 1.9.3.0-3
 - Fix RHEL build.
 - Fixed directory ownership.
 - Verose build output.
 
-* Wed Dec 14 2011 Vít Ondruch <vondruch@redhat.com> - 1.9.3.0-2
+* Wed Jan 15 2012 Vít Ondruch <vondruch@redhat.com> - 1.9.3.0-2
 - Install RubyGems outside of Ruby directory structure.
 - RubyGems has not its own -devel subpackage.
 - Enhanced macros.ruby and macros.rubygems.
 - All tests are green now (bkabrda).
 
-* Tue Sep 23 2011 Vít Ondruch <vondruch@redhat.com> - 1.9.3.0-1
+* Tue Jan 14 2012 Vít Ondruch <vondruch@redhat.com> - 1.9.3.0-1
 - Initial package
 
 * Sat Jan 14 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.8.7.357-2
