@@ -1,82 +1,109 @@
-%global	rubyxver	1.8
-%global	rubyver	1.8.7
-%global	_patchlevel	357
+%global major_version 1
+%global minor_version 9
+%global teeny_version 3
+%global patch_level 0
 
-%global	dotpatchlevel	%{?_patchlevel:.%{_patchlevel}}
-%global	patchlevel	%{?_patchlevel:-p%{_patchlevel}}
-%global	arcver		%{rubyver}%{?patchlevel}
+%global major_minor_version %{major_version}.%{minor_version}
 
-%{!?vendorlibbase:	%global vendorlibbase	%{_prefix}/lib/ruby}
-%{!?vendorarchbase:	%global vendorarchbase	%{_libdir}/ruby}
-%{!?sitelibbase:	%global sitelibbase	%{vendorlibbase}/site_ruby}
-%{!?sitearchbase:	%global sitearchbase	%{vendorarchbase}/site_ruby}
+%global ruby_version %{major_minor_version}.%{teeny_version}
+%global ruby_version_patch_level %{major_minor_version}.%{teeny_version}.%{patch_level}
+%global ruby_abi %{major_minor_version}.1
 
-%global	_normalized_cpu	%(echo %{_target_cpu} | sed 's/^ppc/powerpc/;s/i.86/i386/;s/sparcv./sparc/')
-# Fri Jul 15 21:28:10 2011 +0000
-%global	ruby_tk_git_revision	c2dfaa7d40531aef3706bcc16f38178b0c6633ee
+%global ruby_archive %{name}-%{ruby_version}-p%{patch_level}
 
-Name:		ruby
-Version:	%{rubyver}%{?dotpatchlevel}
-Release:	2%{?dist}
-# Please check if ruby upstream changes this to "Ruby or GPLv2+"
-License:	Ruby or GPLv2
-URL:		http://www.ruby-lang.org/
+%global ruby_libdir %{_datadir}/%{name}
+%global ruby_libarchdir %{_libdir}/%{name}
 
-BuildRequires:	compat-readline5-devel
-BuildRequires:	db4-devel
-%if 0%{?fedora} < 17
-BuildRequires:	gdbm-devel
-%endif
-BuildRequires:	libX11-devel
-BuildRequires:	ncurses-devel
-BuildRequires:	openssl-devel
-BuildRequires:	tcl-devel
-BuildRequires:	tk-devel
+# This is the local lib/arch and should not be used for packaging.
+%global ruby_sitedir site_ruby
+%global ruby_sitelibdir %{_prefix}/local/share/ruby/%{ruby_sitedir}
+%global ruby_sitearchdir %{_prefix}/local/%{_lib}/ruby/%{ruby_sitedir}
 
-BuildRequires:	autoconf
-BuildRequires:	bison
-BuildRequires:	byacc
+# This is the general location for libs/archs compatible with all
+# or most of the Ruby versions available in the Fedora repositories.
+%global ruby_vendordir vendor_ruby
+%global ruby_vendorlibdir %{_datadir}/ruby/%{ruby_vendordir}
+%global ruby_vendorarchdir %{_libdir}/ruby/%{ruby_vendordir}
 
-# Official ruby source release tarball
-Source0:	ftp://ftp.ruby-lang.org/pub/%{name}/%{rubyxver}/%{name}-%{arcver}.tar.bz2
+%global rubygems_version 1.8.11
 
-# Source100: contains ext/tk directory of the ruby source head
-# see http://lists.fedoraproject.org/pipermail/ruby-sig/2010-May/000096.html 
-# and bug 560053, 590503.
-# To checkout, run the following commands
-# (replacing 'ruby_tk_git_revision' with the value of the macro above):
-# *  git clone http://github.com/ruby/ruby.git
-# *  cd ruby
-# *  git checkout %%{ruby_tk_git_revision} ext/tk
-# *  tar czvf ruby-rev%%{ruby_tk_git_revision}-ext_tk.tar.gz ext/tk
-Source100:	ruby-rev%{ruby_tk_git_revision}-ext_tk.tar.gz
+# The RubyGems library has to stay out of Ruby directory three, since the
+# RubyGems should be share by all Ruby implementations.
+%global rubygems_dir %{_datadir}/rubygems
 
-# Patches 23, 29, and 33 brought over from ruby 1.8.6
-#  (updated to apply against 1.8.7 source)
-# If building against a 64bit arch, use 64bit libdir
-Patch23:	ruby-1.8.7-p330-multilib.patch
-# Mark all i.86 arch's (eg i586, i686, etc) as i386
-Patch29:	ruby-1.8.7-always-use-i386.patch
-# Use shared libs as opposed to static for mkmf
-# See bug 428384
-Patch33:	ruby-1.8.7-p249-mkmf-use-shared.patch
-# Remove duplicate path entry
-# bug 718695
-Patch34:	ruby-1.8.7-p352-path-uniq.patch
-# Change ruby load path to conform to Fedora/ruby
-# library placement (various 1.8.6 patches consolidated into this)
-Patch100:	ruby-1.8.7-lib-paths.patch
+# Specify custom RubyGems root.
+%global gem_dir %{_datadir}/gems
+# TODO: Should we create arch specific rubygems-filesystem?
+%global gem_extdir %{_exec_prefix}/lib{,64}/gems
 
-Summary:	An interpreter of object-oriented scripting language
-Group:		Development/Languages
-Requires:	%{name}-libs%{?_isa} = %{version}-%{release}
+%global rake_version 0.9.2.2
+# TODO: The IRB has strange versioning. Keep the Ruby's versioning ATM.
+# http://redmine.ruby-lang.org/issues/5313
+%global irb_version %{ruby_version_patch_level}
+%global rdoc_version 3.9.4
+%global bigdecimal_version 1.1.0
+%global io_console_version 0.3
+%global json_version 1.5.4
+%global minitest_version 2.5.1
 
-# emacs-23.2.x itself now provides the ruby mode
-# And no Provides here
-Obsoletes:	%{name}-mode < 1.8.7
-# remove old documentation
-# And no Provides here
-Obsoletes:	%{name}-docs < 1.8.7
+%global	_normalized_cpu	%(echo %{_target_cpu} | sed 's/^ppc/powerpc/;s/i.86/i386/;s/sparcv./sparc/;s/armv.*/arm/')
+
+Summary: An interpreter of object-oriented scripting language
+Name: ruby
+Version: %{ruby_version_patch_level}
+Release: 5%{?dist}
+Group: Development/Languages
+License: Ruby or BSD
+URL: http://ruby-lang.org/
+Source0: ftp://ftp.ruby-lang.org/pub/%{name}/%{major_minor_version}/%{ruby_archive}.tar.gz
+Source1: operating_system.rb
+
+# http://redmine.ruby-lang.org/issues/5231
+Patch0: ruby-1.9.3-disable-versioned-paths.patch
+# TODO: Should be submitted upstream?
+Patch1: ruby-1.9.3-arch-specific-dir.patch
+# http://redmine.ruby-lang.org/issues/5281
+Patch2: ruby-1.9.3-added-site-and-vendor-arch-flags.patch
+# Force multiarch directories for i.86 to be always named i386. This solves
+# some differencies in build between Fedora and RHEL.
+Patch3: ruby-1.9.3-always-use-i386.patch
+# http://redmine.ruby-lang.org/issues/5465
+Patch4: ruby-1.9.3-fix-s390x-build.patch
+# Fix the uninstaller, so that it doesn't say that gem doesn't exist
+# when it exists outside of the GEM_HOME (already fixed in the upstream)
+Patch5: ruby-1.9.3-rubygems-1.8.11-uninstaller.patch
+# http://redmine.ruby-lang.org/issues/5135 - see comment 29
+Patch6: ruby-1.9.3-webrick-test-fix.patch
+# Already fixed upstream:
+# https://github.com/ruby/ruby/commit/f212df564a4e1025f9fb019ce727022a97bfff53
+Patch7: ruby-1.9.3-bignum-test-fix.patch
+# Allows to install RubyGems into custom directory, outside of Ruby's tree.
+# http://redmine.ruby-lang.org/issues/5617
+Patch8: ruby-1.9.3-custom-rubygems-location.patch
+# Add support for installing binary extensions according to FHS.
+# https://github.com/rubygems/rubygems/issues/210
+Patch9: rubygems-1.8.11-binary-extensions.patch
+# Fixes segfaults when build with GCC 4.7.
+# http://bugs.ruby-lang.org/issues/5851
+Patch10: ruby-1.9.3-prevent-optimizing-sp.patch
+# Fixes json encoding failures when build with GCC 4.7.
+# http://bugs.ruby-lang.org/issues/5888
+Patch11: ruby-1.9.3-fix-json-parser.patch
+
+Requires: %{name}-libs%{?_isa} = %{version}-%{release}
+Requires: ruby(rubygems) >= %{rubygems_version}
+
+BuildRequires: autoconf
+BuildRequires: gdbm-devel
+BuildRequires: ncurses-devel
+BuildRequires: db4-devel
+BuildRequires: libffi-devel
+BuildRequires: openssl-devel
+BuildRequires: libyaml-devel
+BuildRequires: readline-devel
+BuildRequires: tk-devel
+# Needed to pass test_set_program_name(TestRubyOptions)
+BuildRequires: procps
 
 %description
 Ruby is the interpreted scripting language for quick and easy
@@ -85,465 +112,618 @@ files and to do system management tasks (as in Perl).  It is simple,
 straight-forward, and extensible.
 
 
-%package	libs
-Summary:	Libraries necessary to run Ruby
-Group:		Development/Libraries
-# ext/bigdecimal/bigdecimal.{c,h} are under (GPL+ or Artistic) which
-# are used for bigdecimal.so
-License:	(Ruby or GPLv2) and (GPL+ or Artistic)
-Provides:	ruby(abi) = %{rubyxver}
-Provides:	libruby = %{version}-%{release}
-Obsoletes:	libruby < %{version}-%{release}
+%package devel
+Summary:    A Ruby development environment
+Group:      Development/Languages
+# Requires:   %{name}-libs = %{version}-%{release}
+Requires:   %{name}%{?_isa} = %{version}-%{release}
+
+%description devel
+Header files and libraries for building an extension library for the
+Ruby or an application embedding Ruby.
+
+%package libs
+Summary:    Libraries necessary to run Ruby
+Group:      Development/Libraries
+License:    Ruby or BSD
+Provides:   ruby(abi) = %{ruby_abi}
 
 %description libs
 This package includes the libruby, necessary to run Ruby.
 
+# TODO: Rename or not rename to ruby-rubygems?
+%package -n rubygems
+Summary:    The Ruby standard for packaging ruby libraries
+Version:    %{rubygems_version}
+Group:      Development/Libraries
+License:    Ruby or MIT
+Requires:   ruby(abi) = %{ruby_abi}
+Requires:   rubygem(rdoc) = %{rdoc_version}
+Requires:   rubygem(io-console) = %{io_console_version}
+Provides:   gem = %{version}-%{release}
+Provides:   ruby(rubygems) = %{version}-%{release}
+BuildArch:  noarch
 
-%package	devel
-Summary:	A Ruby development environment
-Group:		Development/Languages
-Requires:	%{name}-libs%{?_isa} = %{version}-%{release}
+%description -n rubygems
+RubyGems is the Ruby standard for publishing and managing third party
+libraries.
 
-%description	devel
-Header files and libraries for building a extension library for the
-Ruby or an application embedded Ruby.
 
-%package	static
-Summary:	Static libraries for Ruby development environment
-Group:		Development/Languages
-Requires:	%{name}-devel%{?_isa} = %{version}-%{release}
+%package -n rubygems-devel
+Summary:    Macros and development tools for packagin RubyGems
+Version:    %{rubygems_version}
+Group:      Development/Libraries
+License:    Ruby or MIT
+Requires:   ruby(rubygems) = %{version}-%{release}
+BuildArch:  noarch
 
-%description	static
-Static libraries for for building a extension library for the
-Ruby or an application embedded Ruby.
+%description -n rubygems-devel
+Macros and development tools for packagin RubyGems.
 
-%package	irb
-Summary:	The Interactive Ruby
-Group:		Development/Languages
-# No isa specific
-Requires:	%{name} = %{version}-%{release}
-Provides:	irb = %{version}-%{release}
-Obsoletes:	irb < %{version}-%{release}
-BuildArch:	noarch
+
+%package -n rubygem-rake
+Summary:    Ruby based make-like utility
+Version:    %{rake_version}
+Group:      Development/Libraries
+License:    Ruby or MIT
+Requires:   ruby(abi) = %{ruby_abi}
+Requires:   ruby(rubygems) = %{rubygems_version}
+Provides:   rake = %{version}-%{release}
+Provides:   rubygem(rake) = %{version}-%{release}
+BuildArch:  noarch
+
+%description -n rubygem-rake
+Rake is a Make-like program implemented in Ruby. Tasks and dependencies are
+specified in standard Ruby syntax.
+
+
+%package irb
+Summary:    The Interactive Ruby
+Version:    %{irb_version}
+Group:      Development/Libraries
+Requires:   %{name}-libs = %{ruby_version_patch_level}
+Provides:   irb = %{version}-%{release}
+Provides:   ruby(irb) = %{version}-%{release}
+BuildArch:  noarch
 
 %description irb
 The irb is acronym for Interactive Ruby.  It evaluates ruby expression
 from the terminal.
 
 
-%package	rdoc
-Summary:	A tool to generate documentation from Ruby source files
-Group:		Development/Languages
-# generators/template/html/html.rb is under CC-BY
-License:	(GPLv2 or Ruby) and CC-BY
-# No isa specific
-Requires:	%{name}-irb = %{version}-%{release}
-Provides:	rdoc = %{version}-%{release}
-Obsoletes:	rdoc < %{version}-%{release}
-BuildArch:	noarch
+%package -n rubygem-rdoc
+Summary:    A tool to generate HTML and command-line documentation for Ruby projects
+Version:    %{rdoc_version}
+Group:      Development/Libraries
+License:    GPLv2 and Ruby and MIT
+Requires:   ruby(abi) = %{ruby_abi}
+Requires:   ruby(rubygems) = %{rubygems_version}
+Requires:   ruby(irb) = %{irb_version}
+Provides:   rdoc = %{version}-%{release}
+Provides:   ri = %{version}-%{release}
+Provides:   rubygem(rdoc) = %{version}-%{release}
+Obsoletes:  ruby-rdoc < %{version}
+Obsoletes:  ruby-ri < %{version}
+# TODO: It seems that ri documentation differs from platform to platform due to
+# some encoding bugs, therefore the documentation should be split out of this gem
+# or kept platform specific.
+# https://github.com/rdoc/rdoc/issues/71
+# BuildArch:  noarch
 
-%description rdoc
-The rdoc is a tool to generate the documentation from Ruby source files.
-It supports some output formats, like HTML, Ruby interactive reference (ri),
-XML and Windows Help file (chm).
+%description -n rubygem-rdoc
+RDoc produces HTML and command-line documentation for Ruby projects.  RDoc
+includes the 'rdoc' and 'ri' tools for generating and displaying online
+documentation.
 
 
-%package	ri
-Summary:	Ruby interactive reference
-Group:		Documentation
-## ruby-irb requires ruby, which ruby-rdoc requires
-#Requires: %%{name} = %%{version}-%%{release}
-# No isa specific
-Requires:	%{name}-rdoc = %{version}-%{release}
-Provides:	ri = %{version}-%{release}
-Obsoletes:	ri < %{version}-%{release}
-# FIXME: Make ruby-ri really arch independent
-# BuildArch:	noarch # Currently commented out
+%package -n rubygem-bigdecimal
+Summary:    BigDecimal provides arbitrary-precision floating point decimal arithmetic
+Version:    %{bigdecimal_version}
+Group:      Development/Libraries
+License:    GPL+ or Artistic
+Requires:   ruby(abi) = %{ruby_abi}
+Requires:   ruby(rubygems) = %{rubygems_version}
+Provides:   rubygem(bigdecimal) = %{version}-%{release}
 
-%description ri
-ri is a command line tool that displays descriptions of built-in
-Ruby methods, classes and modules. For methods, it shows you the calling
-sequence and a description. For classes and modules, it shows a synopsis
-along with a list of the methods the class or module implements.
+%description -n rubygem-bigdecimal
+Ruby provides built-in support for arbitrary precision integer arithmetic.
+For example:
 
-##
-## ruby-tcltk
-##
-%package	tcltk
-Summary:	Tcl/Tk interface for scripting language Ruby
-Group:		Development/Languages
-Requires:	%{name}-libs%{?_isa} = %{version}-%{release}
+42**13 -> 1265437718438866624512
+
+BigDecimal provides similar support for very large or very accurate floating
+point numbers. Decimal arithmetic is also useful for general calculation,
+because it provides the correct answers people expect–whereas normal binary
+floating point arithmetic often introduces subtle errors because of the
+conversion between base 10 and base 2.
+
+
+%package -n rubygem-io-console
+Summary:    IO/Console is a simple console utilizing library
+Version:    %{io_console_version}
+Group:      Development/Libraries
+Requires:   ruby(abi) = %{ruby_abi}
+Requires:   ruby(rubygems) = %{rubygems_version}
+Provides:   rubygem(io-console) = %{version}-%{release}
+
+%description -n rubygem-io-console
+IO/Console provides very simple and portable access to console. It doesn’t
+provide higher layer features, such like curses and readline.
+
+
+%package -n rubygem-json
+Summary:    This is a JSON implementation as a Ruby extension in C
+Version:    %{json_version}
+Group:      Development/Libraries
+License:    Ruby or GPLv2
+Requires:   ruby(abi) = %{ruby_abi}
+Requires:   ruby(rubygems) = %{rubygems_version}
+Provides:   rubygem(json) = %{version}-%{release}
+
+%description -n rubygem-json
+This is a implementation of the JSON specification according to RFC 4627.
+You can think of it as a low fat alternative to XML, if you want to store
+data to disk or transmit it over a network rather than use a verbose
+markup language.
+
+
+%package -n rubygem-minitest
+Summary:    Minitest provides a complete suite of testing facilities.
+Version:    %{minitest_version}
+Group:      Development/Libraries
+License:    MIT
+Requires:   ruby(abi) = %{ruby_abi}
+Requires:   ruby(rubygems) = %{rubygems_version}
+Provides:   rubygem(minitest) = %{version}-%{release}
+BuildArch:  noarch
+
+%description -n rubygem-minitest
+minitest/unit is a small and incredibly fast unit testing framework.
+
+minitest/spec is a functionally complete spec engine.
+
+minitest/benchmark is an awesome way to assert the performance of your
+algorithms in a repeatable manner.
+
+minitest/mock by Steven Baker, is a beautifully tiny mock object
+framework.
+
+minitest/pride shows pride in testing and adds coloring to your test
+output.
+
+
+%package tcltk
+Summary:    Tcl/Tk interface for scripting language Ruby
+Group:      Development/Languages
+Requires:   %{name}-libs%{?_isa} = %{ruby_version_patch_level}
+Provides:   ruby(tcltk) = %{ruby_version_patch_level}-%{release}
 
 %description tcltk
 Tcl/Tk interface for the object-oriented scripting language Ruby.
 
 %prep
-%setup -q -c -a 100
-pushd %{name}-%{arcver}
-%patch23 -p1
-%patch29 -p1
-%patch33 -p1
-%patch34 -p1
-%patch100 -p1
+%setup -q -n %{ruby_archive}
 
-( 
-	cd ext
-	rm -rf tk
-	cp -a ../../ext/tk tk
-	find tk -type d -name \.svn | sort -r | xargs rm -rf
-
-# Remove rpath
-	sed -i.rpath -e 's|-Wl,-R|-L|g' tk/extconf.rb
-) 
-
-popd
-
-# Once fix FTBTS issue (bug 716021). Remove the below
-# when it is no longer needed.
-sed -i.redirect  -e '\@RUBY@s@\.rb >@\.rb | cat >@' %{name}-%{arcver}/ext/dl/depend
-
-# Disable gdbm support on F-17 for now
-%if 0%{?fedora} >= 17
-sed -i '\@dblib =@s|gdbm[^ ]*||g' %{name}-%{arcver}/ext/dbm/extconf.rb
-%endif
-
+%patch0 -p1
+%patch1 -p1
+%patch2 -p1
+%patch3 -p1
+%patch4 -p1
+%patch5 -p1
+%patch6 -p1
+%patch7 -p1
+%patch8 -p1
+%patch9 -p1
+%patch10
+%patch11 -p1
 
 %build
-pushd %{name}-%{arcver}
-for i in config.sub config.guess; do
-	test -f %{_datadir}/libtool/$i && cp -p %{_datadir}/libtool/$i .
-done
 autoconf
 
-rb_cv_func_strtod=no
-export rb_cv_func_strtod
-
-# bug 489990
-CFLAGS="$RPM_OPT_FLAGS -fno-strict-aliasing"
-export CFLAGS
-
 %configure \
-	--with-default-kcode=none \
-	--enable-shared \
-	--enable-pthread \
-	--disable-rpath \
-	--with-readline-include=%{_includedir}/readline5 \
-	--with-readline-lib=%{_libdir}/readline5 \
-	--with-sitedir='%{sitelibbase}' \
-	--with-sitearchdir='%{sitearchbase}' \
-	--with-vendordir='%{vendorlibbase}' \
-	--with-vendorarchdir='%{vendorarchbase}'
+        --with-rubylibprefix='%{ruby_libdir}' \
+        --with-archdir='%{ruby_libarchdir}' \
+        --with-sitedir='%{ruby_sitelibdir}' \
+        --with-sitearchdir='%{ruby_sitearchdir}' \
+        --with-vendordir='%{ruby_vendorlibdir}' \
+        --with-vendorarchdir='%{ruby_vendorarchdir}' \
+        --with-rubyhdrdir='%{_includedir}' \
+        --with-rubygemsdir='%{rubygems_dir}' \
+        --disable-rpath \
+        --enable-shared \
+        --disable-versioned-paths
 
-# For example ext/socket/extconf.rb uses try_run (for getaddrinfo test),
-# which executes conftest and setting LD_LIBRARY_PATH for libruby.so is
-# needed.
-export LD_LIBRARY_PATH=$(pwd)
+# Q= makes the build output more verbose and allows to check Fedora
+# compiler options.
+make %{?_smp_mflags} COPY="cp -p" Q=
 
-make RUBY_INSTALL_NAME=ruby \
-	COPY="cp -p" \
-	%{?_smp_mflags}
-%ifarch ia64
-# Miscompilation? Buggy code?
-rm -f parse.o
-make OPT=-O0 RUBY_INSTALL_NAME=ruby \
-	%{?_smp_mflags}
-%endif
-
-# Avoid multilib conflict on -libs (bug 649174)
-# Maybe dlconfig.rb is unneeded anyway, however for now moving
-# dlconfig.rb and add wrapper (need checking)
-CONFIGARCH=$(./miniruby -rrbconfig -e "puts Config::CONFIG['arch']")
-[ -z "$CONFIGARCH" ] && exit 1
-pushd ext/dl
-mkdir $CONFIGARCH
-mv dlconfig.rb $CONFIGARCH/
-cat > dlconfig.rb <<EOF
-require 'rbconfig'
-dlconfig_path=File.join(File.dirname(__FILE__), Config::CONFIG['arch'], 'dlconfig')
-require dlconfig_path
-EOF
-popd
-
-
-# Generate ri doc
-rm -rf .ext/rdoc
-rm -rf ./RI_TMPDIR
-mkdir ./RI_TMPDIR
-make \
-	DESTDIR=$(pwd)/RI_TMPDIR \
-	install-doc
-
-popd
-
-%check
-pushd %{name}-%{arcver}
-%ifarch ppc64
-make test || true
-%else
-make test
-%endif
-popd
 
 %install
-# install documenation in tmp directory to be
-# picked up by %%doc macros in %%files sections
-rm -rf tmp-ruby-docs
-mkdir tmp-ruby-docs
-pushd tmp-ruby-docs
+rm -rf %{buildroot}
+make install DESTDIR=%{buildroot}
 
-mkdir \
-	ruby ruby-libs ruby-tcltk irb
+# Dump the macros into macro.ruby to use them to build other Ruby libraries.
+mkdir -p %{buildroot}%{_sysconfdir}/rpm
+cat >> %{buildroot}%{_sysconfdir}/rpm/macros.ruby << \EOF
+%%ruby_libdir %{_datadir}/%{name}
+%%ruby_libarchdir %{_libdir}/%{name}
 
-# First gather all samples
-cp -a  ../%{name}-%{arcver}/sample/ ruby
-cp -a \
-	../%{name}-%{arcver}/lib/README* ../%{name}-%{arcver}/doc/ \
-	ruby-libs
-# Use tar to keep directory hierarchy
-cd ruby-libs
-(
-	cd ../../%{name}-%{arcver} ; \
-	find ext \
-	-mindepth 1 \
-	\( -path '*/sample/*' -o -path '*/demo/*' \) -o \
-	\( -name '*.rb' -not -path '*/lib/*' -not -name extconf.rb \) -o \
-	\( -name 'README*' -o -name '*.txt*' -o -name 'MANUAL*' \) \
-	\
-	| xargs tar cf -
-) \
-	| tar xf -
-cd ..
+# This is the local lib/arch and should not be used for packaging.
+%%ruby_sitedir site_ruby
+%%ruby_sitelibdir %{_prefix}/local/share/ruby/%{ruby_sitedir}
+%%ruby_sitearchdir %{_prefix}/local/%{_lib}/ruby/%{ruby_sitedir}
 
-# make sure that all doc files are the world-readable 
-find -type f | xargs chmod 0644
+# This is the general location for libs/archs compatible with all
+# or most of the Ruby versions available in the Fedora repositories.
+%%ruby_vendordir vendor_ruby
+%%ruby_vendorlibdir %{_datadir}/ruby/%{ruby_vendordir}
+%%ruby_vendorarchdir %{_libdir}/ruby/%{ruby_vendordir}
+EOF
 
-# Fix shebang
-grep -rl '#![ \t]*%{_prefix}/local/bin' . | \
-	xargs sed -i -e '1s|\(#![ \t]*\)%{_prefix}/local/bin|\1%{_bindir}|'
-grep -rl '#![ \t]*\./ruby' . | \
-	xargs sed -i -e '1s|\(#![ \t]*\)\./ruby|%{_bindir}/ruby|'
+cat >> %{buildroot}%{_sysconfdir}/rpm/macros.rubygems << \EOF
+# The RubyGems root folder.
+%%gem_dir %{gem_dir}
 
-# Fix encoding
-# Suppress message
-set +x
-find . -type f | while read f ; do
-	file $f | grep -q 'text' || continue
-	iconv -f UTF-8 -t UTF-8 $f &> /dev/null && continue
-	for encoding in \
-		EUC-JP ISO-8859-1
-	do
-		iconv -f $encoding -t UTF-8 $f -o $f.tmp 2>/dev/null && \
-			{ touch -r $f $f.tmp ; mv $f.tmp $f ; \
-				echo -e "$f\t: converted from $encoding -t UTF-8" ; continue 2; } || \
-			rm -f $f.tmp
-	done
-done
-# Enable message
-set -x
+# Common gem locations and files.
+%%gem_instdir %%{gem_dir}/gems/%%{gem_name}-%%{version}
+%%gem_extdir %%{_libdir}/gems/exts/%%{gem_name}-%%{version}
+%%gem_libdir %%{gem_instdir}/lib
+%%gem_cache %%{gem_dir}/cache/%%{gem_name}-%%{version}.gem
+%%gem_spec %%{gem_dir}/specifications/%%{gem_name}-%%{version}.gemspec
+%%gem_docdir %%{gem_dir}/doc/%%{gem_name}-%%{version}
+EOF
 
-# irb
-mv ruby-libs/doc/irb/* irb
-rm -rf ruby-libs/doc/irb
+# Install custom operating_system.rb.
+mkdir -p %{buildroot}%{rubygems_dir}/rubygems/defaults
+cp %{SOURCE1} %{buildroot}%{rubygems_dir}/rubygems/defaults
 
-# tcltk
-mv ruby-libs/ext/tk/* ruby-tcltk/
-rmdir ruby-libs/ext/tk
+# Move gems root into common direcotry, out of Ruby directory structure.
+mv %{buildroot}%{ruby_libdir}/gems/%{ruby_abi} %{buildroot}%{gem_dir}
 
-## Fix encodings
-pushd ruby-tcltk
-cd sample
-find . -path ./demos-jp/\*.rb -or -path ./tkoptdb\*.rb -or -path ./msgs_rb2/ja.msg | \
-	xargs sed -i -e 's|euc-jp|utf-8|'
-sed -i \
-	-e '/KCODE =/s|euc|utf-8|' -e 's|EUC-JP|UTF-8|' \
-	demos-jp/widget
-cd ..
-sed -i -e 's|EUC-JP|UTF-8|' README.1st
-popd
+# Create folders for gem binary extensions.
+mkdir -p %{buildroot}%{gem_extdir}/exts
 
-# done w/ docs
-popd
+# Move bundled rubygems to %%gem_dir and %%gem_extdir
+mkdir -p %{buildroot}%{gem_dir}/gems/rake-%{rake_version}/lib
+mv %{buildroot}%{ruby_libdir}/rake* %{buildroot}%{gem_dir}/gems/rake-%{rake_version}/lib
 
-# installing binaries ...
-make \
-	-C $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{arcver} \
-	DESTDIR=$RPM_BUILD_ROOT \
-	install
+mkdir -p %{buildroot}%{gem_dir}/gems/rdoc-%{rdoc_version}/lib
+mv %{buildroot}%{ruby_libdir}/rdoc* %{buildroot}%{gem_dir}/gems/rdoc-%{rdoc_version}/lib
 
-# install ri doc
-cp -a ./%{name}-%{arcver}/RI_TMPDIR/* $RPM_BUILD_ROOT
+mkdir -p %{buildroot}%{gem_dir}/gems/bigdecimal-%{bigdecimal_version}/lib
+mkdir -p %{buildroot}%{_libdir}/gems/exts/bigdecimal-%{bigdecimal_version}/lib
+mv %{buildroot}%{ruby_libdir}/bigdecimal %{buildroot}%{gem_dir}/gems/bigdecimal-%{bigdecimal_version}/lib
+mv %{buildroot}%{ruby_libarchdir}/bigdecimal.so %{buildroot}%{_libdir}/gems/exts/bigdecimal-%{bigdecimal_version}/lib
 
-mkdir -p $RPM_BUILD_ROOT%{sitelibbase}/%{rubyxver}
-mkdir -p $RPM_BUILD_ROOT%{sitearchbase}/%{rubyxver}/%{_normalized_cpu}-%{_target_os}
+mkdir -p %{buildroot}%{gem_dir}/gems/io-console-%{io_console_version}/lib
+mkdir -p %{buildroot}%{_libdir}/gems/exts/io-console-%{io_console_version}/lib/io
+mv %{buildroot}%{ruby_libdir}/io %{buildroot}%{gem_dir}/gems/io-console-%{io_console_version}/lib
+mv %{buildroot}%{ruby_libarchdir}/io/console.so %{buildroot}%{_libdir}/gems/exts/io-console-%{io_console_version}/lib/io
 
-# remove shebang
-for i in \
-	$RPM_BUILD_ROOT%{vendorlibbase}/%{rubyxver}/{abbrev,generator,irb/{cmd/subirb,ext/save-history},matrix,rdoc/{markup/sample/rdoc2latex,parsers/parse_rb},set,tsort}.rb; \
-	do
-	sed -i -e '/^#!.*/,1D' $i
-done
-# The following can be executable
-chmod 0755 $RPM_BUILD_ROOT%{vendorlibbase}/%{rubyxver}/tkextlib/pkg_checker.rb
-chmod 0644 $RPM_BUILD_ROOT%{vendorarchbase}/%{rubyxver}/%{_normalized_cpu}-%{_target_os}/*.h
+mkdir -p %{buildroot}%{gem_dir}/gems/json-%{json_version}/lib
+mkdir -p %{buildroot}%{_libdir}/gems/exts/json-%{json_version}/lib
+mv %{buildroot}%{ruby_libdir}/json* %{buildroot}%{gem_dir}/gems/json-%{json_version}/lib
+mv %{buildroot}%{ruby_libarchdir}/json/ %{buildroot}%{_libdir}/gems/exts/json-%{json_version}/lib/
 
-find $RPM_BUILD_ROOT/ -name "*.so" -exec chmod 755 {} \;
+mkdir -p %{buildroot}%{gem_dir}/gems/minitest-%{minitest_version}/lib
+mv %{buildroot}%{ruby_libdir}/minitest %{buildroot}%{gem_dir}/gems/minitest-%{minitest_version}/lib
 
-%clean
-rm -rf $RPM_BUILD_ROOT
+# Adjust the gemspec files so that the gems will load properly
+sed -i '2 a\
+  s.require_paths = ["lib"]' %{buildroot}/%{gem_dir}/specifications/rake-%{rake_version}.gemspec
+
+sed -i '2 a\
+  s.require_paths = ["lib"]' %{buildroot}/%{gem_dir}/specifications/rdoc-%{rdoc_version}.gemspec
+
+sed -i -e '2 a\
+  s.require_paths = ["lib"]' -e '3 a\
+  s.extensions = ["bigdecimal.so"]' %{buildroot}/%{gem_dir}/specifications/bigdecimal-%{bigdecimal_version}.gemspec
+
+sed -i -e '2 a\
+  s.require_paths = ["lib"]' -e '3 a\
+  s.extensions = ["io/console.so"]' %{buildroot}/%{gem_dir}/specifications/io-console-%{io_console_version}.gemspec
+
+sed -i -e '2 a\
+  s.require_paths = ["lib"]' -e '3 a\
+  s.extensions = ["json/ext/parser.so", "json/ext/generator.so"]' %{buildroot}/%{gem_dir}/specifications/json-%{json_version}.gemspec
+
+sed -i '2 a\
+  s.require_paths = ["lib"]' %{buildroot}/%{gem_dir}/specifications/minitest-%{minitest_version}.gemspec
+
+%check
+make check
 
 %post libs -p /sbin/ldconfig
 
 %postun libs -p /sbin/ldconfig
 
 %files
-%defattr(-, root, root, -)
-%doc	%{name}-%{arcver}/COPYING*
-%doc	%{name}-%{arcver}/ChangeLog
-%doc	%{name}-%{arcver}/GPL
-%doc	%{name}-%{arcver}/LEGAL
-%doc	%{name}-%{arcver}/LGPL
-%doc	%{name}-%{arcver}/NEWS
-%doc	%{name}-%{arcver}/README
-%lang(ja)	%doc	%{name}-%{arcver}/README.ja
-%doc	%{name}-%{arcver}/ToDo
-%doc	tmp-ruby-docs/ruby/*
-%{_bindir}/ruby
+%doc COPYING
+%lang(ja) %doc COPYING.ja
+%doc ChangeLog
+%doc GPL
+%doc LEGAL
+%doc NEWS
+%doc README
+%lang(ja) %doc README.ja
+%doc ToDo
+%doc doc/ChangeLog-*
+%doc doc/NEWS-*
 %{_bindir}/erb
+%{_bindir}/ruby
 %{_bindir}/testrb
-%{_mandir}/man1/ruby.1*
+%{_mandir}/man1/erb*
+%{_mandir}/man1/ruby*
 
-%files	devel
-%defattr(-, root, root, -)
-%doc	%{name}-%{arcver}/COPYING*
-%doc	%{name}-%{arcver}/ChangeLog
-%doc	%{name}-%{arcver}/GPL
-%doc	%{name}-%{arcver}/LEGAL
-%doc	%{name}-%{arcver}/LGPL
-%doc	%{name}-%{arcver}/README.EXT
-%lang(ja)	%doc	%{name}-%{arcver}/README.EXT.ja
+# http://fedoraproject.org/wiki/Packaging:Guidelines#Packaging_Static_Libraries
+%exclude %{_libdir}/libruby-static.a
+
+%files devel
+%doc COPYING*
+%doc GPL
+%doc LEGAL
+%doc README.EXT
+%lang(ja) %doc README.EXT.ja
+
+%config(noreplace) %{_sysconfdir}/rpm/macros.ruby
+
+%{_includedir}/ruby.h
+%{_includedir}/ruby
+%dir %{_includedir}/%{_normalized_cpu}-%{_target_os}
+%{_includedir}/%{_normalized_cpu}-%{_target_os}/ruby
+
 %{_libdir}/libruby.so
-%{vendorarchbase}/%{rubyxver}/%{_normalized_cpu}-%{_target_os}/*.h
+%{_libdir}/pkgconfig/ruby-1.9.pc
 
-%files	static
-%defattr(-, root, root, -)
-%{_libdir}/libruby-static.a
+%files libs
+%doc COPYING
+%lang(ja) %doc COPYING.ja
+%doc GPL
+%doc LEGAL
+%doc README
+%lang(ja) %doc README.ja
+# Exclude /usr/local directory since it is supposed to be managed by
+# local system administrator.
+%exclude %{ruby_sitelibdir}
+%exclude %{ruby_sitearchdir}
+%{ruby_vendorlibdir}
+%{ruby_vendorarchdir}
 
-%files	libs
-%defattr(-, root, root, -)
-%doc %{name}-%{arcver}/README
-%lang(ja)	%doc	%{name}-%{arcver}/README.ja
-%doc	%{name}-%{arcver}/COPYING*
-%doc	%{name}-%{arcver}/ChangeLog
-%doc	%{name}-%{arcver}/GPL
-%doc	%{name}-%{arcver}/LEGAL
-%doc	%{name}-%{arcver}/LGPL
-%doc	tmp-ruby-docs/ruby-libs/*
-%dir	%{vendorlibbase}
-%dir	%{vendorlibbase}/%{rubyxver}
-%{sitelibbase}
-%ifarch ppc64 s390x sparc64 x86_64
-%dir	%{vendorarchbase}
-%dir	%{vendorarchbase}/%{rubyxver}
-%dir	%{vendorarchbase}/%{rubyxver}/%{_normalized_cpu}-%{_target_os}
-%{sitearchbase}
-%else
-%dir	%{vendorlibbase}/%{rubyxver}/%{_normalized_cpu}-%{_target_os}
-%endif
-## the following files should goes into ruby-tcltk package.
-%exclude	%{vendorlibbase}/%{rubyxver}/*tk.rb
-%exclude	%{vendorlibbase}/%{rubyxver}/tcltk.rb
-%exclude	%{vendorlibbase}/%{rubyxver}/tk
-%exclude	%{vendorlibbase}/%{rubyxver}/tk*.rb
-%exclude	%{vendorlibbase}/%{rubyxver}/tkextlib
-%exclude	%{vendorarchbase}/%{rubyxver}/%{_normalized_cpu}-%{_target_os}/tcltklib.so
-%exclude	%{vendorarchbase}/%{rubyxver}/%{_normalized_cpu}-%{_target_os}/tkutil.so
-## the following files should goes into ruby-rdoc package.
-%exclude	%{vendorlibbase}/%{rubyxver}/rdoc
-## the following files should goes into ruby-irb package.
-%exclude	%{vendorlibbase}/%{rubyxver}/irb.rb
-%exclude	%{vendorlibbase}/%{rubyxver}/irb
-## files in ruby-libs from here
-%{vendorlibbase}/%{rubyxver}/*.rb
-%{vendorlibbase}/%{rubyxver}/bigdecimal
-%{vendorlibbase}/%{rubyxver}/cgi
-%{vendorlibbase}/%{rubyxver}/date
-%{vendorlibbase}/%{rubyxver}/digest
-%{vendorlibbase}/%{rubyxver}/dl
-%{vendorlibbase}/%{rubyxver}/drb
-%{vendorlibbase}/%{rubyxver}/io
-%{vendorlibbase}/%{rubyxver}/net
-%{vendorlibbase}/%{rubyxver}/openssl
-%{vendorlibbase}/%{rubyxver}/optparse
-%{vendorlibbase}/%{rubyxver}/racc
-%{vendorlibbase}/%{rubyxver}/rexml
-%{vendorlibbase}/%{rubyxver}/rinda
-%{vendorlibbase}/%{rubyxver}/rss
-%{vendorlibbase}/%{rubyxver}/runit
-%{vendorlibbase}/%{rubyxver}/shell
-%{vendorlibbase}/%{rubyxver}/soap
-%{vendorlibbase}/%{rubyxver}/test
-%{vendorlibbase}/%{rubyxver}/uri
-%{vendorlibbase}/%{rubyxver}/webrick
-%{vendorlibbase}/%{rubyxver}/wsdl
-%{vendorlibbase}/%{rubyxver}/xmlrpc
-%{vendorlibbase}/%{rubyxver}/xsd
-%{vendorlibbase}/%{rubyxver}/yaml
+# List all these files explicitly to prevent surprises
+# Platform independent libraries.
+%dir %{ruby_libdir}
+%{ruby_libdir}/*.rb
+%exclude %{ruby_libdir}/*-tk.rb
+%exclude %{ruby_libdir}/irb.rb
+%exclude %{ruby_libdir}/tcltk.rb
+%exclude %{ruby_libdir}/tk*.rb
+%{ruby_libdir}/cgi
+%{ruby_libdir}/date
+%{ruby_libdir}/digest
+%{ruby_libdir}/dl
+%{ruby_libdir}/drb
+%{ruby_libdir}/fiddle
+%exclude %{ruby_libdir}/gems
+%exclude %{ruby_libdir}/irb
+%{ruby_libdir}/matrix
+%{ruby_libdir}/net
+%{ruby_libdir}/openssl
+%{ruby_libdir}/optparse
+%{ruby_libdir}/psych
+%{ruby_libdir}/racc
+%{ruby_libdir}/rbconfig
+%{ruby_libdir}/rexml
+%{ruby_libdir}/rinda
+%{ruby_libdir}/ripper
+%{ruby_libdir}/rss
+%{ruby_libdir}/shell
+%{ruby_libdir}/syck
+%{ruby_libdir}/test
+%exclude %{ruby_libdir}/tk
+%exclude %{ruby_libdir}/tkextlib
+%{ruby_libdir}/uri
+%{ruby_libdir}/webrick
+%{ruby_libdir}/xmlrpc
+%{ruby_libdir}/yaml
+
+# Platform specific libraries.
 %{_libdir}/libruby.so.*
-%{vendorarchbase}/%{rubyxver}/%{_normalized_cpu}-%{_target_os}/*.so
-%{vendorarchbase}/%{rubyxver}/%{_normalized_cpu}-%{_target_os}/digest
-%{vendorarchbase}/%{rubyxver}/%{_normalized_cpu}-%{_target_os}/io
-%{vendorarchbase}/%{rubyxver}/%{_normalized_cpu}-%{_target_os}/racc
-%{vendorarchbase}/%{rubyxver}/%{_normalized_cpu}-%{_target_os}/rbconfig.rb
+%dir %{ruby_libarchdir}
+%{ruby_libarchdir}/continuation.so
+%{ruby_libarchdir}/coverage.so
+%{ruby_libarchdir}/curses.so
+%{ruby_libarchdir}/date_core.so
+%{ruby_libarchdir}/dbm.so
+%dir %{ruby_libarchdir}/digest
+%{ruby_libarchdir}/digest.so
+%{ruby_libarchdir}/digest/bubblebabble.so
+%{ruby_libarchdir}/digest/md5.so
+%{ruby_libarchdir}/digest/rmd160.so
+%{ruby_libarchdir}/digest/sha1.so
+%{ruby_libarchdir}/digest/sha2.so
+%dir %{ruby_libarchdir}/dl
+%{ruby_libarchdir}/dl.so
+%{ruby_libarchdir}/dl/callback.so
+%dir %{ruby_libarchdir}/enc
+%{ruby_libarchdir}/enc/big5.so
+%{ruby_libarchdir}/enc/cp949.so
+%{ruby_libarchdir}/enc/emacs_mule.so
+%{ruby_libarchdir}/enc/encdb.so
+%{ruby_libarchdir}/enc/euc_jp.so
+%{ruby_libarchdir}/enc/euc_kr.so
+%{ruby_libarchdir}/enc/euc_tw.so
+%{ruby_libarchdir}/enc/gb18030.so
+%{ruby_libarchdir}/enc/gb2312.so
+%{ruby_libarchdir}/enc/gbk.so
+%{ruby_libarchdir}/enc/iso_8859_1.so
+%{ruby_libarchdir}/enc/iso_8859_10.so
+%{ruby_libarchdir}/enc/iso_8859_11.so
+%{ruby_libarchdir}/enc/iso_8859_13.so
+%{ruby_libarchdir}/enc/iso_8859_14.so
+%{ruby_libarchdir}/enc/iso_8859_15.so
+%{ruby_libarchdir}/enc/iso_8859_16.so
+%{ruby_libarchdir}/enc/iso_8859_2.so
+%{ruby_libarchdir}/enc/iso_8859_3.so
+%{ruby_libarchdir}/enc/iso_8859_4.so
+%{ruby_libarchdir}/enc/iso_8859_5.so
+%{ruby_libarchdir}/enc/iso_8859_6.so
+%{ruby_libarchdir}/enc/iso_8859_7.so
+%{ruby_libarchdir}/enc/iso_8859_8.so
+%{ruby_libarchdir}/enc/iso_8859_9.so
+%{ruby_libarchdir}/enc/koi8_r.so
+%{ruby_libarchdir}/enc/koi8_u.so
+%{ruby_libarchdir}/enc/shift_jis.so
+%dir %{ruby_libarchdir}/enc/trans
+%{ruby_libarchdir}/enc/trans/big5.so
+%{ruby_libarchdir}/enc/trans/chinese.so
+%{ruby_libarchdir}/enc/trans/emoji.so
+%{ruby_libarchdir}/enc/trans/emoji_iso2022_kddi.so
+%{ruby_libarchdir}/enc/trans/emoji_sjis_docomo.so
+%{ruby_libarchdir}/enc/trans/emoji_sjis_kddi.so
+%{ruby_libarchdir}/enc/trans/emoji_sjis_softbank.so
+%{ruby_libarchdir}/enc/trans/escape.so
+%{ruby_libarchdir}/enc/trans/gb18030.so
+%{ruby_libarchdir}/enc/trans/gbk.so
+%{ruby_libarchdir}/enc/trans/iso2022.so
+%{ruby_libarchdir}/enc/trans/japanese.so
+%{ruby_libarchdir}/enc/trans/japanese_euc.so
+%{ruby_libarchdir}/enc/trans/japanese_sjis.so
+%{ruby_libarchdir}/enc/trans/korean.so
+%{ruby_libarchdir}/enc/trans/single_byte.so
+%{ruby_libarchdir}/enc/trans/transdb.so
+%{ruby_libarchdir}/enc/trans/utf8_mac.so
+%{ruby_libarchdir}/enc/trans/utf_16_32.so
+%{ruby_libarchdir}/enc/utf_16be.so
+%{ruby_libarchdir}/enc/utf_16le.so
+%{ruby_libarchdir}/enc/utf_32be.so
+%{ruby_libarchdir}/enc/utf_32le.so
+%{ruby_libarchdir}/enc/windows_1251.so
+%{ruby_libarchdir}/etc.so
+%{ruby_libarchdir}/fcntl.so
+%{ruby_libarchdir}/fiber.so
+%{ruby_libarchdir}/fiddle.so
+%{ruby_libarchdir}/gdbm.so
+%{ruby_libarchdir}/iconv.so
+%dir %{ruby_libarchdir}/io
+%{ruby_libarchdir}/io/nonblock.so
+%{ruby_libarchdir}/io/wait.so
+%dir %{ruby_libarchdir}/mathn
+%{ruby_libarchdir}/mathn/complex.so
+%{ruby_libarchdir}/mathn/rational.so
+%{ruby_libarchdir}/nkf.so
+%{ruby_libarchdir}/objspace.so
+%{ruby_libarchdir}/openssl.so
+%{ruby_libarchdir}/pathname.so
+%{ruby_libarchdir}/psych.so
+%{ruby_libarchdir}/pty.so
+%dir %{ruby_libarchdir}/racc
+%{ruby_libarchdir}/racc/cparse.so
+%{ruby_libarchdir}/rbconfig.rb
+%{ruby_libarchdir}/readline.so
+%{ruby_libarchdir}/ripper.so
+%{ruby_libarchdir}/sdbm.so
+%{ruby_libarchdir}/socket.so
+%{ruby_libarchdir}/stringio.so
+%{ruby_libarchdir}/strscan.so
+%{ruby_libarchdir}/syck.so
+%{ruby_libarchdir}/syslog.so
+%exclude %{ruby_libarchdir}/tcltklib.so
+%exclude %{ruby_libarchdir}/tkutil.so
+%{ruby_libarchdir}/zlib.so
 
-%files tcltk
-%defattr(-, root, root, -)
-%doc	%{name}-%{arcver}/COPYING*
-%doc	%{name}-%{arcver}/ChangeLog
-%doc	%{name}-%{arcver}/GPL
-%doc	%{name}-%{arcver}/LEGAL
-%doc	%{name}-%{arcver}/LGPL
-%doc	tmp-ruby-docs/ruby-tcltk/*
-%{vendorlibbase}/%{rubyxver}/*-tk.rb
-%{vendorlibbase}/%{rubyxver}/tcltk.rb
-%{vendorlibbase}/%{rubyxver}/tk
-%{vendorlibbase}/%{rubyxver}/tk*.rb
-%{vendorlibbase}/%{rubyxver}/tkextlib
-%{vendorarchbase}/%{rubyxver}/%{_normalized_cpu}-%{_target_os}/tcltklib.so
-%{vendorarchbase}/%{rubyxver}/%{_normalized_cpu}-%{_target_os}/tkutil.so
+%files -n rubygems
+%{_bindir}/gem
+%{rubygems_dir}
+%{gem_dir}
+%exclude %{gem_dir}/gems/*
+%{_exec_prefix}/lib*/gems
+%exclude %{_exec_prefix}/lib*/gems/exts/bigdecimal-%{bigdecimal_version}
+%exclude %{_exec_prefix}/lib*/gems/exts/io-console-%{io_console_version}
+%exclude %{_exec_prefix}/lib*/gems/exts/json-%{json_version}
+%exclude %{gem_dir}/gems/rake-%{rake_version}
+%exclude %{gem_dir}/gems/rdoc-%{rdoc_version}
+%exclude %{gem_dir}/specifications/bigdecimal-%{bigdecimal_version}.gemspec
+%exclude %{gem_dir}/specifications/io-console-%{io_console_version}.gemspec
+%exclude %{gem_dir}/specifications/json-%{json_version}.gemspec
+%exclude %{gem_dir}/specifications/minitest-%{minitest_version}.gemspec
+%exclude %{gem_dir}/specifications/rake-%{rake_version}.gemspec
+%exclude %{gem_dir}/specifications/rdoc-%{rdoc_version}.gemspec
 
-%files	rdoc
-%defattr(-, root, root, -)
-%doc	%{name}-%{arcver}/COPYING*
-%doc	%{name}-%{arcver}/ChangeLog
-%doc	%{name}-%{arcver}/GPL
-%doc	%{name}-%{arcver}/LEGAL
-%doc	%{name}-%{arcver}/LGPL
-%{_bindir}/rdoc
-%{vendorlibbase}/%{rubyxver}/rdoc
+%files -n rubygems-devel
+%config(noreplace) %{_sysconfdir}/rpm/macros.rubygems
+
+%files -n rubygem-rake
+%{_bindir}/rake
+%{gem_dir}/gems/rake-%{rake_version}
+%{gem_dir}/specifications/rake-%{rake_version}.gemspec
+%{_mandir}/man1/rake.1*
 
 %files irb
-%defattr(-, root, root, -)
-%doc	%{name}-%{arcver}/COPYING*
-%doc	%{name}-%{arcver}/ChangeLog
-%doc	%{name}-%{arcver}/GPL
-%doc	%{name}-%{arcver}/LEGAL
-%doc	%{name}-%{arcver}/LGPL
-%doc	tmp-ruby-docs/irb/*
 %{_bindir}/irb
-%{vendorlibbase}/%{rubyxver}/irb.rb
-%{vendorlibbase}/%{rubyxver}/irb
+%{ruby_libdir}/irb.rb
+%{ruby_libdir}/irb
+%{_mandir}/man1/irb.1*
 
-%files ri
-%defattr(-, root, root, -)
-%doc	%{name}-%{arcver}/COPYING*
-%doc	%{name}-%{arcver}/ChangeLog
-%doc	%{name}-%{arcver}/GPL
-%doc	%{name}-%{arcver}/LEGAL
-%doc	%{name}-%{arcver}/LGPL
+%files -n rubygem-rdoc
+%{_bindir}/rdoc
 %{_bindir}/ri
+%{gem_dir}/gems/rdoc-%{rdoc_version}
+%{gem_dir}/specifications/rdoc-%{rdoc_version}.gemspec
+%{_mandir}/man1/ri*
 %{_datadir}/ri
 
+%files -n rubygem-bigdecimal
+%{_libdir}/gems/exts/bigdecimal-%{bigdecimal_version}
+%{gem_dir}/gems/bigdecimal-%{bigdecimal_version}
+%{gem_dir}/specifications/bigdecimal-%{bigdecimal_version}.gemspec
+
+%files -n rubygem-io-console
+%{_libdir}/gems/exts/io-console-%{io_console_version}
+%{gem_dir}/gems/io-console-%{io_console_version}
+%{gem_dir}/specifications/io-console-%{io_console_version}.gemspec
+
+%files -n rubygem-json
+%{_libdir}/gems/exts/json-%{json_version}
+%{gem_dir}/gems/json-%{json_version}
+%{gem_dir}/specifications/json-%{json_version}.gemspec
+
+%files -n rubygem-minitest
+%{gem_dir}/gems/minitest-%{minitest_version}
+%{gem_dir}/specifications/minitest-%{minitest_version}.gemspec
+
+%files tcltk
+%{ruby_libdir}/*-tk.rb
+%{ruby_libdir}/tcltk.rb
+%{ruby_libdir}/tk*.rb
+%{ruby_libarchdir}/tcltklib.so
+%{ruby_libarchdir}/tkutil.so
+%{ruby_libdir}/tk
+%{ruby_libdir}/tkextlib
+
 %changelog
+* Wed Jan 18 2012 Vít Ondruch <vondruch@redhat.com> - 1.9.3.0-5
+- Add rubygems dependency on io-console for user interactions.
+- Gems license clarification.
+
+* Tue Jan 17 2012 Vít Ondruch <vondruch@redhat.com> - 1.9.3.0-4
+- Bundled gems moved into dedicated directories and subpackages.
+- Create and own RubyGems directories for binary extensions.
+- Fix build with GCC 4.7.
+
+* Wed Jan 04 2012 Vít Ondruch <vondruch@redhat.com> - 1.9.3.0-3
+- Fix RHEL build.
+- Fixed directory ownership.
+- Verose build output.
+
+* Wed Dec 14 2011 Vít Ondruch <vondruch@redhat.com> - 1.9.3.0-2
+- Install RubyGems outside of Ruby directory structure.
+- RubyGems has not its own -devel subpackage.
+- Enhanced macros.ruby and macros.rubygems.
+- All tests are green now (bkabrda).
+
+* Tue Sep 23 2011 Vít Ondruch <vondruch@redhat.com> - 1.9.3.0-1
+- Initial package
+
 * Sat Jan 14 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.8.7.357-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
 
