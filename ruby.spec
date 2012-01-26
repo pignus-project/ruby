@@ -51,7 +51,7 @@
 Summary: An interpreter of object-oriented scripting language
 Name: ruby
 Version: %{ruby_version_patch_level}
-Release: 5%{?dist}
+Release: 6%{?dist}
 Group: Development/Languages
 License: Ruby or BSD
 URL: http://ruby-lang.org/
@@ -138,8 +138,8 @@ Version:    %{rubygems_version}
 Group:      Development/Libraries
 License:    Ruby or MIT
 Requires:   ruby(abi) = %{ruby_abi}
-Requires:   rubygem(rdoc) = %{rdoc_version}
-Requires:   rubygem(io-console) = %{io_console_version}
+Requires:   rubygem(rdoc) >= %{rdoc_version}
+Requires:   rubygem(io-console) >= %{io_console_version}
 Provides:   gem = %{version}-%{release}
 Provides:   ruby(rubygems) = %{version}-%{release}
 BuildArch:  noarch
@@ -167,7 +167,7 @@ Version:    %{rake_version}
 Group:      Development/Libraries
 License:    Ruby or MIT
 Requires:   ruby(abi) = %{ruby_abi}
-Requires:   ruby(rubygems) = %{rubygems_version}
+Requires:   ruby(rubygems) >= %{rubygems_version}
 Provides:   rake = %{version}-%{release}
 Provides:   rubygem(rake) = %{version}-%{release}
 BuildArch:  noarch
@@ -197,7 +197,7 @@ Version:    %{rdoc_version}
 Group:      Development/Libraries
 License:    GPLv2 and Ruby and MIT
 Requires:   ruby(abi) = %{ruby_abi}
-Requires:   ruby(rubygems) = %{rubygems_version}
+Requires:   ruby(rubygems) >= %{rubygems_version}
 Requires:   ruby(irb) = %{irb_version}
 Provides:   rdoc = %{version}-%{release}
 Provides:   ri = %{version}-%{release}
@@ -222,7 +222,7 @@ Version:    %{bigdecimal_version}
 Group:      Development/Libraries
 License:    GPL+ or Artistic
 Requires:   ruby(abi) = %{ruby_abi}
-Requires:   ruby(rubygems) = %{rubygems_version}
+Requires:   ruby(rubygems) >= %{rubygems_version}
 Provides:   rubygem(bigdecimal) = %{version}-%{release}
 
 %description -n rubygem-bigdecimal
@@ -243,7 +243,7 @@ Summary:    IO/Console is a simple console utilizing library
 Version:    %{io_console_version}
 Group:      Development/Libraries
 Requires:   ruby(abi) = %{ruby_abi}
-Requires:   ruby(rubygems) = %{rubygems_version}
+Requires:   ruby(rubygems) >= %{rubygems_version}
 Provides:   rubygem(io-console) = %{version}-%{release}
 
 %description -n rubygem-io-console
@@ -257,7 +257,7 @@ Version:    %{json_version}
 Group:      Development/Libraries
 License:    Ruby or GPLv2
 Requires:   ruby(abi) = %{ruby_abi}
-Requires:   ruby(rubygems) = %{rubygems_version}
+Requires:   ruby(rubygems) >= %{rubygems_version}
 Provides:   rubygem(json) = %{version}-%{release}
 
 %description -n rubygem-json
@@ -273,7 +273,7 @@ Version:    %{minitest_version}
 Group:      Development/Libraries
 License:    MIT
 Requires:   ruby(abi) = %{ruby_abi}
-Requires:   ruby(rubygems) = %{rubygems_version}
+Requires:   ruby(rubygems) >= %{rubygems_version}
 Provides:   rubygem(minitest) = %{version}-%{release}
 BuildArch:  noarch
 
@@ -701,6 +701,9 @@ make check
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Thu Jan 26 2012 Vít Ondruch <vondruch@redhat.com> - 1.9.3.0-6
+- Relax dependencies to allow external updates of bundled gems.
+
 * Wed Jan 18 2012 Vít Ondruch <vondruch@redhat.com> - 1.9.3.0-5
 - Initial release of Ruby 1.9.3.
 - Add rubygems dependency on io-console for user interactions.
