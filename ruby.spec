@@ -51,7 +51,7 @@
 Summary: An interpreter of object-oriented scripting language
 Name: ruby
 Version: %{ruby_version_patch_level}
-Release: 6%{?dist}
+Release: 7%{?dist}
 Group: Development/Languages
 License: Ruby or BSD
 URL: http://ruby-lang.org/
@@ -89,6 +89,8 @@ Patch10: ruby-1.9.3-prevent-optimizing-sp.patch
 # Fixes json encoding failures when build with GCC 4.7.
 # http://bugs.ruby-lang.org/issues/5888
 Patch11: ruby-1.9.3-fix-json-parser.patch
+# Make mkmf verbose by default
+Patch12: ruby-1.9.3-mkmf-verbose.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Requires: ruby(rubygems) >= %{rubygems_version}
@@ -316,6 +318,7 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 %patch9 -p1
 %patch10
 %patch11 -p1
+%patch12 -p1
 
 %build
 autoconf
@@ -701,6 +704,9 @@ make check
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Sun Jan 29 2012 Mamoru Tasaka <mtasaka@fedoraprpject.org> - 1.9.3.0-7
+- Make mkmf.rb verbose by default
+
 * Thu Jan 26 2012 Vít Ondruch <vondruch@redhat.com> - 1.9.3.0-6
 - Relax dependencies to allow external updates of bundled gems.
 
