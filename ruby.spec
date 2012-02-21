@@ -470,7 +470,7 @@ make check TESTS="-v -x test_pathname.rb -x test_drbssl.rb -x test_parse.rb -x t
 %{_includedir}/%{_normalized_cpu}-%{_target_os}/ruby
 
 %{_libdir}/libruby.so
-%{_libdir}/pkgconfig/ruby-1.9.pc
+%{_libdir}/pkgconfig/ruby-%{major_minor_version}.pc
 
 %files libs
 %doc COPYING
