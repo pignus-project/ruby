@@ -410,16 +410,16 @@ sed -i '2 a\
 sed -i '2 a\
   s.require_paths = ["lib"]' %{buildroot}/%{gem_dir}/specifications/rdoc-%{rdoc_version}.gemspec
 
-sed -i -e '2 a\
-  s.require_paths = ["lib"]' -e '3 a\
+sed -i '2 a\
+  s.require_paths = ["lib"]\
   s.extensions = ["bigdecimal.so"]' %{buildroot}/%{gem_dir}/specifications/bigdecimal-%{bigdecimal_version}.gemspec
 
-sed -i -e '2 a\
-  s.require_paths = ["lib"]' -e '3 a\
+sed -i '2 a\
+  s.require_paths = ["lib"]\
   s.extensions = ["io/console.so"]' %{buildroot}/%{gem_dir}/specifications/io-console-%{io_console_version}.gemspec
 
-sed -i -e '2 a\
-  s.require_paths = ["lib"]' -e '3 a\
+sed -i '2 a\
+  s.require_paths = ["lib"]\
   s.extensions = ["json/ext/parser.so", "json/ext/generator.so"]' %{buildroot}/%{gem_dir}/specifications/json-%{json_version}.gemspec
 
 sed -i '2 a\
