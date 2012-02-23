@@ -40,7 +40,7 @@ index 83e5d76..e6dc38c 100644
 +done
 +
  AC_ARG_WITH(sitedir,
- 	    AS_HELP_STRING([--with-sitedir=DIR], [site libraries in DIR [[RUBY_LIB_PREFIX/site_ruby]]]),
+ 	    AS_HELP_STRING([--with-sitedir=DIR], [site libraries in DIR [[RUBY_LIB_PREFIX/site_ruby]], "no" to disable site directory]),
              [sitedir=$withval],
 @@ -2815,16 +2824,25 @@ if test "${LOAD_RELATIVE+set}"; then
      AC_DEFINE_UNQUOTED(LOAD_RELATIVE, $LOAD_RELATIVE)

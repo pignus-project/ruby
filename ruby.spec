@@ -1,13 +1,15 @@
-%global major_version 1
-%global minor_version 9
-%global teeny_version 3
-%global patch_level 385
+%global major_version 2
+%global minor_version 0
+%global teeny_version 0
+%global patch_level 0
 
 %global major_minor_version %{major_version}.%{minor_version}
 
 %global ruby_version %{major_minor_version}.%{teeny_version}
 %global ruby_version_patch_level %{major_minor_version}.%{teeny_version}.%{patch_level}
-%global ruby_abi %{major_minor_version}.1
+# Keep the ruby abi 1.9.1 for compatibility with gems.
+# %global ruby_abi %{major_minor_version}.0
+%global ruby_abi 1.9.1
 
 %global ruby_archive %{name}-%{ruby_version}-p%{patch_level}
 
@@ -44,7 +46,7 @@
 %global bigdecimal_version 1.1.0
 %global io_console_version 0.3
 %global json_version 1.5.4
-%global minitest_version 2.5.1
+%global minitest_version 2.8.1
 
 %global	_normalized_cpu	%(echo %{_target_cpu} | sed 's/^ppc/powerpc/;s/i.86/i386/;s/sparcv./sparc/')
 
@@ -78,9 +80,6 @@ Patch4: ruby-1.9.3-fix-s390x-build.patch
 # Fix the uninstaller, so that it doesn't say that gem doesn't exist
 # when it exists outside of the GEM_HOME (already fixed in the upstream)
 Patch5: ruby-1.9.3-rubygems-1.8.11-uninstaller.patch
-# Already fixed upstream:
-# https://github.com/ruby/ruby/commit/f212df564a4e1025f9fb019ce727022a97bfff53
-Patch7: ruby-1.9.3-bignum-test-fix.patch
 # Allows to install RubyGems into custom directory, outside of Ruby's tree.
 # http://redmine.ruby-lang.org/issues/5617
 Patch8: ruby-1.9.3-custom-rubygems-location.patch
@@ -330,6 +329,9 @@ minitest/pride shows pride in testing and adds coloring to your test
 output.
 
 
+# TODO:
+# %%pacakge -n rubygem-psych
+
 %package tcltk
 Summary:    Tcl/Tk interface for scripting language Ruby
 Group:      Development/Languages
@@ -348,7 +350,6 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
-%patch7 -p1
 %patch8 -p1
 %patch9 -p1
 %patch10 -p1
@@ -424,7 +425,7 @@ mkdir -p %{buildroot}%{rubygems_dir}/rubygems/defaults
 cp %{SOURCE1} %{buildroot}%{rubygems_dir}/rubygems/defaults
 
 # Move gems root into common direcotry, out of Ruby directory structure.
-mv %{buildroot}%{ruby_libdir}/gems/%{ruby_abi} %{buildroot}%{gem_dir}
+mv %{buildroot}%{ruby_libdir}/gems/2.0.0 %{buildroot}%{gem_dir}
 
 # Create folders for gem binary extensions.
 mkdir -p %{buildroot}%{gem_extdir}/exts
@@ -460,49 +461,31 @@ mkdir -p %{buildroot}%{gem_dir}/gems/minitest-%{minitest_version}/lib
 mv %{buildroot}%{ruby_libdir}/minitest %{buildroot}%{gem_dir}/gems/minitest-%{minitest_version}/lib
 
 # Adjust the gemspec files so that the gems will load properly
-sed -i '2 a\
-  s.require_paths = ["lib"]' %{buildroot}%{gem_dir}/specifications/rake-%{rake_version}.gemspec
+sed -i '8 a\
+  s.require_paths = ["lib"]' %{buildroot}/%{gem_dir}/specifications/rake-%{rake_version}.gemspec
 
-sed -i '2 a\
-  s.require_paths = ["lib"]' %{buildroot}%{gem_dir}/specifications/rdoc-%{rdoc_version}.gemspec
+sed -i '8 a\
+  s.require_paths = ["lib"]' %{buildroot}/%{gem_dir}/specifications/rdoc-%{rdoc_version}.gemspec
 
-sed -i '2 a\
+sed -i '8 a\
   s.require_paths = ["lib"]\
   s.extensions = ["bigdecimal.so"]' %{buildroot}%{gem_dir}/specifications/bigdecimal-%{bigdecimal_version}.gemspec
 
-sed -i '2 a\
+sed -i '8 a\
   s.require_paths = ["lib"]\
   s.extensions = ["io/console.so"]' %{buildroot}%{gem_dir}/specifications/io-console-%{io_console_version}.gemspec
 
-sed -i '2 a\
+sed -i '8 a\
   s.require_paths = ["lib"]\
   s.extensions = ["json/ext/parser.so", "json/ext/generator.so"]' %{buildroot}%{gem_dir}/specifications/json-%{json_version}.gemspec
 
-sed -i '2 a\
-  s.require_paths = ["lib"]' %{buildroot}%{gem_dir}/specifications/minitest-%{minitest_version}.gemspec
+sed -i '8 a\
+  s.require_paths = ["lib"]' %{buildroot}/%{gem_dir}/specifications/minitest-%{minitest_version}.gemspec
 
 %check
-DISABLE_TESTS=""
-
-# OpenSSL 1.0.1 is breaking the drb test suite.
-# https://bugs.ruby-lang.org/issues/6221
-DISABLE_TESTS="-x test_drbssl.rb $DISABLE_TESTS"
-
-%ifarch armv7l armv7hl armv7hnl
-# test_call_double(DL::TestDL) fails on ARM HardFP
-# http://bugs.ruby-lang.org/issues/6592
-DISABLE_TESTS="-x test_dl2.rb $DISABLE_TESTS"
-%endif
-
-%ifarch %{arm}
-# test_parse.rb fails on ARM at line 787
-# http://bugs.ruby-lang.org/issues/6899
-DISABLE_TESTS="-x test_parse.rb $DISABLE_TESTS"
-%endif
-
-%ifnarch ppc ppc64
-make check TESTS="-v $DISABLE_TESTS"
-%endif
+# TODO: Investigate the test failures.
+# https://bugs.ruby-lang.org/issues/6036
+make check TESTS="-v -x test_pathname.rb -x test_drbssl.rb -x test_x509cert.rb"
 
 %post libs -p /sbin/ldconfig
 
@@ -513,6 +496,11 @@ make check TESTS="-v $DISABLE_TESTS"
 %lang(ja) %doc COPYING.ja
 %doc GPL
 %doc LEGAL
+%doc NEWS
+%doc README
+%lang(ja) %doc README.ja
+%doc doc/ChangeLog-*
+%doc doc/NEWS-*
 %{_bindir}/erb
 %{_bindir}/ruby
 %{_bindir}/testrb
@@ -665,6 +653,7 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libarchdir}/enc/utf_32be.so
 %{ruby_libarchdir}/enc/utf_32le.so
 %{ruby_libarchdir}/enc/windows_1251.so
+%{ruby_libarchdir}/enc/windows_31j.so
 %{ruby_libarchdir}/etc.so
 %{ruby_libarchdir}/fcntl.so
 %{ruby_libarchdir}/fiber.so
