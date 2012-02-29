@@ -51,7 +51,7 @@
 Summary: An interpreter of object-oriented scripting language
 Name: ruby
 Version: %{ruby_version_patch_level}
-Release: 1%{?dist}
+Release: 2%{?dist}
 Group: Development/Languages
 License: Ruby or BSD
 URL: http://ruby-lang.org/
@@ -146,7 +146,7 @@ libraries.
 
 
 %package -n rubygems-devel
-Summary:    Macros and development tools for packagin RubyGems
+Summary:    Macros and development tools for packaging RubyGems
 Version:    %{rubygems_version}
 Group:      Development/Libraries
 License:    Ruby or MIT
@@ -154,7 +154,7 @@ Requires:   ruby(rubygems) = %{version}-%{release}
 BuildArch:  noarch
 
 %description -n rubygems-devel
-Macros and development tools for packagin RubyGems.
+Macros and development tools for packaging RubyGems.
 
 
 %package -n rubygem-rake
@@ -243,7 +243,7 @@ Requires:   ruby(rubygems) >= %{rubygems_version}
 Provides:   rubygem(io-console) = %{version}-%{release}
 
 %description -n rubygem-io-console
-IO/Console provides very simple and portable access to console. It doesn’t
+IO/Console provides very simple and portable access to console. It doesn't
 provide higher layer features, such like curses and readline.
 
 
@@ -426,9 +426,14 @@ sed -i '2 a\
   s.require_paths = ["lib"]' %{buildroot}/%{gem_dir}/specifications/minitest-%{minitest_version}.gemspec
 
 %check
+# Disable make check on ARM until the bug is fixed
+# https://bugzilla.redhat.com/show_bug.cgi?id=789410
+# https://bugs.ruby-lang.org/issues/6011
+%ifnarch %{arm}
 # TODO: Investigate the test failures.
 # https://bugs.ruby-lang.org/issues/6036
 make check TESTS="-v -x test_pathname.rb -x test_drbssl.rb -x test_parse.rb -x test_x509cert.rb"
+%endif
 
 %post libs -p /sbin/ldconfig
 
@@ -464,11 +469,7 @@ make check TESTS="-v -x test_pathname.rb -x test_drbssl.rb -x test_parse.rb -x t
 
 %config(noreplace) %{_sysconfdir}/rpm/macros.ruby
 
-%{_includedir}/ruby.h
-%{_includedir}/ruby
-%dir %{_includedir}/%{_normalized_cpu}-%{_target_os}
-%{_includedir}/%{_normalized_cpu}-%{_target_os}/ruby
-
+%{_includedir}/*
 %{_libdir}/libruby.so
 %{_libdir}/pkgconfig/ruby-%{major_minor_version}.pc
 
@@ -698,6 +699,9 @@ make check TESTS="-v -x test_pathname.rb -x test_drbssl.rb -x test_parse.rb -x t
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Wed Feb 29 2012 Peter Robinson <pbrobinson@fedoraproject.org> - 1.9.3.125-2
+- Temporarily disable make check on ARM until it's fixed upstream. Tracked in RHBZ 789410
+
 * Mon Feb 20 2012 Vít Ondruch <vondruch@redhat.com> - 1.9.3.125-1
 - Upgrade to Ruby 1.9.3-p125.
 
