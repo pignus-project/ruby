@@ -51,7 +51,7 @@
 Summary: An interpreter of object-oriented scripting language
 Name: ruby
 Version: %{ruby_version_patch_level}
-Release: 2%{?dist}
+Release: 3%{?dist}
 Group: Development/Languages
 License: Ruby or BSD
 URL: http://ruby-lang.org/
@@ -429,7 +429,8 @@ sed -i '2 a\
 # Disable make check on ARM until the bug is fixed
 # https://bugzilla.redhat.com/show_bug.cgi?id=789410
 # https://bugs.ruby-lang.org/issues/6011
-%ifnarch %{arm}
+# same for ppc(64), RH bugzilla #803698
+%ifnarch %{arm} ppc ppc64
 # TODO: Investigate the test failures.
 # https://bugs.ruby-lang.org/issues/6036
 make check TESTS="-v -x test_pathname.rb -x test_drbssl.rb -x test_parse.rb -x test_x509cert.rb"
@@ -699,6 +700,9 @@ make check TESTS="-v -x test_pathname.rb -x test_drbssl.rb -x test_parse.rb -x t
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Mon Apr 09 2012 Karsten Hopp <karsten@redhat.com> 1.9.3.125-3
+- disable check on ppc(64), RH bugzilla 803698
+
 * Wed Feb 29 2012 Peter Robinson <pbrobinson@fedoraproject.org> - 1.9.3.125-2
 - Temporarily disable make check on ARM until it's fixed upstream. Tracked in RHBZ 789410
 
