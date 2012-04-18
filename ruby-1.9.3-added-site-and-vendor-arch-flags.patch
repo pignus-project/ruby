@@ -15,7 +15,7 @@ diff --git a/Makefile.in b/Makefile.in
 index bcdaf5f..f57e4c4 100644
 --- a/Makefile.in
 +++ b/Makefile.in
-@@ -34,6 +34,9 @@ datadir = @datadir@
+@@ -37,6 +37,9 @@ datadir = @datadir@
  archdir = @archdir@
  sitearch = @sitearch@
  sitedir = @sitedir@
@@ -29,7 +29,7 @@ diff --git a/configure.in b/configure.in
 index 83e5d76..31532bd 100644
 --- a/configure.in
 +++ b/configure.in
-@@ -2811,6 +2811,15 @@ until SITE_DIR=`eval echo \\"${dir}\\"`; test "x${dir}" = "x${SITE_DIR}"; do
+@@ -2866,6 +2866,15 @@ until SITE_DIR=`eval echo \\"${dir}\\"`; test "x${dir}" = "x${SITE_DIR}"; do
      dir="${SITE_DIR}"
  done
  
@@ -45,7 +45,7 @@ index 83e5d76..31532bd 100644
  AC_ARG_WITH(vendordir,
  	    AS_HELP_STRING([--with-vendordir=DIR], [vendor libraries in DIR [[RUBY_LIB_PREFIX/vendor_ruby]], "no" to disable vendor directory]),
              [vendordir=$withval],
-@@ -2820,19 +2829,32 @@ until VENDOR_DIR=`eval echo \\"${dir}\\"`; test "x${dir}" = "x${VENDOR_DIR}"; do
+@@ -2875,19 +2884,32 @@ until VENDOR_DIR=`eval echo \\"${dir}\\"`; test "x${dir}" = "x${VENDOR_DIR}"; do
      dir="${VENDOR_DIR}"
  done
  
@@ -78,7 +78,7 @@ index 83e5d76..31532bd 100644
  fi
  
  pat=`echo "$RUBY_LIB_PREFIX/" | tr -c '\012' .`'\(.*\)'
-@@ -2850,6 +2872,13 @@ AS_CASE(["$RUBY_SITE_LIB_PATH"],
+@@ -2905,12 +2927,26 @@ AS_CASE(["$RUBY_SITE_LIB_PATH"],
    [
      RUBY_SITE_LIB_PATH="\"${RUBY_SITE_LIB_PATH}\""
      ])
@@ -92,31 +92,30 @@ index 83e5d76..31532bd 100644
  AS_CASE(["$RUBY_VENDOR_LIB_PATH"],
    ["$RUBY_LIB_PREFIX/"*], [
      RUBY_VENDOR_LIB_PATH='RUBY_LIB_PREFIX"/'"`expr \"$RUBY_VENDOR_LIB_PATH\" : \"$pat\"`"'"'
-@@ -2857,6 +2886,13 @@ AS_CASE(["$RUBY_VENDOR_LIB_PATH"],
+     ],
    [
      RUBY_VENDOR_LIB_PATH="\"${RUBY_VENDOR_LIB_PATH}\""
-     ])
++    ])
 +AS_CASE(["$RUBY_VENDOR_ARCHLIB_PATH"],
 +  ["$RUBY_LIB_PREFIX/"*], [
 +    RUBY_VENDOR_ARCHLIB_PATH='RUBY_LIB_PREFIX"/'"`expr \"$RUBY_VENDOR_ARCHLIB_PATH\" : \"$pat\"`"'"'
 +    ],
 +  [
 +    RUBY_VENDOR_ARCHLIB_PATH="\"${RUBY_VENDOR_ARCHLIB_PATH}\""
-+    ])
+     ])
  pat=`echo "$RUBY_EXEC_PREFIX/" | tr -c '\012' .`'\(.*\)'
  AS_CASE(["$RUBY_LIB_PREFIX"],
-   ["$RUBY_EXEC_PREFIX/"*], [
-@@ -2878,19 +2914,23 @@ if test "x$SITE_DIR" = xno; then
-     AC_DEFINE(NO_RUBY_SITE_LIB)
+@@ -2933,19 +2969,23 @@ if test "x$SITE_DIR" = xno; then
+     AC_DEFINE(NO_RUBY_SITE_LIB, [] !<verconf>!)
  else
-     AC_DEFINE_UNQUOTED(RUBY_SITE_LIB, ${RUBY_SITE_LIB_PATH})
-+    AC_DEFINE_UNQUOTED(RUBY_SITE_ARCHLIB, ${RUBY_SITE_ARCHLIB_PATH})
+     AC_DEFINE_UNQUOTED(RUBY_SITE_LIB, ${RUBY_SITE_LIB_PATH} !<verconf>!)
++    AC_DEFINE_UNQUOTED(RUBY_SITE_ARCHLIB, ${RUBY_SITE_ARCHLIB_PATH} !<verconf>!)
  fi
  if test "x$VENDOR_DIR" = xno; then
-     AC_DEFINE(NO_RUBY_VENDOR_LIB)
+     AC_DEFINE(NO_RUBY_VENDOR_LIB, [] !<verconf>!)
  else
-     AC_DEFINE_UNQUOTED(RUBY_VENDOR_LIB, ${RUBY_VENDOR_LIB_PATH})
-+    AC_DEFINE_UNQUOTED(RUBY_VENDOR_ARCHLIB, ${RUBY_VENDOR_ARCHLIB_PATH})
+     AC_DEFINE_UNQUOTED(RUBY_VENDOR_LIB, ${RUBY_VENDOR_LIB_PATH} !<verconf>!)
++    AC_DEFINE_UNQUOTED(RUBY_VENDOR_ARCHLIB, ${RUBY_VENDOR_ARCHLIB_PATH} !<verconf>!)
  fi
  
  AC_SUBST(arch)dnl
@@ -170,7 +169,7 @@ diff --git a/version.c b/version.c
 index 59d4e5e..2558aa0 100644
 --- a/version.c
 +++ b/version.c
-@@ -50,8 +50,12 @@
+@@ -51,8 +51,12 @@
  #ifndef RUBY_ARCHLIB
  #define RUBY_ARCHLIB                RUBY_LIB         "/"RUBY_ARCH
  #endif

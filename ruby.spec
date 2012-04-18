@@ -11,7 +11,13 @@
 # %global ruby_abi %{major_minor_version}.0
 %global ruby_abi 1.9.1
 
-%global ruby_archive %{name}-%{ruby_version}-p%{patch_level}
+# If revision is removed/commented out, the official release build is expected.
+# Keep the revision enabled for pre-releases from SVN.
+%global revision 35368
+
+%global release 1
+
+%global ruby_archive %{name}-%{ruby_version}-%{?revision:r%{revision}}%{!?revision:p%{patch_level}}
 
 %global ruby_libdir %{_datadir}/%{name}
 %global ruby_libarchdir %{_libdir}/%{name}
@@ -45,7 +51,7 @@
 %global rdoc_version 3.9.5
 %global bigdecimal_version 1.1.0
 %global io_console_version 0.3
-%global json_version 1.5.4
+%global json_version 1.6.6
 %global minitest_version 2.8.1
 
 %global	_normalized_cpu	%(echo %{_target_cpu} | sed 's/^ppc/powerpc/;s/i.86/i386/;s/sparcv./sparc/')
@@ -53,12 +59,7 @@
 Summary: An interpreter of object-oriented scripting language
 Name: ruby
 Version: %{ruby_version_patch_level}
-# Note:
-# As seen on perl srpm, as this (ruby) srpm contains several sub-components,
-# we cannot reset the release number to 1 even when the main (ruby) version
-# is updated - because it may be that the versions of sub-components don't
-# change.
-Release: 28%{?dist}
+Release: %{?revision:0.}%{release}%{?revision:.r%{revision}}%{?dist}
 Group: Development/Languages
 # Public Domain for example for: include/ruby/st.h, strftime.c, ...
 License: (Ruby or BSD) and Public Domain
@@ -484,8 +485,13 @@ sed -i '8 a\
 
 %check
 # TODO: Investigate the test failures.
-# https://bugs.ruby-lang.org/issues/6036
-make check TESTS="-v -x test_pathname.rb -x test_drbssl.rb -x test_x509cert.rb"
+# OpenSSL 1.0.1 is breaking the drb test suite.
+# https://bugs.ruby-lang.org/issues/6221
+# TestTimeTZ failures - Resolved by r35377.
+# https://bugs.ruby-lang.org/issues/6318
+# TestWEBrickHTTPRequest and WEBrick::TestFileHandler fail
+# https://bugs.ruby-lang.org/issues/6319
+make check TESTS="-v -x test_drbssl.rb -x test_time_tz.rb -x test_httprequest.rb -x test_filehandler.rb"
 
 %post libs -p /sbin/ldconfig
 

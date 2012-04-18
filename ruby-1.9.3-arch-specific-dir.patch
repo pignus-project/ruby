@@ -14,7 +14,7 @@ diff --git a/Makefile.in b/Makefile.in
 index bcdaf5f..d61b2ee 100644
 --- a/Makefile.in
 +++ b/Makefile.in
-@@ -31,6 +31,7 @@ libexecdir = @libexecdir@
+@@ -34,6 +34,7 @@ libexecdir = @libexecdir@
  datarootdir = @datarootdir@
  datadir = @datadir@
  arch = @arch@
@@ -26,7 +26,7 @@ diff --git a/configure.in b/configure.in
 index 83e5d76..e6dc38c 100644
 --- a/configure.in
 +++ b/configure.in
-@@ -2793,6 +2793,15 @@ else
+@@ -2848,6 +2848,15 @@ else
      RUBY_LIB_VERSION="\"${ruby_version}\""
  fi
  
@@ -42,7 +42,7 @@ index 83e5d76..e6dc38c 100644
  AC_ARG_WITH(sitedir,
  	    AS_HELP_STRING([--with-sitedir=DIR], [site libraries in DIR [[RUBY_LIB_PREFIX/site_ruby]], "no" to disable site directory]),
              [sitedir=$withval],
-@@ -2815,16 +2824,25 @@ if test "${LOAD_RELATIVE+set}"; then
+@@ -2870,16 +2879,25 @@ if test "${LOAD_RELATIVE+set}"; then
      AC_DEFINE_UNQUOTED(LOAD_RELATIVE, $LOAD_RELATIVE)
      RUBY_EXEC_PREFIX=""
      RUBY_LIB_PREFIX="`eval echo "$RUBY_LIB_PREFIX" | sed 's|^NONE/|/|;s|^'"$prefix"'/|/|'`"
@@ -68,15 +68,15 @@ index 83e5d76..e6dc38c 100644
  AS_CASE(["$RUBY_SITE_LIB_PATH"],
    ["$RUBY_LIB_PREFIX/"*], [
      RUBY_SITE_LIB_PATH='RUBY_LIB_PREFIX"/'"`expr \"$RUBY_SITE_LIB_PATH\" : \"$pat\"`"'"'
-@@ -2855,6 +2873,7 @@ else
+@@ -2910,6 +2928,7 @@
  fi
  AC_DEFINE_UNQUOTED(RUBY_EXEC_PREFIX, "${RUBY_EXEC_PREFIX}")
- AC_DEFINE_UNQUOTED(RUBY_LIB_PREFIX, ${RUBY_LIB_PREFIX})
-+AC_DEFINE_UNQUOTED(RUBY_ARCHLIB, ${RUBY_ARCH_LIB_PATH})
+ AC_DEFINE_UNQUOTED(RUBY_LIB_PREFIX, ${RUBY_LIB_PREFIX} !<verconf>!)
++AC_DEFINE_UNQUOTED(RUBY_ARCHLIB, ${RUBY_ARCH_LIB_PATH} !<verconf>!)
  if test "x$SITE_DIR" = xno; then
-     AC_DEFINE(NO_RUBY_SITE_LIB)
+     AC_DEFINE(NO_RUBY_SITE_LIB, [] !<verconf>!)
  else
-@@ -2869,6 +2888,7 @@ fi
+@@ -2924,6 +2943,7 @@ fi
  AC_SUBST(arch)dnl
  AC_SUBST(sitearch)dnl
  AC_SUBST(ruby_version)dnl
@@ -117,7 +117,7 @@ diff --git a/version.c b/version.c
 index 59d4e5e..915a0a2 100644
 --- a/version.c
 +++ b/version.c
-@@ -47,7 +47,9 @@
+@@ -48,7 +48,9 @@
  #define RUBY_SITE_LIB2              RUBY_SITE_LIB    "/"RUBY_LIB_VERSION
  #define RUBY_VENDOR_LIB2            RUBY_VENDOR_LIB  "/"RUBY_LIB_VERSION
  #endif

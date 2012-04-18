@@ -15,7 +15,7 @@ diff --git a/configure.in b/configure.in
 index b1bc951..91c5d0d 100644
 --- a/configure.in
 +++ b/configure.in
-@@ -2838,6 +2838,13 @@ until VENDOR_DIR=`eval echo \\"${dir}\\"`; test "x${dir}" = "x${VENDOR_DIR}"; do
+@@ -2893,6 +2893,13 @@ until VENDOR_DIR=`eval echo \\"${dir}\\"`; test "x${dir}" = "x${VENDOR_DIR}"; do
      dir="${VENDORARCH_DIR}"
  done
  
@@ -29,7 +29,7 @@ index b1bc951..91c5d0d 100644
  if test "${LOAD_RELATIVE+set}"; then
      AC_DEFINE_UNQUOTED(LOAD_RELATIVE, $LOAD_RELATIVE)
      RUBY_EXEC_PREFIX=""
-@@ -2931,6 +2938,7 @@ AC_SUBST(sitearch)dnl
+@@ -2986,6 +2993,7 @@ AC_SUBST(sitearch)dnl
  AC_SUBST(sitearchdir)dnl
  AC_SUBST(vendordir)dnl
  AC_SUBST(vendorarchdir)dnl
@@ -53,15 +53,15 @@ diff --git a/tool/rbinstall.rb b/tool/rbinstall.rb
 index 6bfc73e..31dc446 100755
 --- a/tool/rbinstall.rb
 +++ b/tool/rbinstall.rb
-@@ -300,6 +300,7 @@ sitelibdir = CONFIG["sitelibdir"]
+@@ -311,6 +311,7 @@ sitelibdir = CONFIG["sitelibdir"]
  sitearchlibdir = CONFIG["sitearchdir"]
  vendorlibdir = CONFIG["vendorlibdir"]
  vendorarchlibdir = CONFIG["vendorarchdir"]
 +rubygemsdir = CONFIG["rubygemsdir"]
- mandir = CONFIG["mandir"]
- capidir = CONFIG["docdir"]
+ mandir = CONFIG["mandir", true]
+ capidir = CONFIG["docdir", true]
  configure_args = Shellwords.shellwords(CONFIG["configure_args"])
-@@ -487,7 +488,15 @@ end
+@@ -498,7 +499,15 @@ end
  install?(:local, :comm, :lib) do
    prepare "library scripts", rubylibdir
    noinst = %w[README* *.txt *.rdoc]
@@ -81,7 +81,7 @@ diff --git a/version.c b/version.c
 index 59d4e5e..12ba7e9 100644
 --- a/version.c
 +++ b/version.c
-@@ -103,6 +103,10 @@ const char ruby_initial_load_paths[] =
+@@ -104,6 +104,10 @@ const char ruby_initial_load_paths[] =
  #endif
  #endif
  

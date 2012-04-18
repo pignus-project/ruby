@@ -13,7 +13,7 @@ diff --git a/configure.in b/configure.in
 index e742e74..86cb68f 100644
 --- a/configure.in
 +++ b/configure.in
-@@ -2963,6 +2963,17 @@ else
+@@ -3018,6 +3018,17 @@ else
  fi
  AC_SUBST(USE_RUBYGEMS)
  
@@ -75,7 +75,7 @@ diff --git a/version.c b/version.c
 index 59d4e5e..641dc33 100644
 --- a/version.c
 +++ b/version.c
-@@ -38,9 +38,15 @@
+@@ -39,9 +39,15 @@
  #define RUBY_VENDOR_LIB RUBY_LIB_PREFIX"/vendor_ruby"
  #endif
  
@@ -91,7 +91,7 @@ index 59d4e5e..641dc33 100644
  #define RUBY_ARCHLIB                RUBY_LIB         "/"RUBY_ARCH
  #define RUBY_SITE_ARCHLIB           RUBY_SITE_LIB2   "/"RUBY_SITEARCH
  #define RUBY_VENDOR_ARCHLIB         RUBY_VENDOR_LIB2 "/"RUBY_SITEARCH
-@@ -75,8 +81,10 @@ const char ruby_initial_load_paths[] =
+@@ -76,8 +82,10 @@ const char ruby_initial_load_paths[] =
      RUBY_SITE_THIN_ARCHLIB "\0"
  #endif
      RUBY_SITE_ARCHLIB "\0"
@@ -102,7 +102,7 @@ index 59d4e5e..641dc33 100644
  
  #ifndef NO_RUBY_VENDOR_LIB
      RUBY_VENDOR_LIB2 "\0"
-@@ -84,8 +92,10 @@ const char ruby_initial_load_paths[] =
+@@ -85,8 +93,10 @@ const char ruby_initial_load_paths[] =
      RUBY_VENDOR_THIN_ARCHLIB "\0"
  #endif
      RUBY_VENDOR_ARCHLIB "\0"
@@ -135,7 +135,7 @@ diff --git a/tool/rbinstall.rb b/tool/rbinstall.rb
 index cec8c9f..fed14d2 100755
 --- a/tool/rbinstall.rb
 +++ b/tool/rbinstall.rb
-@@ -379,7 +379,7 @@ end
+@@ -390,7 +390,7 @@ end
  
  install?(:doc, :rdoc) do
    if $rdocdir
