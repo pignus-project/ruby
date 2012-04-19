@@ -431,9 +431,11 @@ sed -i '2 a\
 # https://bugs.ruby-lang.org/issues/6011
 # same for ppc(64), RH bugzilla #803698
 %ifnarch %{arm} ppc ppc64
-# TODO: Investigate the test failures.
-# https://bugs.ruby-lang.org/issues/6036
-make check TESTS="-v -x test_pathname.rb -x test_drbssl.rb -x test_parse.rb -x test_x509cert.rb"
+# Test suite fails with OpenSSL 1.0.1
+# http://bugs.ruby-lang.org/issues/6089
+# OpenSSL 1.0.1 is breaking the drb test suite.
+# https://bugs.ruby-lang.org/issues/6221
+make check TESTS="-v -x test_drbssl.rb -x test_x509cert.rb"
 %endif
 
 %post libs -p /sbin/ldconfig
