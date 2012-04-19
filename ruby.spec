@@ -463,10 +463,10 @@ mv %{buildroot}%{ruby_libdir}/minitest %{buildroot}%{gem_dir}/gems/minitest-%{mi
 
 # Adjust the gemspec files so that the gems will load properly
 sed -i '8 a\
-  s.require_paths = ["lib"]' %{buildroot}/%{gem_dir}/specifications/rake-%{rake_version}.gemspec
+  s.require_paths = ["lib"]' %{buildroot}%{gem_dir}/specifications/rake-%{rake_version}.gemspec
 
 sed -i '8 a\
-  s.require_paths = ["lib"]' %{buildroot}/%{gem_dir}/specifications/rdoc-%{rdoc_version}.gemspec
+  s.require_paths = ["lib"]' %{buildroot}%{gem_dir}/specifications/rdoc-%{rdoc_version}.gemspec
 
 sed -i '8 a\
   s.require_paths = ["lib"]\
@@ -481,7 +481,7 @@ sed -i '8 a\
   s.extensions = ["json/ext/parser.so", "json/ext/generator.so"]' %{buildroot}%{gem_dir}/specifications/json-%{json_version}.gemspec
 
 sed -i '8 a\
-  s.require_paths = ["lib"]' %{buildroot}/%{gem_dir}/specifications/minitest-%{minitest_version}.gemspec
+  s.require_paths = ["lib"]' %{buildroot}%{gem_dir}/specifications/minitest-%{minitest_version}.gemspec
 
 %check
 # TODO: Investigate the test failures.
