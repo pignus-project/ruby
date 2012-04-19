@@ -405,25 +405,25 @@ mv %{buildroot}%{ruby_libdir}/minitest %{buildroot}%{gem_dir}/gems/minitest-%{mi
 
 # Adjust the gemspec files so that the gems will load properly
 sed -i '2 a\
-  s.require_paths = ["lib"]' %{buildroot}/%{gem_dir}/specifications/rake-%{rake_version}.gemspec
+  s.require_paths = ["lib"]' %{buildroot}%{gem_dir}/specifications/rake-%{rake_version}.gemspec
 
 sed -i '2 a\
-  s.require_paths = ["lib"]' %{buildroot}/%{gem_dir}/specifications/rdoc-%{rdoc_version}.gemspec
-
-sed -i '2 a\
-  s.require_paths = ["lib"]\
-  s.extensions = ["bigdecimal.so"]' %{buildroot}/%{gem_dir}/specifications/bigdecimal-%{bigdecimal_version}.gemspec
+  s.require_paths = ["lib"]' %{buildroot}%{gem_dir}/specifications/rdoc-%{rdoc_version}.gemspec
 
 sed -i '2 a\
   s.require_paths = ["lib"]\
-  s.extensions = ["io/console.so"]' %{buildroot}/%{gem_dir}/specifications/io-console-%{io_console_version}.gemspec
+  s.extensions = ["bigdecimal.so"]' %{buildroot}%{gem_dir}/specifications/bigdecimal-%{bigdecimal_version}.gemspec
 
 sed -i '2 a\
   s.require_paths = ["lib"]\
-  s.extensions = ["json/ext/parser.so", "json/ext/generator.so"]' %{buildroot}/%{gem_dir}/specifications/json-%{json_version}.gemspec
+  s.extensions = ["io/console.so"]' %{buildroot}%{gem_dir}/specifications/io-console-%{io_console_version}.gemspec
 
 sed -i '2 a\
-  s.require_paths = ["lib"]' %{buildroot}/%{gem_dir}/specifications/minitest-%{minitest_version}.gemspec
+  s.require_paths = ["lib"]\
+  s.extensions = ["json/ext/parser.so", "json/ext/generator.so"]' %{buildroot}%{gem_dir}/specifications/json-%{json_version}.gemspec
+
+sed -i '2 a\
+  s.require_paths = ["lib"]' %{buildroot}%{gem_dir}/specifications/minitest-%{minitest_version}.gemspec
 
 %check
 # Disable make check on ARM until the bug is fixed
