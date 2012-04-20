@@ -1,7 +1,7 @@
 %global major_version 1
 %global minor_version 9
 %global teeny_version 3
-%global patch_level 125
+%global patch_level 194
 
 %global major_minor_version %{major_version}.%{minor_version}
 
@@ -25,7 +25,7 @@
 %global ruby_vendorlibdir %{_datadir}/ruby/%{ruby_vendordir}
 %global ruby_vendorarchdir %{_libdir}/ruby/%{ruby_vendordir}
 
-%global rubygems_version 1.8.11
+%global rubygems_version 1.8.23
 
 # The RubyGems library has to stay out of Ruby directory three, since the
 # RubyGems should be share by all Ruby implementations.
@@ -51,7 +51,7 @@
 Summary: An interpreter of object-oriented scripting language
 Name: ruby
 Version: %{ruby_version_patch_level}
-Release: 3%{?dist}
+Release: 1%{?dist}
 Group: Development/Languages
 License: Ruby or BSD
 URL: http://ruby-lang.org/
@@ -431,11 +431,9 @@ sed -i '2 a\
 # https://bugs.ruby-lang.org/issues/6011
 # same for ppc(64), RH bugzilla #803698
 %ifnarch %{arm} ppc ppc64
-# Test suite fails with OpenSSL 1.0.1
-# http://bugs.ruby-lang.org/issues/6089
 # OpenSSL 1.0.1 is breaking the drb test suite.
 # https://bugs.ruby-lang.org/issues/6221
-make check TESTS="-v -x test_drbssl.rb -x test_x509cert.rb"
+make check TESTS="-v -x test_drbssl.rb"
 %endif
 
 %post libs -p /sbin/ldconfig
@@ -702,6 +700,9 @@ make check TESTS="-v -x test_drbssl.rb -x test_x509cert.rb"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Fri Apr 20 2012 Vít Ondruch <vondruch@redhat.com> - 1.9.3.194-1
+- Update to Ruby 1.9.3-p194.
+
 * Mon Apr 09 2012 Karsten Hopp <karsten@redhat.com> 1.9.3.125-3
 - disable check on ppc(64), RH bugzilla 803698
 
