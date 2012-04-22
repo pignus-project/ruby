@@ -51,7 +51,12 @@
 Summary: An interpreter of object-oriented scripting language
 Name: ruby
 Version: %{ruby_version_patch_level}
-Release: 1%{?dist}
+# Note:
+# As seen on perl srpm, as this (ruby) srpm contains several sub-components,
+# we cannot reset the release number to 1 even when the main (ruby) version
+# is updated - because it may be that the versions of sub-components don't
+# change.
+Release: 10.1%{?dist}
 Group: Development/Languages
 License: Ruby or BSD
 URL: http://ruby-lang.org/
@@ -700,6 +705,9 @@ make check TESTS="-v -x test_drbssl.rb"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Sun Apr 22 2012 Mamoru Tasaka <mtasaka@fedoraproject.org> - 1.9.3.194-10.1
+- Bump release
+
 * Fri Apr 20 2012 Vít Ondruch <vondruch@redhat.com> - 1.9.3.194-1
 - Update to Ruby 1.9.3-p194.
 
