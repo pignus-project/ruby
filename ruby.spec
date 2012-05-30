@@ -56,9 +56,10 @@ Version: %{ruby_version_patch_level}
 # we cannot reset the release number to 1 even when the main (ruby) version
 # is updated - because it may be that the versions of sub-components don't
 # change.
-Release: 10.1%{?dist}
+Release: 11%{?dist}
 Group: Development/Languages
-License: Ruby or BSD
+# Public Domain for example for: include/ruby/st.h, strftime.c, ...
+License: (Ruby or BSD) and Public Domain
 URL: http://ruby-lang.org/
 Source0: ftp://ftp.ruby-lang.org/pub/%{name}/%{major_minor_version}/%{ruby_archive}.tar.gz
 Source1: operating_system.rb
@@ -345,19 +346,19 @@ make install DESTDIR=%{buildroot}
 # Dump the macros into macro.ruby to use them to build other Ruby libraries.
 mkdir -p %{buildroot}%{_sysconfdir}/rpm
 cat >> %{buildroot}%{_sysconfdir}/rpm/macros.ruby << \EOF
-%%ruby_libdir %{_datadir}/%{name}
-%%ruby_libarchdir %{_libdir}/%{name}
+%%ruby_libdir %%{_datadir}/%{name}
+%%ruby_libarchdir %%{_libdir}/%{name}
 
 # This is the local lib/arch and should not be used for packaging.
 %%ruby_sitedir site_ruby
-%%ruby_sitelibdir %{_prefix}/local/share/ruby/%{ruby_sitedir}
-%%ruby_sitearchdir %{_prefix}/local/%{_lib}/ruby/%{ruby_sitedir}
+%%ruby_sitelibdir %%{_prefix}/local/share/%{name}/%%{ruby_sitedir}
+%%ruby_sitearchdir %%{_prefix}/local/%%{_lib}/%{name}/%%{ruby_sitedir}
 
 # This is the general location for libs/archs compatible with all
 # or most of the Ruby versions available in the Fedora repositories.
 %%ruby_vendordir vendor_ruby
-%%ruby_vendorlibdir %{_datadir}/ruby/%{ruby_vendordir}
-%%ruby_vendorarchdir %{_libdir}/ruby/%{ruby_vendordir}
+%%ruby_vendorlibdir %%{ruby_libdir}/%%{ruby_vendordir}
+%%ruby_vendorarchdir %%{ruby_libarchdir}/%%{ruby_vendordir}
 EOF
 
 cat >> %{buildroot}%{_sysconfdir}/rpm/macros.rubygems << \EOF
@@ -705,6 +706,10 @@ make check TESTS="-v -x test_drbssl.rb"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Tue May 29 2012 Bohuslav Kabrda <bkabrda@redhat.com> - 1.9.3.194-11
+- Fix license to contain Public Domain.
+- macros.ruby now contains unexpanded macros.
+
 * Sun Apr 22 2012 Mamoru Tasaka <mtasaka@fedoraproject.org> - 1.9.3.194-10.1
 - Bump release
 
