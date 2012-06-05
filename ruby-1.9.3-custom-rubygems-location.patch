@@ -59,7 +59,7 @@ index 6bfc73e..31dc446 100755
  vendorarchlibdir = CONFIG["vendorarchdir"]
 +rubygemsdir = CONFIG["rubygemsdir"]
  mandir = CONFIG["mandir", true]
- capidir = CONFIG["docdir", true]
+ docdir = CONFIG["docdir", true]
  configure_args = Shellwords.shellwords(CONFIG["configure_args"])
 @@ -498,7 +499,15 @@ end
  install?(:local, :comm, :lib) do

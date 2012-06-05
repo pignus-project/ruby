@@ -13,7 +13,7 @@
 
 # If revision is removed/commented out, the official release build is expected.
 # Keep the revision enabled for pre-releases from SVN.
-%global revision 35368
+%global revision 35922
 
 %global release 1
 
@@ -51,8 +51,8 @@
 %global rdoc_version 3.9.5
 %global bigdecimal_version 1.1.0
 %global io_console_version 0.3
-%global json_version 1.6.6
-%global minitest_version 2.8.1
+%global json_version 1.7.1
+%global minitest_version 3.0.0
 
 %global	_normalized_cpu	%(echo %{_target_cpu} | sed 's/^ppc/powerpc/;s/i.86/i386/;s/sparcv./sparc/')
 
@@ -579,6 +579,7 @@ make check TESTS="-v -x test_drbssl.rb -x test_time_tz.rb -x test_httprequest.rb
 %{ruby_libdir}/rss
 %{ruby_libdir}/shell
 %{ruby_libdir}/syck
+%{ruby_libdir}/syslog
 %{ruby_libdir}/test
 %exclude %{ruby_libdir}/tk
 %exclude %{ruby_libdir}/tkextlib
@@ -665,7 +666,6 @@ make check TESTS="-v -x test_drbssl.rb -x test_time_tz.rb -x test_httprequest.rb
 %{ruby_libarchdir}/fiber.so
 %{ruby_libarchdir}/fiddle.so
 %{ruby_libarchdir}/gdbm.so
-%{ruby_libarchdir}/iconv.so
 %dir %{ruby_libarchdir}/io
 %{ruby_libarchdir}/io/nonblock.so
 %{ruby_libarchdir}/io/wait.so
