@@ -23,7 +23,7 @@ index b1bc951..91c5d0d 100644
 +           AS_HELP_STRING([--with-rubygemsdir=DIR], [custom rubygems directory]),
 +            [rubygemsdir=$withval])
 +if test "$rubygemsdir" != ""; then
-+    AC_DEFINE_UNQUOTED(RUBYGEMS_DIR,"$rubygemsdir")
++    AC_DEFINE_UNQUOTED(RUBYGEMS_DIR,"$rubygemsdir" !<verconf>!)
 +fi
 +
  if test "${LOAD_RELATIVE+set}"; then
