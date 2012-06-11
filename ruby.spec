@@ -56,7 +56,7 @@ Version: %{ruby_version_patch_level}
 # we cannot reset the release number to 1 even when the main (ruby) version
 # is updated - because it may be that the versions of sub-components don't
 # change.
-Release: 11%{?dist}
+Release: 12%{?dist}
 Group: Development/Languages
 # Public Domain for example for: include/ruby/st.h, strftime.c, ...
 License: (Ruby or BSD) and Public Domain
@@ -385,6 +385,7 @@ mv %{buildroot}%{ruby_libdir}/gems/%{ruby_abi} %{buildroot}%{gem_dir}
 mkdir -p %{buildroot}%{gem_extdir}/exts
 
 # Move bundled rubygems to %%gem_dir and %%gem_extdir
+# make symlinks for io-console and bigdecimal, which are considered to be part of stdlib by other Gems
 mkdir -p %{buildroot}%{gem_dir}/gems/rake-%{rake_version}/lib
 mv %{buildroot}%{ruby_libdir}/rake* %{buildroot}%{gem_dir}/gems/rake-%{rake_version}/lib
 
@@ -395,11 +396,15 @@ mkdir -p %{buildroot}%{gem_dir}/gems/bigdecimal-%{bigdecimal_version}/lib
 mkdir -p %{buildroot}%{_libdir}/gems/exts/bigdecimal-%{bigdecimal_version}/lib
 mv %{buildroot}%{ruby_libdir}/bigdecimal %{buildroot}%{gem_dir}/gems/bigdecimal-%{bigdecimal_version}/lib
 mv %{buildroot}%{ruby_libarchdir}/bigdecimal.so %{buildroot}%{_libdir}/gems/exts/bigdecimal-%{bigdecimal_version}/lib
+ln -s %{gem_dir}/gems/bigdecimal-%{bigdecimal_version}/lib/bigdecimal %{buildroot}%{ruby_libdir}/bigdecimal
+ln -s %{_libdir}/gems/exts/bigdecimal-%{bigdecimal_version}/lib/bigdecimal.so %{buildroot}%{ruby_libarchdir}/bigdecimal.so
 
 mkdir -p %{buildroot}%{gem_dir}/gems/io-console-%{io_console_version}/lib
 mkdir -p %{buildroot}%{_libdir}/gems/exts/io-console-%{io_console_version}/lib/io
 mv %{buildroot}%{ruby_libdir}/io %{buildroot}%{gem_dir}/gems/io-console-%{io_console_version}/lib
 mv %{buildroot}%{ruby_libarchdir}/io/console.so %{buildroot}%{_libdir}/gems/exts/io-console-%{io_console_version}/lib/io
+ln -s %{gem_dir}/gems/io-console-%{io_console_version}/lib/io %{buildroot}%{ruby_libdir}/io
+ln -s %{_libdir}/gems/exts/io-console-%{io_console_version}/lib/io/console.so %{buildroot}%{ruby_libarchdir}/io/console.so
 
 mkdir -p %{buildroot}%{gem_dir}/gems/json-%{json_version}/lib
 mkdir -p %{buildroot}%{_libdir}/gems/exts/json-%{json_version}/lib
@@ -678,11 +683,15 @@ make check TESTS="-v -x test_drbssl.rb"
 %{_datadir}/ri
 
 %files -n rubygem-bigdecimal
+%{ruby_libdir}/bigdecimal
+%{ruby_libarchdir}/bigdecimal.so
 %{_libdir}/gems/exts/bigdecimal-%{bigdecimal_version}
 %{gem_dir}/gems/bigdecimal-%{bigdecimal_version}
 %{gem_dir}/specifications/bigdecimal-%{bigdecimal_version}.gemspec
 
 %files -n rubygem-io-console
+%{ruby_libdir}/io
+%{ruby_libarchdir}/io/console.so
 %{_libdir}/gems/exts/io-console-%{io_console_version}
 %{gem_dir}/gems/io-console-%{io_console_version}
 %{gem_dir}/specifications/io-console-%{io_console_version}.gemspec
@@ -706,6 +715,9 @@ make check TESTS="-v -x test_drbssl.rb"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Mon Jun 11 2012 Bohuslav Kabrda <bkabrda@redhat.com> - 1.9.3.194-12
+- Make symlinks for bigdecimal and io-console gems to ruby stdlib dirs (RHBZ 829209).
+
 * Tue May 29 2012 Bohuslav Kabrda <bkabrda@redhat.com> - 1.9.3.194-11
 - Fix license to contain Public Domain.
 - macros.ruby now contains unexpanded macros.
