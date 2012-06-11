@@ -56,7 +56,7 @@ Version: %{ruby_version_patch_level}
 # we cannot reset the release number to 1 even when the main (ruby) version
 # is updated - because it may be that the versions of sub-components don't
 # change.
-Release: 12%{?dist}
+Release: 13%{?dist}
 Group: Development/Languages
 # Public Domain for example for: include/ruby/st.h, strftime.c, ...
 License: (Ruby or BSD) and Public Domain
@@ -94,6 +94,11 @@ Patch12: ruby-1.9.3-mkmf-verbose.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Requires: ruby(rubygems) >= %{rubygems_version}
+# Make the bigdecimal gem a runtime dependency of Ruby to avoid problems
+# with user-installed gems, that don't require it in gemspec/Gemfile
+# See https://bugzilla.redhat.com/show_bug.cgi?id=829209
+# and http://bugs.ruby-lang.org/issues/6123
+Requires: rubygem(bigdecimal) >= %{bigdecimal_version}
 
 BuildRequires: autoconf
 BuildRequires: gdbm-devel
@@ -715,6 +720,9 @@ make check TESTS="-v -x test_drbssl.rb"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Mon Jun 11 2012 Bohuslav Kabrda <bkabrda@redhat.com> - 1.9.3.194-13
+- Make the bigdecimal gem a runtime dependency of Ruby.
+
 * Mon Jun 11 2012 Bohuslav Kabrda <bkabrda@redhat.com> - 1.9.3.194-12
 - Make symlinks for bigdecimal and io-console gems to ruby stdlib dirs (RHBZ 829209).
 
