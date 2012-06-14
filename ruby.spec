@@ -46,7 +46,7 @@
 %global json_version 1.5.4
 %global minitest_version 2.5.1
 
-%global	_normalized_cpu	%(echo %{_target_cpu} | sed 's/^ppc/powerpc/;s/i.86/i386/;s/sparcv./sparc/;s/armv.*/arm/')
+%global	_normalized_cpu	%(echo %{_target_cpu} | sed 's/^ppc/powerpc/;s/i.86/i386/;s/sparcv./sparc/')
 
 Summary: An interpreter of object-oriented scripting language
 Name: ruby
@@ -442,14 +442,20 @@ sed -i '2 a\
   s.require_paths = ["lib"]' %{buildroot}%{gem_dir}/specifications/minitest-%{minitest_version}.gemspec
 
 %check
-# Disable make check on ARM until the bug is fixed
-# https://bugzilla.redhat.com/show_bug.cgi?id=789410
-# https://bugs.ruby-lang.org/issues/6011
-# same for ppc(64), RH bugzilla #803698
-%ifnarch %{arm} ppc ppc64
+DISABLE_TESTS=""
+
 # OpenSSL 1.0.1 is breaking the drb test suite.
 # https://bugs.ruby-lang.org/issues/6221
-make check TESTS="-v -x test_drbssl.rb"
+DISABLE_TESTS="-x test_drbssl.rb $DISABLE_TESTS"
+
+%ifarch armv7l armv7hl armv7hnl
+# test_call_double(DL::TestDL) fails on ARM HardFP
+# http://bugs.ruby-lang.org/issues/6592
+DISABLE_TESTS="-x test_dl2.rb $DISABLE_TESTS"
+%endif
+
+%ifnarch ppc ppc64
+make check TESTS="-v $DISABLE_TESTS"
 %endif
 
 %post libs -p /sbin/ldconfig
