@@ -13,7 +13,7 @@
 
 # If revision is removed/commented out, the official release build is expected.
 # Keep the revision enabled for pre-releases from SVN.
-%global revision 35922
+%global revision 36169
 
 %global release 1
 
