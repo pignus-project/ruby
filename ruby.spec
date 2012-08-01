@@ -727,7 +727,7 @@ make check TESTS="-v $DISABLE_TESTS"
 
 %changelog
 * Wed Aug 01 2012 Vít Ondruch <vondruch@redhat.com> - 1.9.3.194-15
-- ruby-libs must require rubygems (rhbz#45011).
+- ruby-libs must require rubygems (rhbz#845011).
 
 * Sat Jul 21 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.9.3.194-14
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
