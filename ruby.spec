@@ -56,7 +56,7 @@ Version: %{ruby_version_patch_level}
 # we cannot reset the release number to 1 even when the main (ruby) version
 # is updated - because it may be that the versions of sub-components don't
 # change.
-Release: 14%{?dist}
+Release: 15%{?dist}
 Group: Development/Languages
 # Public Domain for example for: include/ruby/st.h, strftime.c, ...
 License: (Ruby or BSD) and Public Domain
@@ -93,7 +93,6 @@ Patch9: rubygems-1.8.11-binary-extensions.patch
 Patch12: ruby-1.9.3-mkmf-verbose.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
-Requires: ruby(rubygems) >= %{rubygems_version}
 # Make the bigdecimal gem a runtime dependency of Ruby to avoid problems
 # with user-installed gems, that don't require it in gemspec/Gemfile
 # See https://bugzilla.redhat.com/show_bug.cgi?id=829209
@@ -133,6 +132,7 @@ Ruby or an application embedding Ruby.
 Summary:    Libraries necessary to run Ruby
 Group:      Development/Libraries
 License:    Ruby or BSD
+Requires:   ruby(rubygems) >= %{rubygems_version}
 Provides:   ruby(abi) = %{ruby_abi}
 
 %description libs
@@ -726,6 +726,9 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Wed Aug 01 2012 Vít Ondruch <vondruch@redhat.com> - 1.9.3.194-15
+- ruby-libs must require rubygems (rhbz#45011).
+
 * Sat Jul 21 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.9.3.194-14
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
 
