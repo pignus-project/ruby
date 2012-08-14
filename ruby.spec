@@ -110,6 +110,7 @@ Patch12: ruby-1.9.3-mkmf-verbose.patch
 Patch14: ruby-2.0.0-Expand-ruby.pc-variable-by-configuration-process.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
+Requires: ruby(rubygems) >= %{rubygems_version}
 # Make the bigdecimal gem a runtime dependency of Ruby to avoid problems
 # with user-installed gems, that don't require it in gemspec/Gemfile
 # See https://bugzilla.redhat.com/show_bug.cgi?id=829209
@@ -153,7 +154,6 @@ Ruby or an application embedding Ruby.
 Summary:    Libraries necessary to run Ruby
 Group:      Development/Libraries
 License:    Ruby or BSD
-Requires:   ruby(rubygems) >= %{rubygems_version}
 Provides:   ruby(abi) = %{ruby_abi}
 
 %description libs
