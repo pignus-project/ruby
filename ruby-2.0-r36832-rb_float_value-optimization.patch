@@ -1,0 +1,46 @@
+From 0b89d6d5f9f8c788f4391d8a0499f10aed624371 Mon Sep 17 00:00:00 2001
+From: ko1 <ko1@b2dd03c8-39d4-4d8f-98ff-823fe69b080e>
+Date: Mon, 27 Aug 2012 09:22:21 +0000
+Subject: [PATCH] * include/ruby/ruby.h (rb_float_value): optimize it.   This
+ technique was pointed by shinichiro.hamaji  
+ <http://shinh.skr.jp/m/?date=20120825#p02>.
+
+git-svn-id: svn+ssh://ci.ruby-lang.org/ruby/trunk@36832 b2dd03c8-39d4-4d8f-98ff-823fe69b080e
+---
+ ChangeLog           |    6 ++++++
+ include/ruby/ruby.h |   10 +++++-----
+ 2 files changed, 11 insertions(+), 5 deletions(-)
+
+diff --git a/include/ruby/ruby.h b/include/ruby/ruby.h
+index 3905b32..b8b2267 100644
+--- a/include/ruby/ruby.h
++++ b/include/ruby/ruby.h
+@@ -733,10 +733,7 @@ struct RFloat {
+ rb_float_value(VALUE v)
+ {
+     if (FLONUM_P(v)) {
+-	if (v == (VALUE)0x8000000000000002) {
+-	    return 0.0;
+-	}
+-	else {
++	if (v != (VALUE)0x8000000000000002) { /* LIKELY */
+ 	    union {
+ 		double d;
+ 		VALUE v;
+@@ -746,9 +743,12 @@ struct RFloat {
+ 	    /* e: xx1... -> 011... */
+ 	    /*    xx0... -> 100... */
+ 	    /*      ^b63           */
+-	    t.v = RUBY_BIT_ROTR(((b63 ^ 1) << 1) | b63 | (v & ~0x03), 3);
++	    t.v = RUBY_BIT_ROTR(2 - b63 | (v & ~0x03), 3);
+ 	    return t.d;
+ 	}
++	else {
++	    return 0.0;
++	}
+     }
+     else {
+ 	return ((struct RFloat *)v)->float_value;
+-- 
+1.7.10
+
