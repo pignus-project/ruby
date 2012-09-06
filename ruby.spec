@@ -41,7 +41,9 @@
 
 # Specify custom RubyGems root.
 %global gem_dir %{_datadir}/gems
-# TODO: Should we create arch specific rubygems-filesystem?
+# TODO: These folders should go into rubygem-filesystem but how to achieve it,
+# since noarch package cannot provide arch dependent subpackages?
+# http://rpm.org/ticket/78
 %global gem_extdir %{_exec_prefix}/lib{,64}/gems
 
 %global rake_version 0.9.2.2
