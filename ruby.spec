@@ -513,11 +513,6 @@ make check TESTS="-v $DISABLE_TESTS"
 %lang(ja) %doc COPYING.ja
 %doc GPL
 %doc LEGAL
-%doc NEWS
-%doc README
-%lang(ja) %doc README.ja
-%doc doc/ChangeLog-*
-%doc doc/NEWS-*
 %{_bindir}/erb
 %{_bindir}/ruby
 %{_bindir}/testrb
@@ -743,10 +738,12 @@ make check TESTS="-v $DISABLE_TESTS"
 %{_mandir}/man1/ri*
 
 %files doc
+%doc NEWS
 %doc README
 %lang(ja) %doc README.ja
 %doc ChangeLog
 %doc doc/ChangeLog-*
+%doc doc/NEWS-*
 %{_datadir}/ri
 
 %files -n rubygem-bigdecimal
