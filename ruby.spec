@@ -738,7 +738,7 @@ make check TESTS="-v $DISABLE_TESTS"
 
 %changelog
 * Thu Sep 06 2012 Vít Ondruch <vondruch@redhat.com> - 1.9.3.194-17
-- Split documentation into -doc subpackage.
+- Split documentation into -doc subpackage (rhbz#854418).
 
 * Tue Aug 14 2012 Vít Ondruch <vondruch@redhat.com> - 1.9.3.194-16
 - Revert the dependency of ruby-libs on rubygems (rhbz#845011, rhbz#847482).
