@@ -56,7 +56,7 @@ Version: %{ruby_version_patch_level}
 # we cannot reset the release number to 1 even when the main (ruby) version
 # is updated - because it may be that the versions of sub-components don't
 # change.
-Release: 17%{?dist}
+Release: 18%{?dist}
 Group: Development/Languages
 # Public Domain for example for: include/ruby/st.h, strftime.c, ...
 License: (Ruby or BSD) and Public Domain
@@ -89,6 +89,9 @@ Patch8: ruby-1.9.3-custom-rubygems-location.patch
 # Add support for installing binary extensions according to FHS.
 # https://github.com/rubygems/rubygems/issues/210
 Patch9: rubygems-1.8.11-binary-extensions.patch
+# Patch from trunk for CVE-4464, CVE-4466
+# http://svn.ruby-lang.org/cgi-bin/viewvc.cgi?view=revision&revision=37068
+Patch10: ruby-1.9.3-backport-from-trunk-rev37068.patch
 # Make mkmf verbose by default
 Patch12: ruby-1.9.3-mkmf-verbose.patch
 
@@ -331,6 +334,7 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 %patch7 -p1
 %patch8 -p1
 %patch9 -p1
+%patch10 -p0
 %patch12 -p1
 
 %build
@@ -506,6 +510,8 @@ make check TESTS="-v $DISABLE_TESTS"
 %doc LEGAL
 %doc README
 %lang(ja) %doc README.ja
+%doc NEWS
+%doc doc/NEWS-*
 # Exclude /usr/local directory since it is supposed to be managed by
 # local system administrator.
 %exclude %{ruby_sitelibdir}
@@ -696,12 +702,10 @@ make check TESTS="-v $DISABLE_TESTS"
 %{_mandir}/man1/ri*
 
 %files doc
-%doc NEWS
 %doc README
 %lang(ja) %doc README.ja
 %doc ChangeLog
 %doc doc/ChangeLog-*
-%doc doc/NEWS-*
 %{_datadir}/ri
 
 %files -n rubygem-bigdecimal
@@ -737,6 +741,9 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Thu Oct 04 2012 Mamoru Tasaka <mtasaka@fedoraproject.org> - 1.9.3.194-18
+- Patch from trunk for CVE-2012-4464, CVE-2012-4466
+
 * Thu Sep 06 2012 Vít Ondruch <vondruch@redhat.com> - 1.9.3.194-17
 - Split documentation into -doc subpackage (rhbz#854418).
 
