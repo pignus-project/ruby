@@ -1,0 +1,14 @@
+--- ruby-1.9.3-p286/test/ruby/test_io.rb.devtty	2012-10-12 17:37:54.000000000 +0900
++++ ruby-1.9.3-p286/test/ruby/test_io.rb	2012-10-13 14:00:24.000000000 +0900
+@@ -2068,6 +2068,11 @@
+     return if /linux/ !~ RUBY_PLATFORM
+     return if /^i.?86|^x86_64/ !~ RUBY_PLATFORM
+     return unless File.exist?('/dev/tty')
++    begin
++      File.open('/dev/tty') {|f|}
++    rescue Errno::ENXIO
++      return
++    end
+ 
+     File.open('/dev/tty') { |f|
+       tiocgwinsz=0x5413

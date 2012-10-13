@@ -1,7 +1,7 @@
 %global major_version 1
 %global minor_version 9
 %global teeny_version 3
-%global patch_level 194
+%global patch_level 286
 
 %global major_minor_version %{major_version}.%{minor_version}
 
@@ -56,7 +56,7 @@ Version: %{ruby_version_patch_level}
 # we cannot reset the release number to 1 even when the main (ruby) version
 # is updated - because it may be that the versions of sub-components don't
 # change.
-Release: 18%{?dist}
+Release: 19%{?dist}
 Group: Development/Languages
 # Public Domain for example for: include/ruby/st.h, strftime.c, ...
 License: (Ruby or BSD) and Public Domain
@@ -79,7 +79,8 @@ Patch4: ruby-1.9.3-fix-s390x-build.patch
 # when it exists outside of the GEM_HOME (already fixed in the upstream)
 Patch5: ruby-1.9.3-rubygems-1.8.11-uninstaller.patch
 # http://redmine.ruby-lang.org/issues/5135 - see comment 29
-Patch6: ruby-1.9.3-webrick-test-fix.patch
+# Fixed in ruby 1.9.3p286
+#Patch6: ruby-1.9.3-webrick-test-fix.patch
 # Already fixed upstream:
 # https://github.com/ruby/ruby/commit/f212df564a4e1025f9fb019ce727022a97bfff53
 Patch7: ruby-1.9.3-bignum-test-fix.patch
@@ -91,7 +92,11 @@ Patch8: ruby-1.9.3-custom-rubygems-location.patch
 Patch9: rubygems-1.8.11-binary-extensions.patch
 # Patch from trunk for CVE-4464, CVE-4466
 # http://svn.ruby-lang.org/cgi-bin/viewvc.cgi?view=revision&revision=37068
-Patch10: ruby-1.9.3-backport-from-trunk-rev37068.patch
+# Fixed in ruby 1.9.3p286
+#Patch10: ruby-1.9.3-backport-from-trunk-rev37068.patch
+# Opening /dev/tty fails with ENXIO (ref: man 2 open) on koji.
+# Let's rescue this
+Patch10: ruby-1.9.3-p286-open-devtty-on-koji.patch
 # Make mkmf verbose by default
 Patch12: ruby-1.9.3-mkmf-verbose.patch
 
@@ -330,11 +335,11 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
-%patch6 -p1
+#%%patch6 -p1
 %patch7 -p1
 %patch8 -p1
 %patch9 -p1
-%patch10 -p0
+%patch10 -p1
 %patch12 -p1
 
 %build
@@ -741,6 +746,11 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Sat Oct 13 2012 Mamoru TASAKA <mtasaka@fedoraproject.org> - 1.9.3.286-19
+- Update to 1.9.3 p286
+- Don't create files when NUL-containing path name is passed
+  (bug 865940)
+
 * Thu Oct 04 2012 Mamoru Tasaka <mtasaka@fedoraproject.org> - 1.9.3.194-18
 - Patch from trunk for CVE-2012-4464, CVE-2012-4466
 
