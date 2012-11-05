@@ -13,7 +13,7 @@ diff --git a/configure.in b/configure.in
 index e742e74..86cb68f 100644
 --- a/configure.in
 +++ b/configure.in
-@@ -3018,6 +3018,17 @@ else
+@@ -3177,6 +3177,17 @@ else
  fi
  AC_SUBST(USE_RUBYGEMS)
  
@@ -135,7 +135,7 @@ diff --git a/tool/rbinstall.rb b/tool/rbinstall.rb
 index cec8c9f..fed14d2 100755
 --- a/tool/rbinstall.rb
 +++ b/tool/rbinstall.rb
-@@ -390,7 +390,7 @@ end
+@@ -392,7 +392,7 @@ end
  
  install?(:doc, :rdoc) do
    if $rdocdir

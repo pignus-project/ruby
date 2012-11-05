@@ -13,7 +13,7 @@
 
 # If revision is removed/commented out, the official release build is expected.
 # Keep the revision enabled for pre-releases from SVN.
-%global revision 36887
+%global revision 37421
 
 %global release 1
 
@@ -54,7 +54,7 @@
 %global bigdecimal_version 1.1.0
 %global io_console_version 0.3
 %global json_version 1.7.1
-%global minitest_version 3.3.0
+%global minitest_version 3.4.0
 
 %global _normalized_cpu %(echo %{_target_cpu} | sed 's/^ppc/powerpc/;s/i.86/i386/;s/sparcv./sparc/')
 
@@ -110,10 +110,6 @@ Patch12: ruby-1.9.3-mkmf-verbose.patch
 # Fixes issues mentioned in rhbz#789532, comment 8.
 # TODO: Should be probably upstreamed with #5281.
 Patch14: ruby-2.0.0-Expand-ruby.pc-variable-by-configuration-process.patch
-
-# This patch breaks a test suite, so revert it for now.
-# https://bugs.ruby-lang.org/issues/6971
-Patch100: ruby-2.0-r36832-rb_float_value-optimization.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Requires: ruby(rubygems) >= %{rubygems_version}
@@ -339,6 +335,10 @@ output.
 # TODO:
 # %%pacakge -n rubygem-psych
 
+# TODO:
+# %%pacakge -n rubygem-test-unit
+
+
 %package tcltk
 Summary:    Tcl/Tk interface for scripting language Ruby
 Group:      Development/Languages
@@ -364,8 +364,6 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 %patch12 -p1
 #%%patch13 -p1
 %patch14 -p1
-
-%patch100 -p1 -R
 
 %build
 autoconf

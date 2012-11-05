@@ -11,7 +11,7 @@ diff --git a/lib/rubygems/specification.rb b/lib/rubygems/specification.rb
 index 97db19e..263e7d3 100644
 --- a/lib/rubygems/specification.rb
 +++ b/lib/rubygems/specification.rb
-@@ -843,6 +843,12 @@ class Gem::Specification
+@@ -859,6 +859,12 @@ class Gem::Specification
        File.join full_gem_path, path
      end
  
@@ -24,7 +24,7 @@ index 97db19e..263e7d3 100644
      # gem directories must come after -I and ENV['RUBYLIB']
      insert_index = Gem.load_path_insert_index
  
-@@ -954,16 +960,16 @@ class Gem::Specification
+@@ -970,16 +976,16 @@ class Gem::Specification
  
    def contains_requirable_file? file
      root = full_gem_path
@@ -48,7 +48,7 @@ index 97db19e..263e7d3 100644
    end
  
    ##
-@@ -1273,6 +1279,23 @@ class Gem::Specification
+@@ -1295,6 +1301,23 @@ class Gem::Specification
    end
  
    ##
@@ -90,7 +90,7 @@ diff --git a/lib/rubygems/installer.rb b/lib/rubygems/installer.rb
 index 74d803d..0063c7f 100644
 --- a/lib/rubygems/installer.rb
 +++ b/lib/rubygems/installer.rb
-@@ -499,7 +499,7 @@ TEXT
+@@ -509,7 +509,7 @@ TEXT
    def build_extensions
      return if spec.extensions.empty?
      say "Building native extensions.  This could take a while..."
@@ -103,7 +103,7 @@ diff --git a/lib/rubygems/specification.rb b/lib/rubygems/specification.rb
 index 263e7d3..d31b93b 100644
 --- a/lib/rubygems/specification.rb
 +++ b/lib/rubygems/specification.rb
-@@ -1283,16 +1283,15 @@ class Gem::Specification
+@@ -1305,16 +1305,15 @@ class Gem::Specification
    # eg: /usr/local/lib/ruby/1.8/exts/mygem-1.0
  
    def ext_dir
@@ -140,7 +140,7 @@ diff --git a/lib/rubygems/specification.rb b/lib/rubygems/specification.rb
 index d31b93b..e65ea2d 100644
 --- a/lib/rubygems/specification.rb
 +++ b/lib/rubygems/specification.rb
-@@ -843,11 +843,7 @@ class Gem::Specification
+@@ -859,11 +859,7 @@ class Gem::Specification
        File.join full_gem_path, path
      end
  
@@ -153,7 +153,7 @@ index d31b93b..e65ea2d 100644
  
      # gem directories must come after -I and ENV['RUBYLIB']
      insert_index = Gem.load_path_insert_index
-@@ -1291,7 +1287,10 @@ class Gem::Specification
+@@ -1313,7 +1309,10 @@ class Gem::Specification
    # gem directory. eg: /usr/local/lib/ruby/1.8/gems
  
    def exts_dir
@@ -183,7 +183,7 @@ diff --git a/lib/rubygems/installer.rb b/lib/rubygems/installer.rb
 index 0063c7f..83b8fd5 100644
 --- a/lib/rubygems/installer.rb
 +++ b/lib/rubygems/installer.rb
-@@ -499,7 +499,7 @@ TEXT
+@@ -509,7 +509,7 @@ TEXT
    def build_extensions
      return if spec.extensions.empty?
      say "Building native extensions.  This could take a while..."
@@ -196,7 +196,7 @@ diff --git a/lib/rubygems/specification.rb b/lib/rubygems/specification.rb
 index e65ea2d..8be2ade 100644
 --- a/lib/rubygems/specification.rb
 +++ b/lib/rubygems/specification.rb
-@@ -843,7 +843,7 @@ class Gem::Specification
+@@ -859,7 +859,7 @@ class Gem::Specification
        File.join full_gem_path, path
      end
  
@@ -205,7 +205,7 @@ index e65ea2d..8be2ade 100644
  
      # gem directories must come after -I and ENV['RUBYLIB']
      insert_index = Gem.load_path_insert_index
-@@ -1279,7 +1279,7 @@ class Gem::Specification
+@@ -1301,7 +1301,7 @@ class Gem::Specification
    # eg: /usr/local/lib/ruby/1.8/exts/mygem-1.0
  
    def ext_dir
@@ -257,7 +257,7 @@ diff --git a/lib/rubygems/defaults.rb b/lib/rubygems/defaults.rb
 index 20b4198..6d8711f 100644
 --- a/lib/rubygems/defaults.rb
 +++ b/lib/rubygems/defaults.rb
-@@ -87,6 +87,17 @@ module Gem
+@@ -94,6 +94,17 @@ module Gem
    end
  
    ##
@@ -279,7 +279,7 @@ diff --git a/lib/rubygems/specification.rb b/lib/rubygems/specification.rb
 index 8be2ade..f54210a 100644
 --- a/lib/rubygems/specification.rb
 +++ b/lib/rubygems/specification.rb
-@@ -1287,10 +1287,7 @@ class Gem::Specification
+@@ -1309,10 +1309,7 @@ class Gem::Specification
    # gem directory. eg: /usr/local/lib/ruby/1.8/gems
  
    def exts_dir

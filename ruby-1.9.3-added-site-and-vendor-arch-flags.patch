@@ -15,7 +15,7 @@ diff --git a/Makefile.in b/Makefile.in
 index bcdaf5f..f57e4c4 100644
 --- a/Makefile.in
 +++ b/Makefile.in
-@@ -37,6 +37,9 @@ datadir = @datadir@
+@@ -38,6 +38,9 @@ datadir = @datadir@
  archdir = @archdir@
  sitearch = @sitearch@
  sitedir = @sitedir@
@@ -29,7 +29,7 @@ diff --git a/configure.in b/configure.in
 index 83e5d76..31532bd 100644
 --- a/configure.in
 +++ b/configure.in
-@@ -2866,6 +2866,15 @@ until SITE_DIR=`eval echo \\"${dir}\\"`; test "x${dir}" = "x${SITE_DIR}"; do
+@@ -3028,6 +3028,15 @@ until SITE_DIR=`eval echo \\"${dir}\\"`; test "x${dir}" = "x${SITE_DIR}"; do
      dir="${SITE_DIR}"
  done
  
@@ -45,7 +45,7 @@ index 83e5d76..31532bd 100644
  AC_ARG_WITH(vendordir,
  	    AS_HELP_STRING([--with-vendordir=DIR], [vendor libraries in DIR [[RUBY_LIB_PREFIX/vendor_ruby]], "no" to disable vendor directory]),
              [vendordir=$withval],
-@@ -2875,19 +2884,32 @@ until VENDOR_DIR=`eval echo \\"${dir}\\"`; test "x${dir}" = "x${VENDOR_DIR}"; do
+@@ -3037,19 +3046,32 @@ until VENDOR_DIR=`eval echo \\"${dir}\\"`; test "x${dir}" = "x${VENDOR_DIR}"; do
      dir="${VENDOR_DIR}"
  done
  
@@ -78,7 +78,7 @@ index 83e5d76..31532bd 100644
  fi
  
  pat=`echo "$RUBY_LIB_PREFIX/" | tr -c '\012' .`'\(.*\)'
-@@ -2905,12 +2927,26 @@ AS_CASE(["$RUBY_SITE_LIB_PATH"],
+@@ -3067,12 +3089,26 @@ AS_CASE(["$RUBY_SITE_LIB_PATH"],
    [
      RUBY_SITE_LIB_PATH="\"${RUBY_SITE_LIB_PATH}\""
      ])
@@ -105,7 +105,7 @@ index 83e5d76..31532bd 100644
      ])
  pat=`echo "$RUBY_EXEC_PREFIX/" | tr -c '\012' .`'\(.*\)'
  AS_CASE(["$RUBY_LIB_PREFIX"],
-@@ -2933,19 +2969,23 @@ if test "x$SITE_DIR" = xno; then
+@@ -3095,19 +3131,23 @@ if test "x$SITE_DIR" = xno; then
      AC_DEFINE(NO_RUBY_SITE_LIB, [] !<verconf>!)
  else
      AC_DEFINE_UNQUOTED(RUBY_SITE_LIB, ${RUBY_SITE_LIB_PATH} !<verconf>!)
