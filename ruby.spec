@@ -7,17 +7,28 @@
 
 %global ruby_version %{major_minor_version}.%{teeny_version}
 %global ruby_version_patch_level %{major_minor_version}.%{teeny_version}.%{patch_level}
-# Keep the ruby abi 1.9.1 for compatibility with gems.
-# %global ruby_abi %{major_minor_version}.0
+# Ruby 2.0 keeps the abi Ruby 1.9.1 compatible.
+# %%global ruby_abi %%{major_minor_version}.0
 %global ruby_abi 1.9.1
 
-# If revision is removed/commented out, the official release build is expected.
+# Specify the named version. It has precedense to revision.
+#%%global milestone preview1
+
 # Keep the revision enabled for pre-releases from SVN.
 %global revision 37421
 
-%global release 1
+%global ruby_archive %{name}-%{ruby_version}
 
-%global ruby_archive %{name}-%{ruby_version}-%{?revision:r%{revision}}%{!?revision:p%{patch_level}}
+# If revision and milestone are removed/commented out, the official release build is expected.
+%if 0%{?milestone:1}%{?revision:1} != 0
+%global development_release %{?milestone}%{?!milestone:%{?revision:r%{revision}}}
+%global ruby_archive %{ruby_archive}-%{?milestone}%{?!milestone:%{?revision:r%{revision}}}
+%else
+%global ruby_archive %{ruby_archive}-p%{patch_level}
+%endif
+
+
+%global release 1
 
 %global ruby_libdir %{_datadir}/%{name}
 %global ruby_libarchdir %{_libdir}/%{name}
@@ -61,7 +72,7 @@
 Summary: An interpreter of object-oriented scripting language
 Name: ruby
 Version: %{ruby_version_patch_level}
-Release: %{?revision:0.}%{release}%{?revision:.r%{revision}}%{?dist}
+Release: %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}
 Group: Development/Languages
 # Public Domain for example for: include/ruby/st.h, strftime.c, ...
 License: (Ruby or BSD) and Public Domain
