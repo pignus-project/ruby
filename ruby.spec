@@ -319,7 +319,7 @@ markup language.
 
 
 %package -n rubygem-minitest
-Summary:    Minitest provides a complete suite of testing facilities.
+Summary:    Minitest provides a complete suite of testing facilities
 Version:    %{minitest_version}
 Group:      Development/Libraries
 License:    MIT
