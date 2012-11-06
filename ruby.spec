@@ -66,6 +66,7 @@
 %global io_console_version 0.3
 %global json_version 1.7.1
 %global minitest_version 3.4.0
+%global psych_version 1.3.4
 
 %global _normalized_cpu %(echo %{_target_cpu} | sed 's/^ppc/powerpc/;s/i.86/i386/;s/sparcv./sparc/')
 
@@ -343,8 +344,20 @@ minitest/pride shows pride in testing and adds coloring to your test
 output.
 
 
-# TODO:
-# %%pacakge -n rubygem-psych
+%package -n rubygem-psych
+Summary:    A libyaml wrapper for Ruby
+Version:    %{psych_version}
+Group:      Development/Libraries
+License:    MIT
+Requires:   ruby(abi) = %{ruby_abi}
+Requires:   ruby(rubygems) >= %{rubygems_version}
+Provides:   rubygem(psych) = %{version}-%{release}
+
+%description -n rubygem-psych
+Psych is a YAML parser and emitter. Psych leverages
+libyaml[http://pyyaml.org/wiki/LibYAML] for its YAML parsing and emitting
+capabilities. In addition to wrapping libyaml, Psych also knows how to
+serialize and de-serialize most Ruby objects to and from the YAML format.
 
 # TODO:
 # %%pacakge -n rubygem-test-unit
@@ -478,6 +491,11 @@ mv %{buildroot}%{ruby_libarchdir}/json/ %{buildroot}%{_libdir}/gems/exts/json-%{
 mkdir -p %{buildroot}%{gem_dir}/gems/minitest-%{minitest_version}/lib
 mv %{buildroot}%{ruby_libdir}/minitest %{buildroot}%{gem_dir}/gems/minitest-%{minitest_version}/lib
 
+mkdir -p %{buildroot}%{gem_dir}/gems/psych-%{psych_version}/lib
+mkdir -p %{buildroot}%{_libdir}/gems/exts/psych-%{psych_version}/lib
+mv %{buildroot}%{ruby_libdir}/psych* %{buildroot}%{gem_dir}/gems/psych-%{psych_version}/lib
+mv %{buildroot}%{ruby_libarchdir}/psych.so %{buildroot}%{_libdir}/gems/exts/psych-%{psych_version}/lib/
+
 # Adjust the gemspec files so that the gems will load properly
 sed -i '8 a\
   s.require_paths = ["lib"]' %{buildroot}%{gem_dir}/specifications/rake-%{rake_version}.gemspec
@@ -585,7 +603,6 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/net
 %{ruby_libdir}/openssl
 %{ruby_libdir}/optparse
-%{ruby_libdir}/psych
 %{ruby_libdir}/racc
 %{ruby_libdir}/rbconfig
 %{ruby_libdir}/rexml
@@ -690,7 +707,6 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libarchdir}/objspace.so
 %{ruby_libarchdir}/openssl.so
 %{ruby_libarchdir}/pathname.so
-%{ruby_libarchdir}/psych.so
 %{ruby_libarchdir}/pty.so
 %dir %{ruby_libarchdir}/racc
 %{ruby_libarchdir}/racc/cparse.so
@@ -715,6 +731,7 @@ make check TESTS="-v $DISABLE_TESTS"
 %exclude %{_exec_prefix}/lib*/gems/exts/bigdecimal-%{bigdecimal_version}
 %exclude %{_exec_prefix}/lib*/gems/exts/io-console-%{io_console_version}
 %exclude %{_exec_prefix}/lib*/gems/exts/json-%{json_version}
+%exclude %{_exec_prefix}/lib*/gems/exts/psych-%{psych_version}
 %exclude %{gem_dir}/gems/rake-%{rake_version}
 %exclude %{gem_dir}/gems/rdoc-%{rdoc_version}
 %exclude %{gem_dir}/specifications/bigdecimal-%{bigdecimal_version}.gemspec
@@ -723,6 +740,7 @@ make check TESTS="-v $DISABLE_TESTS"
 %exclude %{gem_dir}/specifications/minitest-%{minitest_version}.gemspec
 %exclude %{gem_dir}/specifications/rake-%{rake_version}.gemspec
 %exclude %{gem_dir}/specifications/rdoc-%{rdoc_version}.gemspec
+%exclude %{gem_dir}/specifications/psych-%{psych_version}.gemspec
 
 %files -n rubygems-devel
 %config(noreplace) %{_sysconfdir}/rpm/macros.rubygems
@@ -775,6 +793,11 @@ make check TESTS="-v $DISABLE_TESTS"
 %files -n rubygem-minitest
 %{gem_dir}/gems/minitest-%{minitest_version}
 %{gem_dir}/specifications/minitest-%{minitest_version}.gemspec
+
+%files -n rubygem-psych
+%{_libdir}/gems/exts/psych-%{psych_version}
+%{gem_dir}/gems/psych-%{psych_version}
+%{gem_dir}/specifications/psych-%{psych_version}.gemspec
 
 %files tcltk
 %{ruby_libdir}/*-tk.rb
