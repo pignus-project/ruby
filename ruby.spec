@@ -56,7 +56,7 @@ Version: %{ruby_version_patch_level}
 # we cannot reset the release number to 1 even when the main (ruby) version
 # is updated - because it may be that the versions of sub-components don't
 # change.
-Release: 22%{?dist}
+Release: 23%{?dist}
 Group: Development/Languages
 # Public Domain for example for: include/ruby/st.h, strftime.c, ...
 License: (Ruby or BSD) and Public Domain
@@ -94,6 +94,9 @@ Patch9: rubygems-1.8.11-binary-extensions.patch
 # On koji, network related tests sometimes cause internal server error,
 # ignore these
 Patch10: ruby-1.9.3-p327-ignore-internal-server-error-on-test.patch
+# http://bugs.ruby-lang.org/issues/show/7312
+# test_str_crypt fails with glibc 2.17
+Patch11: ruby-1.9.3-p327-crypt-argument-glibc217.patch
 # Make mkmf verbose by default
 Patch12: ruby-1.9.3-mkmf-verbose.patch
 
@@ -336,6 +339,7 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 %patch8 -p1
 %patch9 -p1
 %patch10 -p1
+%patch11 -p1
 %patch12 -p1
 
 %build
@@ -742,6 +746,9 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Sun Nov 11 2012 Mamoru TASAKA <mtasaka@fedoraproject.org> - 1.9.3.327-23
+- Skip test_str_crypt (on rawhide) for now (upstream bug 7312)
+
 * Sat Nov 10 2012 Mamoru TASAKA <mtasaka@fedoraproject.org> - 1.9.3.327-22
 - Ignore some network related tests
 
