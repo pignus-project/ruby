@@ -91,6 +91,9 @@ Patch9: rubygems-1.8.11-binary-extensions.patch
 # Let's rescue this
 # Fixed in ruby 1.9.3 p327
 #Patch10: ruby-1.9.3-p286-open-devtty-on-koji.patch
+# On koji, network related tests sometimes cause internal server error,
+# ignore these
+Patch10: ruby-1.9.3-p327-ignore-internal-server-error-on-test.patch
 # Make mkmf verbose by default
 Patch12: ruby-1.9.3-mkmf-verbose.patch
 
@@ -332,7 +335,7 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 %patch7 -p1
 %patch8 -p1
 %patch9 -p1
-#%%patch10 -p1
+%patch10 -p1
 %patch12 -p1
 
 %build
