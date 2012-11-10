@@ -739,7 +739,7 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
-* Sat Nov 10 2012 Mamoru TASAKA <mtasaka@fedoraproject.org> - 1.9.3.327-1
+* Sat Nov 10 2012 Mamoru TASAKA <mtasaka@fedoraproject.org> - 1.9.3.327-20
 - Update to 1.9.3.327
 - Fix Hash-flooding DoS vulnerability on MurmurHash function
   (CVE-2012-5371)
