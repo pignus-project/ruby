@@ -15,7 +15,7 @@
 #%%global milestone preview1
 
 # Keep the revision enabled for pre-releases from SVN.
-%global revision 37421
+%global revision 37589
 
 %global ruby_archive %{name}-%{ruby_version}
 
@@ -520,7 +520,9 @@ sed -i '8 a\
   s.require_paths = ["lib"]' %{buildroot}%{gem_dir}/specifications/minitest-%{minitest_version}.gemspec
 
 %check
-DISABLE_TESTS=""
+# http://bugs.ruby-lang.org/issues/7298
+# http://bugs.ruby-lang.org/issues/7312
+DISABLE_TESTS="-x test_enumerator.rb -x test_m17n_comb.rb"
 
 %ifarch armv7l armv7hl armv7hnl
 # test_call_double(DL::TestDL) fails on ARM HardFP
