@@ -1,20 +1,20 @@
-From df4253a5b79b63f16f215f2c19f1b9666c4ca01e Mon Sep 17 00:00:00 2001
+From 50d6113cc3752d1810d58b78d9d009662e143041 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?V=C3=ADt=20Ondruch?= <vondruch@redhat.com>
 Date: Thu, 8 Sep 2011 15:30:05 +0200
 Subject: [PATCH] Add configuration arch specific dir flag.
 
 ---
- Makefile.in      |    1 +
- configure.in     |   20 ++++++++++++++++++++
- tool/mkconfig.rb |    4 +++-
- version.c        |    2 ++
- 4 files changed, 26 insertions(+), 1 deletions(-)
+ Makefile.in      |  1 +
+ configure.in     | 20 ++++++++++++++++++++
+ tool/mkconfig.rb |  4 +++-
+ version.c        |  2 ++
+ 4 files changed, 26 insertions(+), 1 deletion(-)
 
 diff --git a/Makefile.in b/Makefile.in
-index bcdaf5f..d61b2ee 100644
+index 78d7139..690ff8e 100644
 --- a/Makefile.in
 +++ b/Makefile.in
-@@ -35,6 +35,7 @@ libexecdir = @libexecdir@
+@@ -36,6 +36,7 @@ libexecdir = @libexecdir@
  datarootdir = @datarootdir@
  datadir = @datadir@
  arch = @arch@
@@ -23,10 +23,10 @@ index bcdaf5f..d61b2ee 100644
  sitedir = @sitedir@
  ruby_version = @ruby_version@
 diff --git a/configure.in b/configure.in
-index 83e5d76..e6dc38c 100644
+index db3641b..8e4aaec 100644
 --- a/configure.in
 +++ b/configure.in
-@@ -3011,6 +3011,15 @@ else
+@@ -3151,6 +3151,15 @@ else
      RUBY_LIB_VERSION="\"${ruby_version}\""
  fi
  
@@ -42,7 +42,7 @@ index 83e5d76..e6dc38c 100644
  AC_ARG_WITH(sitedir,
  	    AS_HELP_STRING([--with-sitedir=DIR], [site libraries in DIR [[RUBY_LIB_PREFIX/site_ruby]], "no" to disable site directory]),
              [sitedir=$withval],
-@@ -3033,16 +3042,25 @@ if test "${LOAD_RELATIVE+set}"; then
+@@ -3173,16 +3182,25 @@ if test "${LOAD_RELATIVE+set}"; then
      AC_DEFINE_UNQUOTED(LOAD_RELATIVE, $LOAD_RELATIVE)
      RUBY_EXEC_PREFIX=""
      RUBY_LIB_PREFIX="`eval echo "$RUBY_LIB_PREFIX" | sed 's|^NONE/|/|;s|^'"$prefix"'/|/|'`"
@@ -68,7 +68,7 @@ index 83e5d76..e6dc38c 100644
  AS_CASE(["$RUBY_SITE_LIB_PATH"],
    ["$RUBY_LIB_PREFIX/"*], [
      RUBY_SITE_LIB_PATH='RUBY_LIB_PREFIX"/'"`expr \"$RUBY_SITE_LIB_PATH\" : \"$pat\"`"'"'
-@@ -3073,6 +3091,7 @@
+@@ -3213,6 +3231,7 @@ else
  fi
  AC_DEFINE_UNQUOTED(RUBY_EXEC_PREFIX, "${RUBY_EXEC_PREFIX}")
  AC_DEFINE_UNQUOTED(RUBY_LIB_PREFIX, ${RUBY_LIB_PREFIX} !<verconf>!)
@@ -76,7 +76,7 @@ index 83e5d76..e6dc38c 100644
  if test "x$SITE_DIR" = xno; then
      AC_DEFINE(NO_RUBY_SITE_LIB, [] !<verconf>!)
  else
-@@ -3087,6 +3106,7 @@ fi
+@@ -3227,6 +3246,7 @@ fi
  AC_SUBST(arch)dnl
  AC_SUBST(sitearch)dnl
  AC_SUBST(ruby_version)dnl
@@ -85,10 +85,10 @@ index 83e5d76..e6dc38c 100644
  AC_SUBST(vendordir)dnl
  
 diff --git a/tool/mkconfig.rb b/tool/mkconfig.rb
-index b707c4b..9780ef2 100755
+index d9e26c1..03c3332 100755
 --- a/tool/mkconfig.rb
 +++ b/tool/mkconfig.rb
-@@ -43,6 +43,7 @@ v_others = []
+@@ -43,6 +43,7 @@ vars = {}
  continued_name = nil
  continued_line = nil
  path_version = "/$(ruby_version)"
@@ -114,7 +114,7 @@ index b707c4b..9780ef2 100755
  print <<EOS unless v_disabled["sitedir"]
    CONFIG["sitelibdir"] = "$(sitedir)#{path_version}"
 diff --git a/version.c b/version.c
-index 59d4e5e..915a0a2 100644
+index 05e5069..a117059 100644
 --- a/version.c
 +++ b/version.c
 @@ -48,7 +48,9 @@
@@ -128,5 +128,5 @@ index 59d4e5e..915a0a2 100644
  #define RUBY_VENDOR_ARCHLIB         RUBY_VENDOR_LIB2 "/"RUBY_SITEARCH
  #ifdef  RUBY_THINARCH
 -- 
-1.7.6.1
+1.8.0
 

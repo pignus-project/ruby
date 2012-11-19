@@ -1,19 +1,21 @@
-From fa1a50ad10814f724b8713865dc222724cb955ab Mon Sep 17 00:00:00 2001
+From 23cfbaa371f82d0b4652c9e37189a2be82fa3d4c Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?V=C3=ADt=20Ondruch?= <vondruch@redhat.com>
 Date: Thu, 25 Aug 2011 14:33:51 +0200
 Subject: [PATCH] Allow to disable versioned paths.
 
 ---
- configure.in     |   11 +++++++++++
- tool/mkconfig.rb |    9 ++++++---
- version.c        |   10 ++++++++++
- 3 files changed, 27 insertions(+), 3 deletions(-)
+ configure.in         | 11 +++++++++++
+ lib/rdoc/ri/paths.rb |  4 ++--
+ tool/mkconfig.rb     |  9 ++++++---
+ tool/rbinstall.rb    |  2 +-
+ version.c            | 10 ++++++++++
+ 5 files changed, 30 insertions(+), 6 deletions(-)
 
 diff --git a/configure.in b/configure.in
-index e742e74..86cb68f 100644
+index f2d22ef..db3641b 100644
 --- a/configure.in
 +++ b/configure.in
-@@ -3178,6 +3178,17 @@ else
+@@ -3318,6 +3318,17 @@ else
  fi
  AC_SUBST(USE_RUBYGEMS)
  
@@ -31,8 +33,24 @@ index e742e74..86cb68f 100644
  arch_hdrdir="${EXTOUT}/include/${arch}/ruby"
  AS_MKDIR_P("${arch_hdrdir}")
  config_h="${arch_hdrdir}/config.h"
+diff --git a/lib/rdoc/ri/paths.rb b/lib/rdoc/ri/paths.rb
+index a3c65bf..a4e8559 100644
+--- a/lib/rdoc/ri/paths.rb
++++ b/lib/rdoc/ri/paths.rb
+@@ -11,9 +11,9 @@ module RDoc::RI::Paths
+   version = RbConfig::CONFIG['ruby_version']
+ 
+   base    = if RbConfig::CONFIG.key? 'ridir' then
+-              File.join RbConfig::CONFIG['ridir'], version
++              File.join [RbConfig::CONFIG['ridir'], RbConfig::CONFIG['USE_VERSIONED_PATHS'] == 'YES' ? version : nil].compact
+             else
+-              File.join RbConfig::CONFIG['datadir'], 'ri', version
++              File.join [RbConfig::CONFIG['datadir'], 'ri', RbConfig::CONFIG['USE_VERSIONED_PATHS'] == 'YES' ? version : nil].compact
+             end
+ 
+   SYSDIR  = File.join base, "system"
 diff --git a/tool/mkconfig.rb b/tool/mkconfig.rb
-index a2221f0..47d8c8f 100755
+index f9d97d3..d9e26c1 100755
 --- a/tool/mkconfig.rb
 +++ b/tool/mkconfig.rb
 @@ -42,6 +42,7 @@ v_others = []
@@ -71,8 +89,21 @@ index a2221f0..47d8c8f 100755
    CONFIG["vendorarchdir"] = "$(vendorlibdir)/$(sitearch)"
  EOS
  print <<EOS
+diff --git a/tool/rbinstall.rb b/tool/rbinstall.rb
+index f5facca..17294a2 100755
+--- a/tool/rbinstall.rb
++++ b/tool/rbinstall.rb
+@@ -392,7 +392,7 @@ end
+ 
+ install?(:doc, :rdoc) do
+   if $rdocdir
+-    ridatadir = File.join(CONFIG['ridir'], CONFIG['ruby_version'], "system")
++    ridatadir = File.join([CONFIG['ridir'], RbConfig::CONFIG['USE_VERSIONED_PATHS'] == 'YES' ? version : nil, "system"].compact)
+     prepare "rdoc", ridatadir
+     install_recursive($rdocdir, ridatadir, :mode => $data_mode)
+   end
 diff --git a/version.c b/version.c
-index 59d4e5e..641dc33 100644
+index 26e275a..05e5069 100644
 --- a/version.c
 +++ b/version.c
 @@ -39,9 +39,15 @@
@@ -114,36 +145,5 @@ index 59d4e5e..641dc33 100644
      RUBY_LIB "\0"
  #ifdef RUBY_THIN_ARCHLIB
 -- 
-1.7.7.3
-diff --git a/lib/rdoc/ri/paths.rb b/lib/rdoc/ri/paths.rb
-index a3c65bf..0575730 100644
---- a/lib/rdoc/ri/paths.rb
-+++ b/lib/rdoc/ri/paths.rb
-@@ -11,9 +11,9 @@ module RDoc::RI::Paths
-   version = RbConfig::CONFIG['ruby_version']
- 
-   base    = if RbConfig::CONFIG.key? 'ridir' then
--              File.join RbConfig::CONFIG['ridir'], version
-+              File.join [RbConfig::CONFIG['ridir'], RbConfig::CONFIG['USE_VERSIONED_PATHS'] == 'YES' ? version : nil].compact
-             else
--              File.join RbConfig::CONFIG['datadir'], 'ri', version
-+              File.join [RbConfig::CONFIG['datadir'], 'ri', RbConfig::CONFIG['USE_VERSIONED_PATHS'] == 'YES' ? version : nil].compact
-             end
- 
-   SYSDIR  = File.join base, "system"
-diff --git a/tool/rbinstall.rb b/tool/rbinstall.rb
-index cec8c9f..fed14d2 100755
---- a/tool/rbinstall.rb
-+++ b/tool/rbinstall.rb
-@@ -392,7 +392,7 @@ end
- 
- install?(:doc, :rdoc) do
-   if $rdocdir
--    ridatadir = File.join(CONFIG['ridir'], CONFIG['ruby_version'], "system")
-+    ridatadir = File.join([CONFIG['ridir'], RbConfig::CONFIG['USE_VERSIONED_PATHS'] == 'YES' ? version : nil, "system"].compact)
-     prepare "rdoc", ridatadir
-     install_recursive($rdocdir, ridatadir, :mode => $data_mode)
-   end
--- 
-1.7.6
+1.8.0
 

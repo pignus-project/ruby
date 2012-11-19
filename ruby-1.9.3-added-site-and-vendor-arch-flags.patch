@@ -1,21 +1,21 @@
-From b0a875862d14244ca41cd1e1e9090f87757aaeb9 Mon Sep 17 00:00:00 2001
+From be687364922657501e861e9f53f8ec647a73fe00 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?V=C3=ADt=20Ondruch?= <vondruch@redhat.com>
 Date: Mon, 5 Sep 2011 13:10:47 +0200
 Subject: [PATCH] Added configuration flags for site and vendor architecture
  specific directories.
 
 ---
- Makefile.in      |    3 +++
- configure.in     |   40 ++++++++++++++++++++++++++++++++++++++++
- tool/mkconfig.rb |    8 ++++++--
- version.c        |    4 ++++
+ Makefile.in      |  3 +++
+ configure.in     | 40 ++++++++++++++++++++++++++++++++++++++++
+ tool/mkconfig.rb |  8 ++++++--
+ version.c        |  4 ++++
  4 files changed, 53 insertions(+), 2 deletions(-)
 
 diff --git a/Makefile.in b/Makefile.in
-index bcdaf5f..f57e4c4 100644
+index 690ff8e..8c7dd98 100644
 --- a/Makefile.in
 +++ b/Makefile.in
-@@ -38,6 +38,9 @@ datadir = @datadir@
+@@ -39,6 +39,9 @@ arch = @arch@
  archdir = @archdir@
  sitearch = @sitearch@
  sitedir = @sitedir@
@@ -26,10 +26,10 @@ index bcdaf5f..f57e4c4 100644
  
  TESTUI = console
 diff --git a/configure.in b/configure.in
-index 83e5d76..31532bd 100644
+index 8e4aaec..c65e0c7 100644
 --- a/configure.in
 +++ b/configure.in
-@@ -3029,6 +3029,15 @@ until SITE_DIR=`eval echo \\"${dir}\\"`; test "x${dir}" = "x${SITE_DIR}"; do
+@@ -3169,6 +3169,15 @@ until SITE_DIR=`eval echo \\"${dir}\\"`; test "x${dir}" = "x${SITE_DIR}"; do
      dir="${SITE_DIR}"
  done
  
@@ -45,7 +45,7 @@ index 83e5d76..31532bd 100644
  AC_ARG_WITH(vendordir,
  	    AS_HELP_STRING([--with-vendordir=DIR], [vendor libraries in DIR [[RUBY_LIB_PREFIX/vendor_ruby]], "no" to disable vendor directory]),
              [vendordir=$withval],
-@@ -3038,19 +3047,32 @@ until VENDOR_DIR=`eval echo \\"${dir}\\"`; test "x${dir}" = "x${VENDOR_DIR}"; do
+@@ -3178,19 +3187,32 @@ until VENDOR_DIR=`eval echo \\"${dir}\\"`; test "x${dir}" = "x${VENDOR_DIR}"; do
      dir="${VENDOR_DIR}"
  done
  
@@ -78,7 +78,7 @@ index 83e5d76..31532bd 100644
  fi
  
  pat=`echo "$RUBY_LIB_PREFIX/" | tr -c '\012' .`'\(.*\)'
-@@ -3068,12 +3090,26 @@ AS_CASE(["$RUBY_SITE_LIB_PATH"],
+@@ -3208,6 +3230,13 @@ AS_CASE(["$RUBY_SITE_LIB_PATH"],
    [
      RUBY_SITE_LIB_PATH="\"${RUBY_SITE_LIB_PATH}\""
      ])
@@ -92,20 +92,21 @@ index 83e5d76..31532bd 100644
  AS_CASE(["$RUBY_VENDOR_LIB_PATH"],
    ["$RUBY_LIB_PREFIX/"*], [
      RUBY_VENDOR_LIB_PATH='RUBY_LIB_PREFIX"/'"`expr \"$RUBY_VENDOR_LIB_PATH\" : \"$pat\"`"'"'
-     ],
+@@ -3215,6 +3244,13 @@ AS_CASE(["$RUBY_VENDOR_LIB_PATH"],
    [
      RUBY_VENDOR_LIB_PATH="\"${RUBY_VENDOR_LIB_PATH}\""
-+    ])
+     ])
 +AS_CASE(["$RUBY_VENDOR_ARCHLIB_PATH"],
 +  ["$RUBY_LIB_PREFIX/"*], [
 +    RUBY_VENDOR_ARCHLIB_PATH='RUBY_LIB_PREFIX"/'"`expr \"$RUBY_VENDOR_ARCHLIB_PATH\" : \"$pat\"`"'"'
 +    ],
 +  [
 +    RUBY_VENDOR_ARCHLIB_PATH="\"${RUBY_VENDOR_ARCHLIB_PATH}\""
-     ])
++    ])
  pat=`echo "$RUBY_EXEC_PREFIX/" | tr -c '\012' .`'\(.*\)'
  AS_CASE(["$RUBY_LIB_PREFIX"],
-@@ -3096,19 +3132,23 @@ if test "x$SITE_DIR" = xno; then
+   ["$RUBY_EXEC_PREFIX/"*], [
+@@ -3236,11 +3272,13 @@ if test "x$SITE_DIR" = xno; then
      AC_DEFINE(NO_RUBY_SITE_LIB, [] !<verconf>!)
  else
      AC_DEFINE_UNQUOTED(RUBY_SITE_LIB, ${RUBY_SITE_LIB_PATH} !<verconf>!)
@@ -119,7 +120,7 @@ index 83e5d76..31532bd 100644
  fi
  
  AC_SUBST(arch)dnl
- AC_SUBST(sitearch)dnl
+@@ -3248,7 +3286,9 @@ AC_SUBST(sitearch)dnl
  AC_SUBST(ruby_version)dnl
  AC_SUBST(archdir)dnl
  AC_SUBST(sitedir)dnl
@@ -130,10 +131,10 @@ index 83e5d76..31532bd 100644
  configure_args=$ac_configure_args
  AC_SUBST(configure_args)dnl
 diff --git a/tool/mkconfig.rb b/tool/mkconfig.rb
-index b707c4b..6230720 100755
+index 03c3332..79b8e44 100755
 --- a/tool/mkconfig.rb
 +++ b/tool/mkconfig.rb
-@@ -44,6 +44,8 @@ v_others = []
+@@ -44,6 +44,8 @@ continued_name = nil
  continued_line = nil
  path_version = "/$(ruby_version)"
  archdir_override = "$(vendorlibdir)/$(sitearch)"
@@ -166,7 +167,7 @@ index b707c4b..6230720 100755
  print <<EOS
    CONFIG["topdir"] = File.dirname(__FILE__)
 diff --git a/version.c b/version.c
-index 59d4e5e..2558aa0 100644
+index a117059..962f39f 100644
 --- a/version.c
 +++ b/version.c
 @@ -51,8 +51,12 @@
@@ -183,5 +184,5 @@ index 59d4e5e..2558aa0 100644
  #define RUBY_THIN_ARCHLIB           RUBY_LIB         "/"RUBY_THINARCH
  #define RUBY_SITE_THIN_ARCHLIB      RUBY_SITE_LIB2   "/"RUBY_THINARCH
 -- 
-1.7.6.1
+1.8.0
 
