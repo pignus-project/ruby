@@ -1,6 +1,18 @@
---- ruby-1.9.3-p0/lib/rubygems/uninstaller.rb.orig	2011-10-31 10:22:36.321579483 +0100
-+++ ruby-1.9.3-p0/lib/rubygems/uninstaller.rb	2011-10-31 10:34:25.563626119 +0100
-@@ -51,15 +51,14 @@
+From 6a07398a3aac0793d1a62f6f4778d90baf86ab7e Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?V=C3=ADt=20Ondruch?= <vondruch@redhat.com>
+Date: Mon, 19 Nov 2012 14:41:06 +0100
+Subject: [PATCH] RubyGems uninstaller upstream fixes.
+
+---
+ lib/rubygems/uninstaller.rb           | 35 +++++++++++++++++++++++------------
+ test/rubygems/test_gem_uninstaller.rb |  2 +-
+ 2 files changed, 24 insertions(+), 13 deletions(-)
+
+diff --git a/lib/rubygems/uninstaller.rb b/lib/rubygems/uninstaller.rb
+index cc32ea4..c0e8b4b 100644
+--- a/lib/rubygems/uninstaller.rb
++++ b/lib/rubygems/uninstaller.rb
+@@ -51,15 +51,14 @@ class Gem::Uninstaller
      @bin_dir           = options[:bin_dir]
      @format_executable = options[:format_executable]
  
@@ -21,7 +33,7 @@
    end
  
    ##
-@@ -69,10 +68,24 @@
+@@ -69,10 +68,24 @@ class Gem::Uninstaller
    def uninstall
      list = Gem::Specification.find_all_by_name(@gem, @version)
  
@@ -48,7 +60,7 @@
        remove_all list
  
      elsif list.size > 1 then
-@@ -250,12 +263,10 @@
+@@ -250,12 +263,10 @@ class Gem::Uninstaller
      msg << "\t#{spec.full_name}"
  
      spec.dependent_gems.each do |dep_spec, dep, satlist|
@@ -63,10 +75,11 @@
      msg << 'Continue with Uninstall?'
      return ask_yes_no(msg.join("\n"), true)
    end
-
---- ruby-1.9.3-p0/test/rubygems/test_gem_uninstaller.rb.orig	2011-11-03 08:58:31.411272176 +0100
-+++ ruby-1.9.3-p0/test/rubygems/test_gem_uninstaller.rb	2011-11-03 08:58:43.010272351 +0100
-@@ -225,7 +225,7 @@
+diff --git a/test/rubygems/test_gem_uninstaller.rb b/test/rubygems/test_gem_uninstaller.rb
+index a65b992..1cd186f 100644
+--- a/test/rubygems/test_gem_uninstaller.rb
++++ b/test/rubygems/test_gem_uninstaller.rb
+@@ -225,7 +225,7 @@ class TestGemUninstaller < Gem::InstallerTestCase
  
      uninstaller = Gem::Uninstaller.new('a')
  
@@ -74,3 +87,7 @@
 +    use_ui Gem::MockGemUi.new("2\ny\n") do
        uninstaller.uninstall
      end
+ 
+-- 
+1.8.0
+

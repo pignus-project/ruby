@@ -1,21 +1,21 @@
-From 279a693ce4ef3a887ce8d4fa59e0f2616a14d91a Mon Sep 17 00:00:00 2001
+From 643a3d3af2a3847e730c79515bc586768053119a Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?V=C3=ADt=20Ondruch?= <vondruch@redhat.com>
 Date: Fri, 11 Nov 2011 13:14:45 +0100
 Subject: [PATCH] Allow to install RubyGems into custom location, outside of
  Ruby tree.
 
 ---
- configure.in      |    8 ++++++++
- tool/mkconfig.rb  |    1 +
- tool/rbinstall.rb |    9 +++++++++
- version.c         |    4 ++++
- 4 files changed, 22 insertions(+), 0 deletions(-)
+ configure.in      | 8 ++++++++
+ tool/mkconfig.rb  | 1 +
+ tool/rbinstall.rb | 9 +++++++++
+ version.c         | 4 ++++
+ 4 files changed, 22 insertions(+)
 
 diff --git a/configure.in b/configure.in
-index b1bc951..91c5d0d 100644
+index 748edc9..6a16745 100644
 --- a/configure.in
 +++ b/configure.in
-@@ -3056,6 +3056,13 @@ until VENDOR_DIR=`eval echo \\"${dir}\\"`; test "x${dir}" = "x${VENDOR_DIR}"; do
+@@ -3196,6 +3196,13 @@ until VENDORARCH_DIR=`eval echo \\"${dir}\\"`; test "x${dir}" = "x${VENDORARCH_D
      dir="${VENDORARCH_DIR}"
  done
  
@@ -29,7 +29,7 @@ index b1bc951..91c5d0d 100644
  if test "${LOAD_RELATIVE+set}"; then
      AC_DEFINE_UNQUOTED(LOAD_RELATIVE, $LOAD_RELATIVE)
      RUBY_EXEC_PREFIX=""
-@@ -3149,6 +3156,7 @@ AC_SUBST(sitearch)dnl
+@@ -3289,6 +3296,7 @@ AC_SUBST(sitedir)dnl
  AC_SUBST(sitearchdir)dnl
  AC_SUBST(vendordir)dnl
  AC_SUBST(vendorarchdir)dnl
@@ -38,7 +38,7 @@ index b1bc951..91c5d0d 100644
  configure_args=$ac_configure_args
  AC_SUBST(configure_args)dnl
 diff --git a/tool/mkconfig.rb b/tool/mkconfig.rb
-index b707c4b..9fecbfb 100755
+index 79b8e44..9cef0c6 100755
 --- a/tool/mkconfig.rb
 +++ b/tool/mkconfig.rb
 @@ -84,6 +84,7 @@ File.foreach "config.status" do |line|
@@ -50,7 +50,7 @@ index b707c4b..9fecbfb 100755
      case val
      when /^\$\(ac_\w+\)$/; next
 diff --git a/tool/rbinstall.rb b/tool/rbinstall.rb
-index 6bfc73e..31dc446 100755
+index 17294a2..2757a73 100755
 --- a/tool/rbinstall.rb
 +++ b/tool/rbinstall.rb
 @@ -313,6 +313,7 @@ sitelibdir = CONFIG["sitelibdir"]
@@ -64,7 +64,7 @@ index 6bfc73e..31dc446 100755
 @@ -500,7 +501,15 @@ end
  install?(:local, :comm, :lib) do
    prepare "library scripts", rubylibdir
-   noinst = %w[README* *.txt *.rdoc]
+   noinst = %w[README* *.txt *.rdoc *.gemspec]
 +  noinst += %w[*ubygems.rb rubygems/ datadir.rb] if rubygemsdir
    install_recursive(File.join(srcdir, "lib"), rubylibdir, :no_install => noinst, :mode => $data_mode)
 +  if rubygemsdir
@@ -78,7 +78,7 @@ index 6bfc73e..31dc446 100755
  
  install?(:local, :arch, :lib) do
 diff --git a/version.c b/version.c
-index 59d4e5e..12ba7e9 100644
+index 962f39f..979701d 100644
 --- a/version.c
 +++ b/version.c
 @@ -104,6 +104,10 @@ const char ruby_initial_load_paths[] =
@@ -93,5 +93,5 @@ index 59d4e5e..12ba7e9 100644
  #ifdef RUBY_THIN_ARCHLIB
      RUBY_THIN_ARCHLIB "\0"
 -- 
-1.7.7
+1.8.0
 

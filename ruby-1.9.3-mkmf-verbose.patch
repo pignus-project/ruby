@@ -1,6 +1,17 @@
---- ruby-1.9.3-p0/lib/mkmf.rb.debug	2011-08-11 15:07:37.000000000 +0900
-+++ ruby-1.9.3-p0/lib/mkmf.rb	2012-01-29 21:34:17.000000000 +0900
-@@ -1746,7 +1746,7 @@
+From b6f6f0b8cd750e97c15f1b739b1c95d6c1989294 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?V=C3=ADt=20Ondruch?= <vondruch@redhat.com>
+Date: Mon, 19 Nov 2012 15:14:51 +0100
+Subject: [PATCH] Verbose mkmf.
+
+---
+ lib/mkmf.rb | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/lib/mkmf.rb b/lib/mkmf.rb
+index ded4e89..0870f22 100644
+--- a/lib/mkmf.rb
++++ b/lib/mkmf.rb
+@@ -1746,7 +1746,7 @@ SRC
  SHELL = /bin/sh
  
  # V=0 quiet, V=1 verbose.  other values don't work.
@@ -9,3 +20,6 @@
  Q1 = $(V:1=)
  Q = $(Q1:0=@)
  ECHO1 = $(V:1=@#{CONFIG['NULLCMD']})
+-- 
+1.8.0
+
