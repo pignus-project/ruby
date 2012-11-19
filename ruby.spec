@@ -94,6 +94,8 @@ Patch3: ruby-1.9.3-always-use-i386.patch
 Patch4: ruby-1.9.3-fix-s390x-build.patch
 # Fix the uninstaller, so that it doesn't say that gem doesn't exist
 # when it exists outside of the GEM_HOME (already fixed in the upstream)
+# This consist of several RubyGems upstream patches:
+#     2786a40b, 8e2a9889, 1755effe, 70963846, 21c78318, 88e1e1cc, 415c0ec4
 Patch5: ruby-1.9.3-rubygems-1.8.11-uninstaller.patch
 # Allows to install RubyGems into custom directory, outside of Ruby's tree.
 # http://redmine.ruby-lang.org/issues/5617
