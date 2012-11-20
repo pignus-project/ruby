@@ -11,7 +11,7 @@ diff --git a/configure.in b/configure.in
 index c65e0c7..748edc9 100644
 --- a/configure.in
 +++ b/configure.in
-@@ -3293,6 +3293,8 @@ AC_SUBST(vendorarchdir)dnl
+@@ -3277,6 +3277,8 @@ AC_SUBST(vendorarchdir)dnl
  configure_args=$ac_configure_args
  AC_SUBST(configure_args)dnl
  
