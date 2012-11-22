@@ -15,7 +15,7 @@
 #%%global milestone preview1
 
 # Keep the revision enabled for pre-releases from SVN.
-%global revision 37773
+%global revision 37807
 
 %global ruby_archive %{name}-%{ruby_version}
 
@@ -523,7 +523,8 @@ sed -i '8 a\
 
 %check
 # https://bugs.ruby-lang.org/issues/7386
-DISABLE_TESTS="-x test_rake_functional.rb"
+# http://bugs.ruby-lang.org/issues/7422
+DISABLE_TESTS="-x test_rake_functional.rb -x test_rubyoptions.rb"
 
 %ifarch armv7l armv7hl armv7hnl
 # test_call_double(DL::TestDL) fails on ARM HardFP
