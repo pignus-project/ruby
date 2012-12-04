@@ -4,14 +4,14 @@ Date: Thu, 3 Nov 2011 16:43:05 +0100
 Subject: [PATCH 1/6] Add dedicate extensions folder into $LOAD_PATH.
 
 ---
- lib/rubygems/specification.rb |   37 ++++++++++++++++++++++++++++++-------
- 1 files changed, 30 insertions(+), 7 deletions(-)
+ lib/rubygems/specification.rb | 32 ++++++++++++++++++++++++++++++--
+ 1 file changed, 30 insertions(+), 2 deletions(-)
 
 diff --git a/lib/rubygems/specification.rb b/lib/rubygems/specification.rb
 index 97db19e..263e7d3 100644
 --- a/lib/rubygems/specification.rb
 +++ b/lib/rubygems/specification.rb
-@@ -859,6 +859,12 @@ class Gem::Specification
+@@ -1250,6 +1250,12 @@ class Gem::Specification
        File.join full_gem_path, path
      end
  
@@ -24,31 +24,26 @@ index 97db19e..263e7d3 100644
      # gem directories must come after -I and ENV['RUBYLIB']
      insert_index = Gem.load_path_insert_index
  
-@@ -970,16 +976,16 @@ class Gem::Specification
+@@ -1364,11 +1370,16 @@ class Gem::Specification
  
    def contains_requirable_file? file
-     root = full_gem_path
-+    ext = ext_dir
-+
-+    require_paths.any? do |lib|
+     root     = full_gem_path
++    ext      = ext_dir
+     suffixes = Gem.suffixes
+ 
+     require_paths.any? do |lib|
+-      base = "#{root}/#{lib}/#{file}"
+-      suffixes.any? { |suf| File.file? "#{base}#{suf}" }
 +      base = ["#{root}/#{lib}/#{file}"]
 +      base << "#{ext}/#{lib}/#{file}" unless extensions.empty?
- 
--    require_paths.each do |lib|
--      base = "#{root}/#{lib}/#{file}"
--      Gem.suffixes.each do |suf|
--        path = "#{base}#{suf}"
--        return true if File.file? path
++
 +      base.any? do |path|
-+        Gem.suffixes.any? { |suf| File.file? "#{path}#{suf}" }
-       end
++        suffixes.any? { |suf| File.file? "#{path}#{suf}" }
++      end
      end
--
--    return false
    end
  
-   ##
-@@ -1295,6 +1301,23 @@ class Gem::Specification
+@@ -1664,6 +1675,23 @@ class Gem::Specification
    end
  
    ##
@@ -73,7 +68,7 @@ index 97db19e..263e7d3 100644
    #
    # Formerly used to indicate this gem was RDoc-capable.
 -- 
-1.7.7.3
+1.8.0
 
 
 From 671e4285bf9db948bc5f054d7d3d931cdd7a17f8 Mon Sep 17 00:00:00 2001
@@ -82,18 +77,18 @@ Date: Wed, 16 Nov 2011 13:26:48 +0100
 Subject: [PATCH 2/6] Use spec's ext dir for extension installation.
 
 ---
- lib/rubygems/installer.rb     |    2 +-
- lib/rubygems/specification.rb |    7 +++----
+ lib/rubygems/installer.rb     | 2 +-
+ lib/rubygems/specification.rb | 7 +++----
  2 files changed, 4 insertions(+), 5 deletions(-)
 
 diff --git a/lib/rubygems/installer.rb b/lib/rubygems/installer.rb
 index 74d803d..0063c7f 100644
 --- a/lib/rubygems/installer.rb
 +++ b/lib/rubygems/installer.rb
-@@ -509,7 +509,7 @@ TEXT
-   def build_extensions
-     return if spec.extensions.empty?
-     say "Building native extensions.  This could take a while..."
+@@ -649,7 +649,7 @@ TEXT
+       say "This could take a while..."
+     end
+ 
 -    dest_path = File.join gem_dir, spec.require_paths.first
 +    dest_path = spec.ext_dir
      ran_rake = false # only run rake once
@@ -103,7 +98,7 @@ diff --git a/lib/rubygems/specification.rb b/lib/rubygems/specification.rb
 index 263e7d3..d31b93b 100644
 --- a/lib/rubygems/specification.rb
 +++ b/lib/rubygems/specification.rb
-@@ -1305,16 +1305,15 @@ class Gem::Specification
+@@ -1679,16 +1679,15 @@ class Gem::Specification
    # eg: /usr/local/lib/ruby/1.8/exts/mygem-1.0
  
    def ext_dir
@@ -124,7 +119,7 @@ index 263e7d3..d31b93b 100644
  
    ##
 -- 
-1.7.7.3
+1.8.0
 
 
 From 11b4a0cbadd8b1d3320f838881aa60feb6f848e7 Mon Sep 17 00:00:00 2001
@@ -133,14 +128,14 @@ Date: Wed, 16 Nov 2011 14:52:16 +0100
 Subject: [PATCH 3/6] Simplify the extending of $LOAD_PATH for binary gems.
 
 ---
- lib/rubygems/specification.rb |   11 +++++------
- 1 files changed, 5 insertions(+), 6 deletions(-)
+ lib/rubygems/specification.rb | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
 diff --git a/lib/rubygems/specification.rb b/lib/rubygems/specification.rb
 index d31b93b..e65ea2d 100644
 --- a/lib/rubygems/specification.rb
 +++ b/lib/rubygems/specification.rb
-@@ -859,11 +859,7 @@ class Gem::Specification
+@@ -1250,11 +1250,7 @@ class Gem::Specification
        File.join full_gem_path, path
      end
  
@@ -153,7 +148,7 @@ index d31b93b..e65ea2d 100644
  
      # gem directories must come after -I and ENV['RUBYLIB']
      insert_index = Gem.load_path_insert_index
-@@ -1313,7 +1309,10 @@ class Gem::Specification
+@@ -1687,7 +1683,10 @@ class Gem::Specification
    # gem directory. eg: /usr/local/lib/ruby/1.8/gems
  
    def exts_dir
@@ -166,7 +161,7 @@ index d31b93b..e65ea2d 100644
  
    ##
 -- 
-1.7.7.3
+1.8.0
 
 
 From 5d46cd2b1ac9517a9cbcfa430261e62bb3a376b8 Mon Sep 17 00:00:00 2001
@@ -175,18 +170,18 @@ Date: Fri, 9 Dec 2011 16:31:04 +0100
 Subject: [PATCH 4/6] Fix the binary extension search path construction.
 
 ---
- lib/rubygems/installer.rb     |    2 +-
- lib/rubygems/specification.rb |    4 ++--
+ lib/rubygems/installer.rb     | 2 +-
+ lib/rubygems/specification.rb | 4 ++--
  2 files changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/lib/rubygems/installer.rb b/lib/rubygems/installer.rb
 index 0063c7f..83b8fd5 100644
 --- a/lib/rubygems/installer.rb
 +++ b/lib/rubygems/installer.rb
-@@ -509,7 +509,7 @@ TEXT
-   def build_extensions
-     return if spec.extensions.empty?
-     say "Building native extensions.  This could take a while..."
+@@ -649,7 +649,7 @@ TEXT
+       say "This could take a while..."
+     end
+ 
 -    dest_path = spec.ext_dir
 +    dest_path = File.join spec.ext_dir, spec.require_paths.first
      ran_rake = false # only run rake once
@@ -196,7 +191,7 @@ diff --git a/lib/rubygems/specification.rb b/lib/rubygems/specification.rb
 index e65ea2d..8be2ade 100644
 --- a/lib/rubygems/specification.rb
 +++ b/lib/rubygems/specification.rb
-@@ -859,7 +859,7 @@ class Gem::Specification
+@@ -1250,7 +1250,7 @@ class Gem::Specification
        File.join full_gem_path, path
      end
  
@@ -205,7 +200,7 @@ index e65ea2d..8be2ade 100644
  
      # gem directories must come after -I and ENV['RUBYLIB']
      insert_index = Gem.load_path_insert_index
-@@ -1301,7 +1301,7 @@ class Gem::Specification
+@@ -1675,7 +1675,7 @@ class Gem::Specification
    # eg: /usr/local/lib/ruby/1.8/exts/mygem-1.0
  
    def ext_dir
@@ -215,7 +210,7 @@ index e65ea2d..8be2ade 100644
  
    ##
 -- 
-1.7.7.3
+1.8.0
 
 
 From 6229583633802b45e5a3e5689ab9077347cd9ef7 Mon Sep 17 00:00:00 2001
@@ -224,14 +219,14 @@ Date: Tue, 13 Dec 2011 12:14:54 +0100
 Subject: [PATCH 5/6] Remove binary extensions during uninstall.
 
 ---
- lib/rubygems/uninstaller.rb |    1 +
- 1 files changed, 1 insertions(+), 0 deletions(-)
+ lib/rubygems/uninstaller.rb | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/lib/rubygems/uninstaller.rb b/lib/rubygems/uninstaller.rb
 index cc32ea4..94d78e0 100644
 --- a/lib/rubygems/uninstaller.rb
 +++ b/lib/rubygems/uninstaller.rb
-@@ -213,6 +213,7 @@ class Gem::Uninstaller
+@@ -234,6 +234,7 @@ class Gem::Uninstaller
        File.writable?(spec.base_dir)
  
      FileUtils.rm_rf spec.full_gem_path
@@ -240,7 +235,7 @@ index cc32ea4..94d78e0 100644
      # TODO: should this be moved to spec?... I vote eww (also exists in docmgr)
      old_platform_name = [spec.name,
 -- 
-1.7.7.3
+1.8.0
 
 
 From bc40e1b9f60a9a04456e3504ffe6ee600b6da269 Mon Sep 17 00:00:00 2001
@@ -249,15 +244,15 @@ Date: Tue, 13 Dec 2011 14:27:14 +0100
 Subject: [PATCH 6/6] Avoid dependency on customized operating_system.rb.
 
 ---
- lib/rubygems/defaults.rb      |   11 +++++++++++
- lib/rubygems/specification.rb |    5 +----
+ lib/rubygems/defaults.rb      | 11 +++++++++++
+ lib/rubygems/specification.rb |  5 +----
  2 files changed, 12 insertions(+), 4 deletions(-)
 
 diff --git a/lib/rubygems/defaults.rb b/lib/rubygems/defaults.rb
 index 20b4198..6d8711f 100644
 --- a/lib/rubygems/defaults.rb
 +++ b/lib/rubygems/defaults.rb
-@@ -94,6 +94,17 @@ module Gem
+@@ -101,6 +101,17 @@ module Gem
    end
  
    ##
@@ -272,14 +267,14 @@ index 20b4198..6d8711f 100644
 +  end
 +
 +  ##
-   # The default system-wide source info cache directory
+   # A wrapper around RUBY_ENGINE const that may not be defined
  
-   def self.default_system_source_cache_dir
+   def self.ruby_engine
 diff --git a/lib/rubygems/specification.rb b/lib/rubygems/specification.rb
 index 8be2ade..f54210a 100644
 --- a/lib/rubygems/specification.rb
 +++ b/lib/rubygems/specification.rb
-@@ -1309,10 +1309,7 @@ class Gem::Specification
+@@ -1683,10 +1683,7 @@ class Gem::Specification
    # gem directory. eg: /usr/local/lib/ruby/1.8/gems
  
    def exts_dir
@@ -292,5 +287,5 @@ index 8be2ade..f54210a 100644
  
    ##
 -- 
-1.7.7.3
+1.8.0
 

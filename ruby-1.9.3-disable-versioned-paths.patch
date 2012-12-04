@@ -15,7 +15,7 @@ diff --git a/configure.in b/configure.in
 index f2d22ef..db3641b 100644
 --- a/configure.in
 +++ b/configure.in
-@@ -3302,6 +3302,17 @@ else
+@@ -3319,6 +3319,17 @@ else
  fi
  AC_SUBST(USE_RUBYGEMS)
  
@@ -37,10 +37,10 @@ diff --git a/lib/rdoc/ri/paths.rb b/lib/rdoc/ri/paths.rb
 index a3c65bf..a4e8559 100644
 --- a/lib/rdoc/ri/paths.rb
 +++ b/lib/rdoc/ri/paths.rb
-@@ -11,9 +11,9 @@ module RDoc::RI::Paths
+@@ -12,9 +12,9 @@ module RDoc::RI::Paths
    version = RbConfig::CONFIG['ruby_version']
  
-   base    = if RbConfig::CONFIG.key? 'ridir' then
+   BASE    = if RbConfig::CONFIG.key? 'ridir' then
 -              File.join RbConfig::CONFIG['ridir'], version
 +              File.join [RbConfig::CONFIG['ridir'], RbConfig::CONFIG['USE_VERSIONED_PATHS'] == 'YES' ? version : nil].compact
              else
@@ -48,7 +48,7 @@ index a3c65bf..a4e8559 100644
 +              File.join [RbConfig::CONFIG['datadir'], 'ri', RbConfig::CONFIG['USE_VERSIONED_PATHS'] == 'YES' ? version : nil].compact
              end
  
-   SYSDIR  = File.join base, "system"
+   homedir = begin
 diff --git a/tool/mkconfig.rb b/tool/mkconfig.rb
 index f9d97d3..d9e26c1 100755
 --- a/tool/mkconfig.rb

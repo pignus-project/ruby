@@ -29,7 +29,7 @@ diff --git a/configure.in b/configure.in
 index 8e4aaec..c65e0c7 100644
 --- a/configure.in
 +++ b/configure.in
-@@ -3153,6 +3153,15 @@ until SITE_DIR=`eval echo \\"${dir}\\"`; test "x${dir}" = "x${SITE_DIR}"; do
+@@ -3170,6 +3170,15 @@ until SITE_DIR=`eval echo \\"${dir}\\"`; test "x${dir}" = "x${SITE_DIR}"; do
      dir="${SITE_DIR}"
  done
  
@@ -45,7 +45,7 @@ index 8e4aaec..c65e0c7 100644
  AC_ARG_WITH(vendordir,
  	    AS_HELP_STRING([--with-vendordir=DIR], [vendor libraries in DIR [[RUBY_LIB_PREFIX/vendor_ruby]], "no" to disable vendor directory]),
              [vendordir=$withval],
-@@ -3162,19 +3171,32 @@ until VENDOR_DIR=`eval echo \\"${dir}\\"`; test "x${dir}" = "x${VENDOR_DIR}"; do
+@@ -3179,19 +3188,32 @@ until VENDOR_DIR=`eval echo \\"${dir}\\"`; test "x${dir}" = "x${VENDOR_DIR}"; do
      dir="${VENDOR_DIR}"
  done
  
@@ -78,7 +78,7 @@ index 8e4aaec..c65e0c7 100644
  fi
  
  pat=`echo "$RUBY_LIB_PREFIX/" | tr -c '\012' .`'\(.*\)'
-@@ -3192,6 +3214,13 @@ AS_CASE(["$RUBY_SITE_LIB_PATH"],
+@@ -3209,6 +3231,13 @@ AS_CASE(["$RUBY_SITE_LIB_PATH"],
    [
      RUBY_SITE_LIB_PATH="\"${RUBY_SITE_LIB_PATH}\""
      ])
@@ -92,7 +92,7 @@ index 8e4aaec..c65e0c7 100644
  AS_CASE(["$RUBY_VENDOR_LIB_PATH"],
    ["$RUBY_LIB_PREFIX/"*], [
      RUBY_VENDOR_LIB_PATH='RUBY_LIB_PREFIX"/'"`expr \"$RUBY_VENDOR_LIB_PATH\" : \"$pat\"`"'"'
-@@ -3199,6 +3228,13 @@ AS_CASE(["$RUBY_VENDOR_LIB_PATH"],
+@@ -3216,6 +3245,13 @@ AS_CASE(["$RUBY_VENDOR_LIB_PATH"],
    [
      RUBY_VENDOR_LIB_PATH="\"${RUBY_VENDOR_LIB_PATH}\""
      ])
@@ -106,7 +106,7 @@ index 8e4aaec..c65e0c7 100644
  pat=`echo "$RUBY_EXEC_PREFIX/" | tr -c '\012' .`'\(.*\)'
  AS_CASE(["$RUBY_LIB_PREFIX"],
    ["$RUBY_EXEC_PREFIX/"*], [
-@@ -3220,11 +3256,13 @@ if test "x$SITE_DIR" = xno; then
+@@ -3237,11 +3273,13 @@ if test "x$SITE_DIR" = xno; then
      AC_DEFINE(NO_RUBY_SITE_LIB, [] !<verconf>!)
  else
      AC_DEFINE_UNQUOTED(RUBY_SITE_LIB, ${RUBY_SITE_LIB_PATH} !<verconf>!)
@@ -120,7 +120,7 @@ index 8e4aaec..c65e0c7 100644
  fi
  
  AC_SUBST(arch)dnl
-@@ -3232,7 +3270,9 @@ AC_SUBST(sitearch)dnl
+@@ -3249,7 +3287,9 @@ AC_SUBST(sitearch)dnl
  AC_SUBST(ruby_version)dnl
  AC_SUBST(archdir)dnl
  AC_SUBST(sitedir)dnl

@@ -15,7 +15,7 @@
 #%%global milestone preview1
 
 # Keep the revision enabled for pre-releases from SVN.
-%global revision 37807
+%global revision 38184
 
 %global ruby_archive %{name}-%{ruby_version}
 
@@ -44,7 +44,7 @@
 %global ruby_vendorlibdir %{_datadir}/ruby/%{ruby_vendordir}
 %global ruby_vendorarchdir %{_libdir}/ruby/%{ruby_vendordir}
 
-%global rubygems_version 1.8.23
+%global rubygems_version 2.0.0.preview2
 
 # The RubyGems library has to stay out of Ruby directory three, since the
 # RubyGems should be share by all Ruby implementations.
@@ -57,16 +57,16 @@
 # http://rpm.org/ticket/78
 %global gem_extdir %{_exec_prefix}/lib{,64}/gems
 
-%global rake_version 0.9.4
+%global rake_version 0.9.5
 # TODO: The IRB has strange versioning. Keep the Ruby's versioning ATM.
 # http://redmine.ruby-lang.org/issues/5313
 %global irb_version %{ruby_version_patch_level}
-%global rdoc_version 3.9.5
+%global rdoc_version 4.0.0.preview2
 %global bigdecimal_version 1.1.0
 %global io_console_version 0.3
 %global json_version 1.7.1
-%global minitest_version 3.4.0
-%global psych_version 1.3.4
+%global minitest_version 4.3.2
+%global psych_version 2.0.0
 
 %global _normalized_cpu %(echo %{_target_cpu} | sed 's/^ppc/powerpc/;s/i.86/i386/;s/sparcv./sparc/')
 
@@ -92,11 +92,6 @@ Patch2: ruby-1.9.3-added-site-and-vendor-arch-flags.patch
 Patch3: ruby-1.9.3-always-use-i386.patch
 # http://redmine.ruby-lang.org/issues/5465
 Patch4: ruby-1.9.3-fix-s390x-build.patch
-# Fix the uninstaller, so that it doesn't say that gem doesn't exist
-# when it exists outside of the GEM_HOME (already fixed in the upstream)
-# This consist of several RubyGems upstream patches:
-#     2786a40b, 8e2a9889, 1755effe, 70963846, 21c78318, 88e1e1cc, 415c0ec4
-Patch5: ruby-1.9.3-rubygems-1.8.11-uninstaller.patch
 # Allows to install RubyGems into custom directory, outside of Ruby's tree.
 # http://redmine.ruby-lang.org/issues/5617
 Patch8: ruby-1.9.3-custom-rubygems-location.patch
@@ -383,7 +378,6 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
-%patch5 -p1
 %patch8 -p1
 %patch9 -p1
 %patch10 -p1
@@ -468,14 +462,17 @@ mkdir -p %{buildroot}%{gem_extdir}/exts
 # make symlinks for io-console and bigdecimal, which are considered to be part of stdlib by other Gems
 mkdir -p %{buildroot}%{gem_dir}/gems/rake-%{rake_version}/lib
 mv %{buildroot}%{ruby_libdir}/rake* %{buildroot}%{gem_dir}/gems/rake-%{rake_version}/lib
+mv %{buildroot}%{gem_dir}/specifications/default/rake-%{rake_version}.gemspec %{buildroot}%{gem_dir}/specifications
 
 mkdir -p %{buildroot}%{gem_dir}/gems/rdoc-%{rdoc_version}/lib
 mv %{buildroot}%{ruby_libdir}/rdoc* %{buildroot}%{gem_dir}/gems/rdoc-%{rdoc_version}/lib
+mv %{buildroot}%{gem_dir}/specifications/default/rdoc-%{rdoc_version}.gemspec %{buildroot}%{gem_dir}/specifications
 
 mkdir -p %{buildroot}%{gem_dir}/gems/bigdecimal-%{bigdecimal_version}/lib
 mkdir -p %{buildroot}%{_libdir}/gems/exts/bigdecimal-%{bigdecimal_version}/lib
 mv %{buildroot}%{ruby_libdir}/bigdecimal %{buildroot}%{gem_dir}/gems/bigdecimal-%{bigdecimal_version}/lib
 mv %{buildroot}%{ruby_libarchdir}/bigdecimal.so %{buildroot}%{_libdir}/gems/exts/bigdecimal-%{bigdecimal_version}/lib
+mv %{buildroot}%{gem_dir}/specifications/default/bigdecimal-%{bigdecimal_version}.gemspec %{buildroot}%{gem_dir}/specifications
 ln -s %{gem_dir}/gems/bigdecimal-%{bigdecimal_version}/lib/bigdecimal %{buildroot}%{ruby_libdir}/bigdecimal
 ln -s %{_libdir}/gems/exts/bigdecimal-%{bigdecimal_version}/lib/bigdecimal.so %{buildroot}%{ruby_libarchdir}/bigdecimal.so
 
@@ -483,6 +480,7 @@ mkdir -p %{buildroot}%{gem_dir}/gems/io-console-%{io_console_version}/lib
 mkdir -p %{buildroot}%{_libdir}/gems/exts/io-console-%{io_console_version}/lib/io
 mv %{buildroot}%{ruby_libdir}/io %{buildroot}%{gem_dir}/gems/io-console-%{io_console_version}/lib
 mv %{buildroot}%{ruby_libarchdir}/io/console.so %{buildroot}%{_libdir}/gems/exts/io-console-%{io_console_version}/lib/io
+mv %{buildroot}%{gem_dir}/specifications/default/io-console-%{io_console_version}.gemspec %{buildroot}%{gem_dir}/specifications
 ln -s %{gem_dir}/gems/io-console-%{io_console_version}/lib/io %{buildroot}%{ruby_libdir}/io
 ln -s %{_libdir}/gems/exts/io-console-%{io_console_version}/lib/io/console.so %{buildroot}%{ruby_libarchdir}/io/console.so
 
@@ -490,14 +488,17 @@ mkdir -p %{buildroot}%{gem_dir}/gems/json-%{json_version}/lib
 mkdir -p %{buildroot}%{_libdir}/gems/exts/json-%{json_version}/lib
 mv %{buildroot}%{ruby_libdir}/json* %{buildroot}%{gem_dir}/gems/json-%{json_version}/lib
 mv %{buildroot}%{ruby_libarchdir}/json/ %{buildroot}%{_libdir}/gems/exts/json-%{json_version}/lib/
+mv %{buildroot}%{gem_dir}/specifications/default/json-%{json_version}.gemspec %{buildroot}%{gem_dir}/specifications
 
 mkdir -p %{buildroot}%{gem_dir}/gems/minitest-%{minitest_version}/lib
 mv %{buildroot}%{ruby_libdir}/minitest %{buildroot}%{gem_dir}/gems/minitest-%{minitest_version}/lib
+mv %{buildroot}%{gem_dir}/specifications/default/minitest-%{minitest_version}.gemspec %{buildroot}%{gem_dir}/specifications
 
 mkdir -p %{buildroot}%{gem_dir}/gems/psych-%{psych_version}/lib
 mkdir -p %{buildroot}%{_libdir}/gems/exts/psych-%{psych_version}/lib
 mv %{buildroot}%{ruby_libdir}/psych* %{buildroot}%{gem_dir}/gems/psych-%{psych_version}/lib
 mv %{buildroot}%{ruby_libarchdir}/psych.so %{buildroot}%{_libdir}/gems/exts/psych-%{psych_version}/lib/
+mv %{buildroot}%{gem_dir}/specifications/default/psych-%{psych_version}.gemspec %{buildroot}%{gem_dir}/specifications
 
 # Adjust the gemspec files so that the gems will load properly
 sed -i '8 a\
