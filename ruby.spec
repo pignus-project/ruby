@@ -12,7 +12,7 @@
 %global ruby_abi 1.9.1
 
 # Specify the named version. It has precedense to revision.
-#%%global milestone preview1
+#%%global milestone preview2
 
 # Keep the revision enabled for pre-releases from SVN.
 %global revision 38184
