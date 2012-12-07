@@ -241,6 +241,7 @@ License:    GPLv2 and Ruby and MIT
 Requires:   ruby(abi) = %{ruby_abi}
 Requires:   ruby(rubygems) >= %{rubygems_version}
 Requires:   ruby(irb) = %{irb_version}
+Requires:   rubygem(json) >= %{json_version}
 Provides:   rdoc = %{version}-%{release}
 Provides:   ri = %{version}-%{release}
 Provides:   rubygem(rdoc) = %{version}-%{release}
