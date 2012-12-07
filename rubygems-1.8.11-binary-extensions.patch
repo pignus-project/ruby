@@ -24,7 +24,7 @@ index 97db19e..263e7d3 100644
      # gem directories must come after -I and ENV['RUBYLIB']
      insert_index = Gem.load_path_insert_index
  
-@@ -1364,11 +1370,16 @@ class Gem::Specification
+@@ -1368,11 +1374,16 @@ class Gem::Specification
  
    def contains_requirable_file? file
      root     = full_gem_path
@@ -43,7 +43,7 @@ index 97db19e..263e7d3 100644
      end
    end
  
-@@ -1664,6 +1675,23 @@ class Gem::Specification
+@@ -1668,6 +1679,23 @@ class Gem::Specification
    end
  
    ##
@@ -98,7 +98,7 @@ diff --git a/lib/rubygems/specification.rb b/lib/rubygems/specification.rb
 index 263e7d3..d31b93b 100644
 --- a/lib/rubygems/specification.rb
 +++ b/lib/rubygems/specification.rb
-@@ -1679,16 +1679,15 @@ class Gem::Specification
+@@ -1683,16 +1683,15 @@ class Gem::Specification
    # eg: /usr/local/lib/ruby/1.8/exts/mygem-1.0
  
    def ext_dir
@@ -148,7 +148,7 @@ index d31b93b..e65ea2d 100644
  
      # gem directories must come after -I and ENV['RUBYLIB']
      insert_index = Gem.load_path_insert_index
-@@ -1687,7 +1683,10 @@ class Gem::Specification
+@@ -1691,7 +1687,10 @@ class Gem::Specification
    # gem directory. eg: /usr/local/lib/ruby/1.8/gems
  
    def exts_dir
@@ -200,7 +200,7 @@ index e65ea2d..8be2ade 100644
  
      # gem directories must come after -I and ENV['RUBYLIB']
      insert_index = Gem.load_path_insert_index
-@@ -1675,7 +1675,7 @@ class Gem::Specification
+@@ -1679,7 +1679,7 @@ class Gem::Specification
    # eg: /usr/local/lib/ruby/1.8/exts/mygem-1.0
  
    def ext_dir
@@ -274,7 +274,7 @@ diff --git a/lib/rubygems/specification.rb b/lib/rubygems/specification.rb
 index 8be2ade..f54210a 100644
 --- a/lib/rubygems/specification.rb
 +++ b/lib/rubygems/specification.rb
-@@ -1683,10 +1683,7 @@ class Gem::Specification
+@@ -1687,10 +1687,7 @@ class Gem::Specification
    # gem directory. eg: /usr/local/lib/ruby/1.8/gems
  
    def exts_dir
