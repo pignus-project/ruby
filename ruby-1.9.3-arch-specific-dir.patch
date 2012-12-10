@@ -26,7 +26,7 @@ diff --git a/configure.in b/configure.in
 index db3641b..8e4aaec 100644
 --- a/configure.in
 +++ b/configure.in
-@@ -3152,6 +3152,15 @@ else
+@@ -3154,6 +3154,15 @@ else
      RUBY_LIB_VERSION="\"${ruby_version}\""
  fi
  
@@ -42,7 +42,7 @@ index db3641b..8e4aaec 100644
  AC_ARG_WITH(sitedir,
  	    AS_HELP_STRING([--with-sitedir=DIR], [site libraries in DIR [[RUBY_LIB_PREFIX/site_ruby]], "no" to disable site directory]),
              [sitedir=$withval],
-@@ -3174,16 +3183,25 @@ if test "${LOAD_RELATIVE+set}"; then
+@@ -3176,16 +3185,25 @@ if test "${LOAD_RELATIVE+set}"; then
      AC_DEFINE_UNQUOTED(LOAD_RELATIVE, $LOAD_RELATIVE)
      RUBY_EXEC_PREFIX=""
      RUBY_LIB_PREFIX="`eval echo "$RUBY_LIB_PREFIX" | sed 's|^NONE/|/|;s|^'"$prefix"'/|/|'`"
@@ -68,7 +68,7 @@ index db3641b..8e4aaec 100644
  AS_CASE(["$RUBY_SITE_LIB_PATH"],
    ["$RUBY_LIB_PREFIX/"*], [
      RUBY_SITE_LIB_PATH='RUBY_LIB_PREFIX"/'"`expr \"$RUBY_SITE_LIB_PATH\" : \"$pat\"`"'"'
-@@ -3214,6 +3232,7 @@ else
+@@ -3216,6 +3234,7 @@ else
  fi
  AC_DEFINE_UNQUOTED(RUBY_EXEC_PREFIX, "${RUBY_EXEC_PREFIX}")
  AC_DEFINE_UNQUOTED(RUBY_LIB_PREFIX, ${RUBY_LIB_PREFIX} !<verconf>!)
@@ -76,7 +76,7 @@ index db3641b..8e4aaec 100644
  if test "x$SITE_DIR" = xno; then
      AC_DEFINE(NO_RUBY_SITE_LIB, [] !<verconf>!)
  else
-@@ -3228,6 +3247,7 @@ fi
+@@ -3230,6 +3249,7 @@ fi
  AC_SUBST(arch)dnl
  AC_SUBST(sitearch)dnl
  AC_SUBST(ruby_version)dnl
@@ -96,7 +96,7 @@ index d9e26c1..03c3332 100755
  File.foreach "config.status" do |line|
    next if /^#/ =~ line
    name = nil
-@@ -77,6 +78,7 @@ File.foreach "config.status" do |line|
+@@ -78,6 +79,7 @@ File.foreach "config.status" do |line|
      when /^RUBY_INSTALL_NAME$/; next if $install_name
      when /^RUBY_SO_NAME$/; next if $so_name
      when /^arch$/; if val.empty? then val = arch else arch = val end
@@ -104,7 +104,7 @@ index d9e26c1..03c3332 100755
      when /^sitearch/; val = '$(arch)' if val.empty?
      end
      case val
-@@ -207,7 +209,7 @@ print(*v_fast)
+@@ -208,7 +210,7 @@ print(*v_fast)
  print(*v_others)
  print <<EOS
    CONFIG["rubylibdir"] = "$(rubylibprefix)#{path_version}"

@@ -15,7 +15,7 @@ diff --git a/configure.in b/configure.in
 index 748edc9..6a16745 100644
 --- a/configure.in
 +++ b/configure.in
-@@ -3197,6 +3197,13 @@ until VENDORARCH_DIR=`eval echo \\"${dir}\\"`; test "x${dir}" = "x${VENDORARCH_D
+@@ -3199,6 +3199,13 @@ until VENDORARCH_DIR=`eval echo \\"${dir}\\"`; test "x${dir}" = "x${VENDORARCH_D
      dir="${VENDORARCH_DIR}"
  done
  
@@ -29,7 +29,7 @@ index 748edc9..6a16745 100644
  if test "${LOAD_RELATIVE+set}"; then
      AC_DEFINE_UNQUOTED(LOAD_RELATIVE, $LOAD_RELATIVE)
      RUBY_EXEC_PREFIX=""
-@@ -3290,6 +3297,7 @@ AC_SUBST(sitedir)dnl
+@@ -3292,6 +3299,7 @@ AC_SUBST(sitedir)dnl
  AC_SUBST(sitearchdir)dnl
  AC_SUBST(vendordir)dnl
  AC_SUBST(vendorarchdir)dnl
@@ -41,7 +41,7 @@ diff --git a/tool/mkconfig.rb b/tool/mkconfig.rb
 index 79b8e44..9cef0c6 100755
 --- a/tool/mkconfig.rb
 +++ b/tool/mkconfig.rb
-@@ -84,6 +84,7 @@ File.foreach "config.status" do |line|
+@@ -85,6 +85,7 @@ File.foreach "config.status" do |line|
      when /^sitearchdir$/; sitearchdir_override = val; next
      when /^vendorarchdir$/; vendorarchdir_override = val; next
      when /^sitearch/; val = '$(arch)' if val.empty?

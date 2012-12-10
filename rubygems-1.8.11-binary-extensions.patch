@@ -252,7 +252,7 @@ diff --git a/lib/rubygems/defaults.rb b/lib/rubygems/defaults.rb
 index 20b4198..6d8711f 100644
 --- a/lib/rubygems/defaults.rb
 +++ b/lib/rubygems/defaults.rb
-@@ -101,6 +101,17 @@ module Gem
+@@ -104,6 +104,17 @@ module Gem
    end
  
    ##
