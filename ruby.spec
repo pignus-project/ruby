@@ -259,11 +259,7 @@ documentation.
 Summary:    Documentation for %{name}
 Group:      Documentation
 Requires:   %{_bindir}/ri
-# TODO: It seems that ri documentation differs from platform to platform due to
-# some encoding bugs, therefore the documentation should be split out of this gem
-# or kept platform specific.
-# https://github.com/rdoc/rdoc/issues/71
-# BuildArch:  noarch
+BuildArch:  noarch
 
 %description doc
 This package contains documentation for %{name}.
