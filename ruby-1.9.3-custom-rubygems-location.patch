@@ -15,7 +15,7 @@ diff --git a/configure.in b/configure.in
 index 748edc9..6a16745 100644
 --- a/configure.in
 +++ b/configure.in
-@@ -3199,6 +3199,13 @@ until VENDORARCH_DIR=`eval echo \\"${dir}\\"`; test "x${dir}" = "x${VENDORARCH_D
+@@ -3205,6 +3205,13 @@ until VENDORARCH_DIR=`eval echo \\"${dir}\\"`; test "x${dir}" = "x${VENDORARCH_D
      dir="${VENDORARCH_DIR}"
  done
  
@@ -29,7 +29,7 @@ index 748edc9..6a16745 100644
  if test "${LOAD_RELATIVE+set}"; then
      AC_DEFINE_UNQUOTED(LOAD_RELATIVE, $LOAD_RELATIVE)
      RUBY_EXEC_PREFIX=""
-@@ -3292,6 +3299,7 @@ AC_SUBST(sitedir)dnl
+@@ -3298,6 +3305,7 @@ AC_SUBST(sitedir)dnl
  AC_SUBST(sitearchdir)dnl
  AC_SUBST(vendordir)dnl
  AC_SUBST(vendorarchdir)dnl

@@ -17,7 +17,7 @@
 #%%global milestone preview2
 
 # Keep the revision enabled for pre-releases from SVN.
-%global revision 38297
+%global revision 38422
 
 %global ruby_archive %{name}-%{ruby_version}
 
@@ -63,10 +63,10 @@
 # TODO: The IRB has strange versioning. Keep the Ruby's versioning ATM.
 # http://redmine.ruby-lang.org/issues/5313
 %global irb_version %{ruby_version_patch_level}
-%global rdoc_version 4.0.0.preview2
+%global rdoc_version 4.0.0.preview2.1
 %global bigdecimal_version 1.1.0
 %global io_console_version 0.3
-%global json_version 1.7.1
+%global json_version 1.7.5
 %global minitest_version 4.3.2
 %global psych_version 2.0.0
 
