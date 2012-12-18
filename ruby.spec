@@ -523,9 +523,7 @@ sed -i '/^end$/ i\
   s.require_paths = ["lib"]' %{buildroot}%{gem_dir}/specifications/minitest-%{minitest_version}.gemspec
 
 %check
-# https://bugs.ruby-lang.org/issues/7386
-# http://bugs.ruby-lang.org/issues/7422
-DISABLE_TESTS="-x test_rake_functional.rb -x test_rubyoptions.rb"
+DISABLE_TESTS=""
 
 %ifarch armv7l armv7hl armv7hnl
 # test_call_double(DL::TestDL) fails on ARM HardFP
