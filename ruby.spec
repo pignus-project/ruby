@@ -70,6 +70,19 @@
 %global minitest_version 4.3.2
 %global psych_version 2.0.0
 
+# Might not be needed in the future, if we are lucky enough.
+# https://bugzilla.redhat.com/show_bug.cgi?id=888262
+%global tapset_dir %{_datadir}/systemtap/tapset
+
+# The distinction between 32 and 64 bit file locations might be done better in
+# the future.
+# http://sourceware.org/bugzilla/show_bug.cgi?id=10485
+%ifarch ppc64 s390x x86_64 ia64 alpha sparc64
+%global libruby_stp libruby.so.%{ruby_version}-64.stp
+%else
+%global libruby_stp libruby.so.%{ruby_version}-32.stp
+%endif
+
 %global _normalized_cpu %(echo %{_target_cpu} | sed 's/^ppc/powerpc/;s/i.86/i386/;s/sparcv./sparc/')
 
 Summary: An interpreter of object-oriented scripting language
@@ -82,6 +95,7 @@ License: (Ruby or BSD) and Public Domain
 URL: http://ruby-lang.org/
 Source0: ftp://ftp.ruby-lang.org/pub/%{name}/%{major_minor_version}/%{ruby_archive}.tar.gz
 Source1: operating_system.rb
+Source2: libruby.stp
 
 # http://redmine.ruby-lang.org/issues/5231
 Patch0: ruby-1.9.3-disable-versioned-paths.patch
@@ -522,6 +536,11 @@ sed -i '/^end$/ i\
 sed -i '/^end$/ i\
   s.require_paths = ["lib"]' %{buildroot}%{gem_dir}/specifications/minitest-%{minitest_version}.gemspec
 
+# Install a tapset and fix up the path to the library.
+mkdir -p %{buildroot}%{tapset_dir}
+sed -e "s|LIBRARY_PATH|%{_libdir}/libruby.so.%{ruby_version}|" \
+   %{SOURCE2} > %{buildroot}%{tapset_dir}/%{libruby_stp}
+
 %check
 DISABLE_TESTS=""
 
@@ -726,6 +745,8 @@ make check TESTS="-v $DISABLE_TESTS"
 %exclude %{ruby_libarchdir}/tcltklib.so
 %exclude %{ruby_libarchdir}/tkutil.so
 %{ruby_libarchdir}/zlib.so
+
+%{tapset_dir}/..
 
 %files -n rubygems
 %{_bindir}/gem
