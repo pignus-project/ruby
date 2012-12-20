@@ -14,7 +14,7 @@ diff --git a/Makefile.in b/Makefile.in
 index 78d7139..690ff8e 100644
 --- a/Makefile.in
 +++ b/Makefile.in
-@@ -36,6 +36,7 @@ libexecdir = @libexecdir@
+@@ -38,6 +38,7 @@ libexecdir = @libexecdir@
  datarootdir = @datarootdir@
  datadir = @datadir@
  arch = @arch@
@@ -26,7 +26,7 @@ diff --git a/configure.in b/configure.in
 index db3641b..8e4aaec 100644
 --- a/configure.in
 +++ b/configure.in
-@@ -3160,6 +3160,15 @@ else
+@@ -3179,6 +3179,15 @@ else
      RUBY_LIB_VERSION="\"${ruby_version}\""
  fi
  
@@ -42,7 +42,7 @@ index db3641b..8e4aaec 100644
  AC_ARG_WITH(sitedir,
  	    AS_HELP_STRING([--with-sitedir=DIR], [site libraries in DIR [[RUBY_LIB_PREFIX/site_ruby]], "no" to disable site directory]),
              [sitedir=$withval],
-@@ -3182,16 +3191,25 @@ if test "${LOAD_RELATIVE+set}"; then
+@@ -3201,16 +3210,25 @@ if test "${LOAD_RELATIVE+set}"; then
      AC_DEFINE_UNQUOTED(LOAD_RELATIVE, $LOAD_RELATIVE)
      RUBY_EXEC_PREFIX=""
      RUBY_LIB_PREFIX="`eval echo "$RUBY_LIB_PREFIX" | sed 's|^NONE/|/|;s|^'"$prefix"'/|/|'`"
@@ -68,7 +68,7 @@ index db3641b..8e4aaec 100644
  AS_CASE(["$RUBY_SITE_LIB_PATH"],
    ["$RUBY_LIB_PREFIX/"*], [
      RUBY_SITE_LIB_PATH='RUBY_LIB_PREFIX"/'"`expr \"$RUBY_SITE_LIB_PATH\" : \"$pat\"`"'"'
-@@ -3222,6 +3240,7 @@ else
+@@ -3241,6 +3259,7 @@ else
  fi
  AC_DEFINE_UNQUOTED(RUBY_EXEC_PREFIX, "${RUBY_EXEC_PREFIX}")
  AC_DEFINE_UNQUOTED(RUBY_LIB_PREFIX, ${RUBY_LIB_PREFIX} !<verconf>!)
@@ -76,7 +76,7 @@ index db3641b..8e4aaec 100644
  if test "x$SITE_DIR" = xno; then
      AC_DEFINE(NO_RUBY_SITE_LIB, [] !<verconf>!)
  else
-@@ -3236,6 +3255,7 @@ fi
+@@ -3255,6 +3274,7 @@ fi
  AC_SUBST(arch)dnl
  AC_SUBST(sitearch)dnl
  AC_SUBST(ruby_version)dnl

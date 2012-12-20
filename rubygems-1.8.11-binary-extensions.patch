@@ -85,7 +85,7 @@ diff --git a/lib/rubygems/installer.rb b/lib/rubygems/installer.rb
 index 74d803d..0063c7f 100644
 --- a/lib/rubygems/installer.rb
 +++ b/lib/rubygems/installer.rb
-@@ -649,7 +649,7 @@ TEXT
+@@ -641,7 +641,7 @@ TEXT
        say "This could take a while..."
      end
  
@@ -178,7 +178,7 @@ diff --git a/lib/rubygems/installer.rb b/lib/rubygems/installer.rb
 index 0063c7f..83b8fd5 100644
 --- a/lib/rubygems/installer.rb
 +++ b/lib/rubygems/installer.rb
-@@ -649,7 +649,7 @@ TEXT
+@@ -641,7 +641,7 @@ TEXT
        say "This could take a while..."
      end
  
@@ -226,7 +226,7 @@ diff --git a/lib/rubygems/uninstaller.rb b/lib/rubygems/uninstaller.rb
 index cc32ea4..94d78e0 100644
 --- a/lib/rubygems/uninstaller.rb
 +++ b/lib/rubygems/uninstaller.rb
-@@ -234,6 +234,7 @@ class Gem::Uninstaller
+@@ -246,6 +246,7 @@ class Gem::Uninstaller
        File.writable?(spec.base_dir)
  
      FileUtils.rm_rf spec.full_gem_path

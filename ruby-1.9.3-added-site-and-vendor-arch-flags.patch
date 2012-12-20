@@ -15,7 +15,7 @@ diff --git a/Makefile.in b/Makefile.in
 index 690ff8e..8c7dd98 100644
 --- a/Makefile.in
 +++ b/Makefile.in
-@@ -39,6 +39,9 @@ arch = @arch@
+@@ -41,6 +41,9 @@ arch = @arch@
  archdir = @archdir@
  sitearch = @sitearch@
  sitedir = @sitedir@
@@ -29,7 +29,7 @@ diff --git a/configure.in b/configure.in
 index 8e4aaec..c65e0c7 100644
 --- a/configure.in
 +++ b/configure.in
-@@ -3178,6 +3178,15 @@ until SITE_DIR=`eval echo \\"${dir}\\"`; test "x${dir}" = "x${SITE_DIR}"; do
+@@ -3197,6 +3197,15 @@ until SITE_DIR=`eval echo \\"${dir}\\"`; test "x${dir}" = "x${SITE_DIR}"; do
      dir="${SITE_DIR}"
  done
  
@@ -45,7 +45,7 @@ index 8e4aaec..c65e0c7 100644
  AC_ARG_WITH(vendordir,
  	    AS_HELP_STRING([--with-vendordir=DIR], [vendor libraries in DIR [[RUBY_LIB_PREFIX/vendor_ruby]], "no" to disable vendor directory]),
              [vendordir=$withval],
-@@ -3187,19 +3196,32 @@ until VENDOR_DIR=`eval echo \\"${dir}\\"`; test "x${dir}" = "x${VENDOR_DIR}"; do
+@@ -3206,19 +3215,32 @@ until VENDOR_DIR=`eval echo \\"${dir}\\"`; test "x${dir}" = "x${VENDOR_DIR}"; do
      dir="${VENDOR_DIR}"
  done
  
@@ -78,7 +78,7 @@ index 8e4aaec..c65e0c7 100644
  fi
  
  pat=`echo "$RUBY_LIB_PREFIX/" | tr -c '\012' .`'\(.*\)'
-@@ -3217,6 +3239,13 @@ AS_CASE(["$RUBY_SITE_LIB_PATH"],
+@@ -3236,6 +3258,13 @@ AS_CASE(["$RUBY_SITE_LIB_PATH"],
    [
      RUBY_SITE_LIB_PATH="\"${RUBY_SITE_LIB_PATH}\""
      ])
@@ -92,7 +92,7 @@ index 8e4aaec..c65e0c7 100644
  AS_CASE(["$RUBY_VENDOR_LIB_PATH"],
    ["$RUBY_LIB_PREFIX/"*], [
      RUBY_VENDOR_LIB_PATH='RUBY_LIB_PREFIX"/'"`expr \"$RUBY_VENDOR_LIB_PATH\" : \"$pat\"`"'"'
-@@ -3224,6 +3253,13 @@ AS_CASE(["$RUBY_VENDOR_LIB_PATH"],
+@@ -3243,6 +3272,13 @@ AS_CASE(["$RUBY_VENDOR_LIB_PATH"],
    [
      RUBY_VENDOR_LIB_PATH="\"${RUBY_VENDOR_LIB_PATH}\""
      ])
@@ -106,7 +106,7 @@ index 8e4aaec..c65e0c7 100644
  pat=`echo "$RUBY_EXEC_PREFIX/" | tr -c '\012' .`'\(.*\)'
  AS_CASE(["$RUBY_LIB_PREFIX"],
    ["$RUBY_EXEC_PREFIX/"*], [
-@@ -3245,11 +3281,13 @@ if test "x$SITE_DIR" = xno; then
+@@ -3264,11 +3300,13 @@ if test "x$SITE_DIR" = xno; then
      AC_DEFINE(NO_RUBY_SITE_LIB, [] !<verconf>!)
  else
      AC_DEFINE_UNQUOTED(RUBY_SITE_LIB, ${RUBY_SITE_LIB_PATH} !<verconf>!)
@@ -120,7 +120,7 @@ index 8e4aaec..c65e0c7 100644
  fi
  
  AC_SUBST(arch)dnl
-@@ -3257,7 +3295,9 @@ AC_SUBST(sitearch)dnl
+@@ -3276,7 +3314,9 @@ AC_SUBST(sitearch)dnl
  AC_SUBST(ruby_version)dnl
  AC_SUBST(archdir)dnl
  AC_SUBST(sitedir)dnl

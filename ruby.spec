@@ -17,7 +17,7 @@
 #%%global milestone preview2
 
 # Keep the revision enabled for pre-releases from SVN.
-%global revision 38422
+%global revision 38732
 
 %global ruby_archive %{name}-%{ruby_version}
 
@@ -46,7 +46,7 @@
 %global ruby_vendorlibdir %{_datadir}/ruby/%{ruby_vendordir}
 %global ruby_vendorarchdir %{_libdir}/ruby/%{ruby_vendordir}
 
-%global rubygems_version 2.0.0.preview2
+%global rubygems_version 2.0.0.preview3.1
 
 # The RubyGems library has to stay out of Ruby directory three, since the
 # RubyGems should be share by all Ruby implementations.
@@ -59,11 +59,11 @@
 # http://rpm.org/ticket/78
 %global gem_extdir %{_exec_prefix}/lib{,64}/gems
 
-%global rake_version 0.9.5
+%global rake_version 0.9.6
 # TODO: The IRB has strange versioning. Keep the Ruby's versioning ATM.
 # http://redmine.ruby-lang.org/issues/5313
 %global irb_version %{ruby_version_patch_level}
-%global rdoc_version 4.0.0.preview2.1
+%global rdoc_version 4.0.0.preview3.1
 %global bigdecimal_version 1.1.0
 %global io_console_version 0.3
 %global json_version 1.7.5
@@ -729,7 +729,6 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libarchdir}/racc/cparse.so
 %{ruby_libarchdir}/rbconfig.rb
 %{ruby_libarchdir}/readline.so
-%{ruby_libarchdir}/refinement.so
 %{ruby_libarchdir}/ripper.so
 %{ruby_libarchdir}/sdbm.so
 %{ruby_libarchdir}/socket.so
