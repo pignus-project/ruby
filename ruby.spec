@@ -72,16 +72,9 @@
 
 # Might not be needed in the future, if we are lucky enough.
 # https://bugzilla.redhat.com/show_bug.cgi?id=888262
-%global tapset_dir %{_datadir}/systemtap/tapset
-
-# The distinction between 32 and 64 bit file locations might be done better in
-# the future.
-# http://sourceware.org/bugzilla/show_bug.cgi?id=10485
-%ifarch ppc64 s390x x86_64 ia64 alpha sparc64
-%global libruby_stp libruby.so.%{ruby_version}-64.stp
-%else
-%global libruby_stp libruby.so.%{ruby_version}-32.stp
-%endif
+%global tapset_root %{_datadir}/systemtap
+%global tapset_dir %{tapset_root}/tapset/
+%global tapset_libdir %(echo %{_libdir} | sed 's/64//')*
 
 %global _normalized_cpu %(echo %{_target_cpu} | sed 's/^ppc/powerpc/;s/i.86/i386/;s/sparcv./sparc/')
 
@@ -538,8 +531,8 @@ sed -i '/^end$/ i\
 
 # Install a tapset and fix up the path to the library.
 mkdir -p %{buildroot}%{tapset_dir}
-sed -e "s|LIBRARY_PATH|%{_libdir}/libruby.so.%{ruby_version}|" \
-   %{SOURCE2} > %{buildroot}%{tapset_dir}/%{libruby_stp}
+sed -e "s|@LIBRARY_PATH@|%{tapset_libdir}/libruby.so.%{ruby_version}|" \
+   %{SOURCE2} > %{buildroot}%{tapset_dir}/libruby.so.%{ruby_version}.stp
 
 %check
 DISABLE_TESTS=""
@@ -746,7 +739,7 @@ make check TESTS="-v $DISABLE_TESTS"
 %exclude %{ruby_libarchdir}/tkutil.so
 %{ruby_libarchdir}/zlib.so
 
-%{tapset_dir}/..
+%{tapset_root}
 
 %files -n rubygems
 %{_bindir}/gem
