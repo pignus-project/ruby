@@ -88,6 +88,7 @@ License: (Ruby or BSD) and Public Domain
 URL: http://ruby-lang.org/
 Source0: ftp://ftp.ruby-lang.org/pub/%{name}/%{major_minor_version}/%{ruby_archive}.tar.gz
 Source1: operating_system.rb
+# TODO: Try to push SystemTap support upstream.
 Source2: libruby.stp
 
 # http://redmine.ruby-lang.org/issues/5231
