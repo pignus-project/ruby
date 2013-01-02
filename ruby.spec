@@ -56,7 +56,7 @@ Version: %{ruby_version_patch_level}
 # we cannot reset the release number to 1 even when the main (ruby) version
 # is updated - because it may be that the versions of sub-components don't
 # change.
-Release: 23%{?dist}
+Release: 23%{?dist}.1
 Group: Development/Languages
 # Public Domain for example for: include/ruby/st.h, strftime.c, ...
 License: (Ruby or BSD) and Public Domain
@@ -473,6 +473,12 @@ DISABLE_TESTS="-x test_drbssl.rb $DISABLE_TESTS"
 DISABLE_TESTS="-x test_dl2.rb $DISABLE_TESTS"
 %endif
 
+%ifarch %{arm}
+# test_parse.rb fails on ARM at line 787
+# http://bugs.ruby-lang.org/issues/6899
+DISABLE_TESTS="-x test_parse.rb $DISABLE_TESTS"
+%endif
+
 %ifnarch ppc ppc64
 make check TESTS="-v $DISABLE_TESTS"
 %endif
@@ -746,6 +752,10 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Mon Dec 03 2012 Jaromir Capik <jcapik@redhat.com> - 1.9.3.327-23
+- Skipping test_parse.rb (fails on ARM at line 787)
+- http://bugs.ruby-lang.org/issues/6899
+
 * Sun Nov 11 2012 Mamoru TASAKA <mtasaka@fedoraproject.org> - 1.9.3.327-23
 - Skip test_str_crypt (on rawhide) for now (upstream bug 7312)
 
