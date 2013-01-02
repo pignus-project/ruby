@@ -1,7 +1,7 @@
 %global major_version 1
 %global minor_version 9
 %global teeny_version 3
-%global patch_level 327
+%global patch_level 362
 
 %global major_minor_version %{major_version}.%{minor_version}
 
@@ -56,7 +56,7 @@ Version: %{ruby_version_patch_level}
 # we cannot reset the release number to 1 even when the main (ruby) version
 # is updated - because it may be that the versions of sub-components don't
 # change.
-Release: 23%{?dist}.1
+Release: 24%{?dist}
 Group: Development/Languages
 # Public Domain for example for: include/ruby/st.h, strftime.c, ...
 License: (Ruby or BSD) and Public Domain
@@ -752,6 +752,9 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Wed Jan 2 2013 Mamoru TASAKA <mtasaka@fedoraproject.org> - 1.9.3.362-24
+- Update to 1.9.3.362
+
 * Mon Dec 03 2012 Jaromir Capik <jcapik@redhat.com> - 1.9.3.327-23
 - Skipping test_parse.rb (fails on ARM at line 787)
 - http://bugs.ruby-lang.org/issues/6899
