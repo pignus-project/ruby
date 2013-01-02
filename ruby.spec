@@ -96,7 +96,8 @@ Patch9: rubygems-1.8.11-binary-extensions.patch
 Patch10: ruby-1.9.3-p327-ignore-internal-server-error-on-test.patch
 # http://bugs.ruby-lang.org/issues/show/7312
 # test_str_crypt fails with glibc 2.17
-Patch11: ruby-1.9.3-p327-crypt-argument-glibc217.patch
+# Fixed in 1.9.3 p 362
+#Patch11: ruby-1.9.3-p327-crypt-argument-glibc217.patch
 # Make mkmf verbose by default
 Patch12: ruby-1.9.3-mkmf-verbose.patch
 
@@ -339,7 +340,7 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 %patch8 -p1
 %patch9 -p1
 %patch10 -p1
-%patch11 -p1
+#%%patch11 -p1
 %patch12 -p1
 
 %build
