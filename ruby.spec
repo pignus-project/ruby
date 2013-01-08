@@ -7,11 +7,7 @@
 
 %global ruby_version %{major_minor_version}.%{teeny_version}
 %global ruby_version_patch_level %{major_minor_version}.%{teeny_version}.%{patch_level}
-# TODO: Fix ruby_api for official release according to
-# http://blade.nagaokaut.ac.jp/cgi-bin/scat.rb/ruby/ruby-core/48984
-# It is kept at 1.9.1 just for testing. All dependent libraries need rebuild.
-# %%global ruby_abi %%{major_minor_version}.0
-%global ruby_abi 1.9.1
+%global ruby_abi %{ruby_version}
 
 # Specify the named version. It has precedense to revision.
 #%%global milestone preview2
