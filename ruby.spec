@@ -90,6 +90,7 @@ Source0: ftp://ftp.ruby-lang.org/pub/%{name}/%{major_minor_version}/%{ruby_archi
 Source1: operating_system.rb
 # TODO: Try to push SystemTap support upstream.
 Source2: libruby.stp
+Source3: ruby-exercise.stp
 
 # http://redmine.ruby-lang.org/issues/5231
 Patch0: ruby-1.9.3-disable-versioned-paths.patch
@@ -393,6 +394,9 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 %patch12 -p1
 #%%patch13 -p1
 %patch14 -p1
+
+# Provide an example of usage of the tapset:
+cp -a %{SOURCE3} .
 
 %build
 autoconf
@@ -790,6 +794,7 @@ make check TESTS="-v $DISABLE_TESTS"
 %lang(ja) %doc README.ja
 %doc ChangeLog
 %doc doc/ChangeLog-*
+%doc ruby-exercise.stp
 %{_datadir}/ri
 
 %files -n rubygem-bigdecimal
