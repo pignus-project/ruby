@@ -453,7 +453,7 @@ cat >> %{buildroot}%{_sysconfdir}/rpm/macros.rubygems << \EOF
 
 # Common gem locations and files.
 %%gem_instdir %%{gem_dir}/gems/%%{gem_name}-%%{version}
-%%gem_extdir %%{_libdir}/gems/exts/%%{gem_name}-%%{version}
+%%gem_extdir %%{_libdir}/gems/%{name}/%%{gem_name}-%%{version}
 %%gem_libdir %%{gem_instdir}/lib
 %%gem_cache %%{gem_dir}/cache/%%{gem_name}-%%{version}.gem
 %%gem_spec %%{gem_dir}/specifications/%%{gem_name}-%%{version}.gemspec
@@ -468,7 +468,7 @@ cp %{SOURCE1} %{buildroot}%{rubygems_dir}/rubygems/defaults
 mv %{buildroot}%{ruby_libdir}/gems/2.0.0 %{buildroot}%{gem_dir}
 
 # Create folders for gem binary extensions.
-mkdir -p %{buildroot}%{gem_extdir}/exts
+mkdir -p %{buildroot}%{gem_extdir}/%{name}
 
 # Move bundled rubygems to %%gem_dir and %%gem_extdir
 # make symlinks for io-console and bigdecimal, which are considered to be part of stdlib by other Gems
@@ -481,25 +481,25 @@ mv %{buildroot}%{ruby_libdir}/rdoc* %{buildroot}%{gem_dir}/gems/rdoc-%{rdoc_vers
 mv %{buildroot}%{gem_dir}/specifications/default/rdoc-%{rdoc_version}.gemspec %{buildroot}%{gem_dir}/specifications
 
 mkdir -p %{buildroot}%{gem_dir}/gems/bigdecimal-%{bigdecimal_version}/lib
-mkdir -p %{buildroot}%{_libdir}/gems/exts/bigdecimal-%{bigdecimal_version}/lib
+mkdir -p %{buildroot}%{_libdir}/gems/%{name}/bigdecimal-%{bigdecimal_version}/lib
 mv %{buildroot}%{ruby_libdir}/bigdecimal %{buildroot}%{gem_dir}/gems/bigdecimal-%{bigdecimal_version}/lib
-mv %{buildroot}%{ruby_libarchdir}/bigdecimal.so %{buildroot}%{_libdir}/gems/exts/bigdecimal-%{bigdecimal_version}/lib
+mv %{buildroot}%{ruby_libarchdir}/bigdecimal.so %{buildroot}%{_libdir}/gems/%{name}/bigdecimal-%{bigdecimal_version}/lib
 mv %{buildroot}%{gem_dir}/specifications/default/bigdecimal-%{bigdecimal_version}.gemspec %{buildroot}%{gem_dir}/specifications
 ln -s %{gem_dir}/gems/bigdecimal-%{bigdecimal_version}/lib/bigdecimal %{buildroot}%{ruby_libdir}/bigdecimal
-ln -s %{_libdir}/gems/exts/bigdecimal-%{bigdecimal_version}/lib/bigdecimal.so %{buildroot}%{ruby_libarchdir}/bigdecimal.so
+ln -s %{_libdir}/gems/%{name}/bigdecimal-%{bigdecimal_version}/lib/bigdecimal.so %{buildroot}%{ruby_libarchdir}/bigdecimal.so
 
 mkdir -p %{buildroot}%{gem_dir}/gems/io-console-%{io_console_version}/lib
-mkdir -p %{buildroot}%{_libdir}/gems/exts/io-console-%{io_console_version}/lib/io
+mkdir -p %{buildroot}%{_libdir}/gems/%{name}/io-console-%{io_console_version}/lib/io
 mv %{buildroot}%{ruby_libdir}/io %{buildroot}%{gem_dir}/gems/io-console-%{io_console_version}/lib
-mv %{buildroot}%{ruby_libarchdir}/io/console.so %{buildroot}%{_libdir}/gems/exts/io-console-%{io_console_version}/lib/io
+mv %{buildroot}%{ruby_libarchdir}/io/console.so %{buildroot}%{_libdir}/gems/%{name}/io-console-%{io_console_version}/lib/io
 mv %{buildroot}%{gem_dir}/specifications/default/io-console-%{io_console_version}.gemspec %{buildroot}%{gem_dir}/specifications
 ln -s %{gem_dir}/gems/io-console-%{io_console_version}/lib/io %{buildroot}%{ruby_libdir}/io
-ln -s %{_libdir}/gems/exts/io-console-%{io_console_version}/lib/io/console.so %{buildroot}%{ruby_libarchdir}/io/console.so
+ln -s %{_libdir}/gems/%{name}/io-console-%{io_console_version}/lib/io/console.so %{buildroot}%{ruby_libarchdir}/io/console.so
 
 mkdir -p %{buildroot}%{gem_dir}/gems/json-%{json_version}/lib
-mkdir -p %{buildroot}%{_libdir}/gems/exts/json-%{json_version}/lib
+mkdir -p %{buildroot}%{_libdir}/gems/%{name}/json-%{json_version}/lib
 mv %{buildroot}%{ruby_libdir}/json* %{buildroot}%{gem_dir}/gems/json-%{json_version}/lib
-mv %{buildroot}%{ruby_libarchdir}/json/ %{buildroot}%{_libdir}/gems/exts/json-%{json_version}/lib/
+mv %{buildroot}%{ruby_libarchdir}/json/ %{buildroot}%{_libdir}/gems/%{name}/json-%{json_version}/lib/
 mv %{buildroot}%{gem_dir}/specifications/default/json-%{json_version}.gemspec %{buildroot}%{gem_dir}/specifications
 
 mkdir -p %{buildroot}%{gem_dir}/gems/minitest-%{minitest_version}/lib
@@ -507,9 +507,9 @@ mv %{buildroot}%{ruby_libdir}/minitest %{buildroot}%{gem_dir}/gems/minitest-%{mi
 mv %{buildroot}%{gem_dir}/specifications/default/minitest-%{minitest_version}.gemspec %{buildroot}%{gem_dir}/specifications
 
 mkdir -p %{buildroot}%{gem_dir}/gems/psych-%{psych_version}/lib
-mkdir -p %{buildroot}%{_libdir}/gems/exts/psych-%{psych_version}/lib
+mkdir -p %{buildroot}%{_libdir}/gems/%{name}/psych-%{psych_version}/lib
 mv %{buildroot}%{ruby_libdir}/psych* %{buildroot}%{gem_dir}/gems/psych-%{psych_version}/lib
-mv %{buildroot}%{ruby_libarchdir}/psych.so %{buildroot}%{_libdir}/gems/exts/psych-%{psych_version}/lib/
+mv %{buildroot}%{ruby_libarchdir}/psych.so %{buildroot}%{_libdir}/gems/%{name}/psych-%{psych_version}/lib/
 mv %{buildroot}%{gem_dir}/specifications/default/psych-%{psych_version}.gemspec %{buildroot}%{gem_dir}/specifications
 
 # Adjust the gemspec files so that the gems will load properly
@@ -537,7 +537,7 @@ sed -i '/^end$/ i\
 # Install a tapset and fix up the path to the library.
 mkdir -p %{buildroot}%{tapset_dir}
 sed -e "s|@LIBRARY_PATH@|%{tapset_libdir}/libruby.so.%{ruby_version}|" \
-   %{SOURCE2} > %{buildroot}%{tapset_dir}/libruby.so.%{ruby_version}.stp
+  %{SOURCE2} > %{buildroot}%{tapset_dir}/libruby.so.%{ruby_version}.stp
 # Escape '*/' in comment.
 sed -r "s|( \*.*\*)\/(.*)|\1\\\/\2|" %{buildroot}%{tapset_dir}/libruby.so.%{ruby_version}.stp
 
@@ -753,10 +753,10 @@ make check TESTS="-v $DISABLE_TESTS"
 %{gem_dir}
 %exclude %{gem_dir}/gems/*
 %{_exec_prefix}/lib*/gems
-%exclude %{_exec_prefix}/lib*/gems/exts/bigdecimal-%{bigdecimal_version}
-%exclude %{_exec_prefix}/lib*/gems/exts/io-console-%{io_console_version}
-%exclude %{_exec_prefix}/lib*/gems/exts/json-%{json_version}
-%exclude %{_exec_prefix}/lib*/gems/exts/psych-%{psych_version}
+%exclude %{_exec_prefix}/lib*/gems/%{name}/bigdecimal-%{bigdecimal_version}
+%exclude %{_exec_prefix}/lib*/gems/%{name}/io-console-%{io_console_version}
+%exclude %{_exec_prefix}/lib*/gems/%{name}/json-%{json_version}
+%exclude %{_exec_prefix}/lib*/gems/%{name}/psych-%{psych_version}
 %exclude %{gem_dir}/gems/rake-%{rake_version}
 %exclude %{gem_dir}/gems/rdoc-%{rdoc_version}
 %exclude %{gem_dir}/specifications/bigdecimal-%{bigdecimal_version}.gemspec
@@ -800,19 +800,19 @@ make check TESTS="-v $DISABLE_TESTS"
 %files -n rubygem-bigdecimal
 %{ruby_libdir}/bigdecimal
 %{ruby_libarchdir}/bigdecimal.so
-%{_libdir}/gems/exts/bigdecimal-%{bigdecimal_version}
+%{_libdir}/gems/%{name}/bigdecimal-%{bigdecimal_version}
 %{gem_dir}/gems/bigdecimal-%{bigdecimal_version}
 %{gem_dir}/specifications/bigdecimal-%{bigdecimal_version}.gemspec
 
 %files -n rubygem-io-console
 %{ruby_libdir}/io
 %{ruby_libarchdir}/io/console.so
-%{_libdir}/gems/exts/io-console-%{io_console_version}
+%{_libdir}/gems/%{name}/io-console-%{io_console_version}
 %{gem_dir}/gems/io-console-%{io_console_version}
 %{gem_dir}/specifications/io-console-%{io_console_version}.gemspec
 
 %files -n rubygem-json
-%{_libdir}/gems/exts/json-%{json_version}
+%{_libdir}/gems/%{name}/json-%{json_version}
 %{gem_dir}/gems/json-%{json_version}
 %{gem_dir}/specifications/json-%{json_version}.gemspec
 
@@ -821,7 +821,7 @@ make check TESTS="-v $DISABLE_TESTS"
 %{gem_dir}/specifications/minitest-%{minitest_version}.gemspec
 
 %files -n rubygem-psych
-%{_libdir}/gems/exts/psych-%{psych_version}
+%{_libdir}/gems/%{name}/psych-%{psych_version}
 %{gem_dir}/gems/psych-%{psych_version}
 %{gem_dir}/specifications/psych-%{psych_version}.gemspec
 
