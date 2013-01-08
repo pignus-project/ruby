@@ -534,6 +534,8 @@ sed -i '/^end$/ i\
 mkdir -p %{buildroot}%{tapset_dir}
 sed -e "s|@LIBRARY_PATH@|%{tapset_libdir}/libruby.so.%{ruby_version}|" \
    %{SOURCE2} > %{buildroot}%{tapset_dir}/libruby.so.%{ruby_version}.stp
+# Escape '*/' in comment.
+sed -r "s|( \*.*\*)\/(.*)|\1\\\/\2|" %{buildroot}%{tapset_dir}/libruby.so.%{ruby_version}.stp
 
 %check
 DISABLE_TESTS=""
