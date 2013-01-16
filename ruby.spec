@@ -56,7 +56,7 @@ Version: %{ruby_version_patch_level}
 # we cannot reset the release number to 1 even when the main (ruby) version
 # is updated - because it may be that the versions of sub-components don't
 # change.
-Release: 24%{?dist}
+Release: 25%{?dist}
 Group: Development/Languages
 # Public Domain for example for: include/ruby/st.h, strftime.c, ...
 License: (Ruby or BSD) and Public Domain
@@ -100,6 +100,10 @@ Patch10: ruby-1.9.3-p327-ignore-internal-server-error-on-test.patch
 #Patch11: ruby-1.9.3-p327-crypt-argument-glibc217.patch
 # Make mkmf verbose by default
 Patch12: ruby-1.9.3-mkmf-verbose.patch
+# http://bugs.ruby-lang.org/issues/7629
+# https://bugzilla.redhat.com/show_bug.cgi?id=895173
+# save the proc made from the given block
+Patch13: ruby-1.9.3-p327-PR7629-save-proc.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Requires: ruby(rubygems) >= %{rubygems_version}
@@ -342,6 +346,7 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 %patch10 -p1
 #%%patch11 -p1
 %patch12 -p1
+%patch13 -p1
 
 %build
 autoconf
@@ -753,7 +758,11 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
-* Wed Jan 2 2013 Mamoru TASAKA <mtasaka@fedoraproject.org> - 1.9.3.362-24
+* Wed Jan 16 2013 Mamoru TASAKA <mtasaka@fedoraproject.org> - 1.9.3.362-25
+- Backport fix for the upstream PR7629, save the proc made from the given block
+  (bug 895173)
+
+* Wed Jan  2 2013 Mamoru TASAKA <mtasaka@fedoraproject.org> - 1.9.3.362-24
 - Update to 1.9.3.362
 
 * Mon Dec 03 2012 Jaromir Capik <jcapik@redhat.com> - 1.9.3.327-23
