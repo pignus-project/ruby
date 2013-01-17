@@ -406,7 +406,7 @@ autoconf
         --with-vendorarchdir='%{ruby_vendorarchdir}' \
         --with-rubyhdrdir='%{_includedir}' \
         --with-rubygemsdir='%{rubygems_dir}' \
-        --with-ruby_pc='%{name}.pc' \
+        --with-ruby-pc='%{name}.pc' \
         --disable-rpath \
         --enable-shared \
         --disable-versioned-paths
@@ -579,12 +579,7 @@ make check TESTS="-v $DISABLE_TESTS"
 
 %{_includedir}/*
 %{_libdir}/libruby.so
-# TODO
-# ruby.pc still needs fixing, see bug 789532 comment 8
-%{_libdir}/pkgconfig/ruby.pc
-%if 0%{?fedora} <= 18
-%{_libdir}/pkgconfig/ruby-%{major_minor_version}.pc
-%endif
+%{_libdir}/pkgconfig/%{name}.pc
 
 %files libs
 %doc COPYING
