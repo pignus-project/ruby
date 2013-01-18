@@ -56,7 +56,7 @@ Version: %{ruby_version_patch_level}
 # we cannot reset the release number to 1 even when the main (ruby) version
 # is updated - because it may be that the versions of sub-components don't
 # change.
-Release: 25%{?dist}
+Release: 26%{?dist}
 Group: Development/Languages
 # Public Domain for example for: include/ruby/st.h, strftime.c, ...
 License: (Ruby or BSD) and Public Domain
@@ -116,7 +116,11 @@ Requires: rubygem(bigdecimal) >= %{bigdecimal_version}
 BuildRequires: autoconf
 BuildRequires: gdbm-devel
 BuildRequires: ncurses-devel
+%if 0%{?fedora} >= 19
+BuildRequires: libdb-devel
+%else
 BuildRequires: db4-devel
+%endif
 BuildRequires: libffi-devel
 BuildRequires: openssl-devel
 BuildRequires: libyaml-devel
@@ -360,6 +364,7 @@ autoconf
         --with-vendorarchdir='%{ruby_vendorarchdir}' \
         --with-rubyhdrdir='%{_includedir}' \
         --with-rubygemsdir='%{rubygems_dir}' \
+        --with-ruby_pc='%{name}.pc' \
         --disable-rpath \
         --enable-shared \
         --disable-versioned-paths
@@ -372,6 +377,11 @@ make %{?_smp_mflags} COPY="cp -p" Q=
 %install
 rm -rf %{buildroot}
 make install DESTDIR=%{buildroot}
+
+# On F-18 and below, also provide %%{hame}-%%{major_minor_version}.pc
+%if 0%{?fedora} <= 18
+cp -p %{buildroot}%{_libdir}/pkgconfig/%{name}{,-%{major_minor_version}}.pc
+%endif
 
 # Dump the macros into macro.ruby to use them to build other Ruby libraries.
 mkdir -p %{buildroot}%{_sysconfdir}/rpm
@@ -518,7 +528,12 @@ make check TESTS="-v $DISABLE_TESTS"
 
 %{_includedir}/*
 %{_libdir}/libruby.so
+# TODO
+# ruby.pc still needs fixing, see bug 789532 comment 8
+%{_libdir}/pkgconfig/ruby.pc
+%if 0%{?fedora} <= 18
 %{_libdir}/pkgconfig/ruby-%{major_minor_version}.pc
+%endif
 
 %files libs
 %doc COPYING
@@ -758,6 +773,10 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Fri Jan 18 2013 Mamoru TASAKA <mtasaka@fedoraproject.org> - 1.9.3.362-26
+- Provide non-versioned pkgconfig file (bug 789532)
+- Use db5 on F-19 (bug 894022)
+ 
 * Wed Jan 16 2013 Mamoru TASAKA <mtasaka@fedoraproject.org> - 1.9.3.362-25
 - Backport fix for the upstream PR7629, save the proc made from the given block
   (bug 895173)
