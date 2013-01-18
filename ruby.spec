@@ -138,11 +138,7 @@ Requires: rubygem(bigdecimal) >= %{bigdecimal_version}
 BuildRequires: autoconf
 BuildRequires: gdbm-devel
 BuildRequires: ncurses-devel
-%if 0%{?fedora} >= 19
 BuildRequires: libdb-devel
-%else
-BuildRequires: db4-devel
-%endif
 BuildRequires: libffi-devel
 BuildRequires: openssl-devel
 BuildRequires: libyaml-devel
