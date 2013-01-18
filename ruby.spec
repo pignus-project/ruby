@@ -105,17 +105,9 @@ Patch8: ruby-1.9.3-custom-rubygems-location.patch
 # Add support for installing binary extensions according to FHS.
 # https://github.com/rubygems/rubygems/issues/210
 Patch9: rubygems-1.8.11-binary-extensions.patch
-# Opening /dev/tty fails with ENXIO (ref: man 2 open) on koji.
-# Let's rescue this
-# Fixed in ruby 1.9.3 p327
-#Patch10: ruby-1.9.3-p286-open-devtty-on-koji.patch
-# On koji, network related tests sometimes cause internal server error,
-# ignore these
-Patch10: ruby-1.9.3-p327-ignore-internal-server-error-on-test.patch
-# http://bugs.ruby-lang.org/issues/show/7312
-# test_str_crypt fails with glibc 2.17
-# Fixed in 1.9.3 p 362
-#Patch11: ruby-1.9.3-p327-crypt-argument-glibc217.patch
+# Fixes issues mentioned in rhbz#789532, comment 8.
+# TODO: Should be probably upstreamed with #5281.
+Patch10: ruby-2.0.0-Expand-ruby.pc-variable-by-configuration-process.patch
 # Make mkmf verbose by default
 Patch12: ruby-1.9.3-mkmf-verbose.patch
 # http://bugs.ruby-lang.org/issues/7629
@@ -382,7 +374,6 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 %patch8 -p1
 %patch9 -p1
 %patch10 -p1
-#%%patch11 -p1
 %patch12 -p1
 #%%patch13 -p1
 %patch14 -p1
