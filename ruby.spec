@@ -1,7 +1,7 @@
 %global major_version 1
 %global minor_version 9
 %global teeny_version 3
-%global patch_level 362
+%global patch_level 374
 
 %global major_minor_version %{major_version}.%{minor_version}
 
@@ -56,7 +56,7 @@ Version: %{ruby_version_patch_level}
 # we cannot reset the release number to 1 even when the main (ruby) version
 # is updated - because it may be that the versions of sub-components don't
 # change.
-Release: 26%{?dist}
+Release: 27%{?dist}
 Group: Development/Languages
 # Public Domain for example for: include/ruby/st.h, strftime.c, ...
 License: (Ruby or BSD) and Public Domain
@@ -103,7 +103,11 @@ Patch12: ruby-1.9.3-mkmf-verbose.patch
 # http://bugs.ruby-lang.org/issues/7629
 # https://bugzilla.redhat.com/show_bug.cgi?id=895173
 # save the proc made from the given block
-Patch13: ruby-1.9.3-p327-PR7629-save-proc.patch
+# Fixed in p374
+#Patch13: ruby-1.9.3-p327-PR7629-save-proc.patch
+# Fixes issues mentioned in rhbz#789532, comment 8.
+# TODO: Should be probably upstreamed with #5281.
+Patch14: ruby-2.0.0-Expand-ruby.pc-variable-by-configuration-process.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Requires: ruby(rubygems) >= %{rubygems_version}
@@ -350,7 +354,8 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 %patch10 -p1
 #%%patch11 -p1
 %patch12 -p1
-%patch13 -p1
+#%%patch13 -p1
+%patch14 -p1
 
 %build
 autoconf
@@ -773,6 +778,11 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Sat Jan 19 2013 Mamoru TASAKA <mtasaka@fedoraproject.org> - 1.9.3.374-27
+- Update to 1.9.3 p374
+- Fix provided variables in pkgconfig (bug 789532:
+  Vít Ondruch <vondruch@redhat.com>)
+
 * Fri Jan 18 2013 Mamoru TASAKA <mtasaka@fedoraproject.org> - 1.9.3.362-26
 - Provide non-versioned pkgconfig file (bug 789532)
 - Use db5 on F-19 (bug 894022)
