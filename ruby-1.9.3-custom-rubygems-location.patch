@@ -41,7 +41,7 @@ diff --git a/tool/mkconfig.rb b/tool/mkconfig.rb
 index 79b8e44..9cef0c6 100755
 --- a/tool/mkconfig.rb
 +++ b/tool/mkconfig.rb
-@@ -85,6 +85,7 @@ File.foreach "config.status" do |line|
+@@ -86,6 +86,7 @@ File.foreach "config.status" do |line|
      when /^sitearchdir$/; sitearchdir_override = val; next
      when /^vendorarchdir$/; vendorarchdir_override = val; next
      when /^sitearch/; val = '$(arch)' if val.empty?

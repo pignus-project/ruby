@@ -53,7 +53,7 @@ diff --git a/tool/mkconfig.rb b/tool/mkconfig.rb
 index f9d97d3..d9e26c1 100755
 --- a/tool/mkconfig.rb
 +++ b/tool/mkconfig.rb
-@@ -42,6 +42,7 @@ v_others = []
+@@ -43,6 +43,7 @@ v_runtime = {}
  vars = {}
  continued_name = nil
  continued_line = nil
@@ -61,7 +61,7 @@ index f9d97d3..d9e26c1 100755
  File.foreach "config.status" do |line|
    next if /^#/ =~ line
    name = nil
-@@ -139,6 +140,8 @@ File.foreach "config.status" do |line|
+@@ -142,6 +143,8 @@ File.foreach "config.status" do |line|
      case name
      when "ruby_version"
        version = val[/\A"(.*)"\z/, 1]
@@ -70,7 +70,7 @@ index f9d97d3..d9e26c1 100755
      end
    end
  #  break if /^CEOF/
-@@ -204,15 +207,15 @@ end
+@@ -207,15 +210,15 @@ end
  print(*v_fast)
  print(*v_others)
  print <<EOS

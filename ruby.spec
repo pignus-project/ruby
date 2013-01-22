@@ -13,7 +13,7 @@
 #%%global milestone preview2
 
 # Keep the revision enabled for pre-releases from SVN.
-%global revision 38848
+%global revision 38894
 
 %global ruby_archive %{name}-%{ruby_version}
 
@@ -537,12 +537,6 @@ DISABLE_TESTS="-x test_dl2.rb $DISABLE_TESTS"
 # test_ioctl_linux(TestIO) fails with #<Errno::EINVAL: Invalid argument - /dev/urandom>.
 # https://bugs.ruby-lang.org/issues/7718
 DISABLE_TESTS="-x test_io.rb $DISABLE_TESTS"
-%endif
-
-%ifarch ppc
-# test_stack_size(TestFiber) fails.
-# https://bugs.ruby-lang.org/issues/7719
-DISABLE_TESTS="-x test_fiber.rb $DISABLE_TESTS"
 %endif
 
 make check TESTS="-v $DISABLE_TESTS"

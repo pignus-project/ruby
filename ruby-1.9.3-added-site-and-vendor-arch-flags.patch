@@ -134,7 +134,7 @@ diff --git a/tool/mkconfig.rb b/tool/mkconfig.rb
 index 03c3332..79b8e44 100755
 --- a/tool/mkconfig.rb
 +++ b/tool/mkconfig.rb
-@@ -44,6 +44,8 @@ continued_name = nil
+@@ -45,6 +45,8 @@ continued_name = nil
  continued_line = nil
  path_version = "/$(ruby_version)"
  archdir_override = "$(vendorlibdir)/$(sitearch)"
@@ -143,7 +143,7 @@ index 03c3332..79b8e44 100755
  File.foreach "config.status" do |line|
    next if /^#/ =~ line
    name = nil
-@@ -80,6 +82,8 @@ File.foreach "config.status" do |line|
+@@ -81,6 +83,8 @@ File.foreach "config.status" do |line|
      when /^RUBY_SO_NAME$/; next if $so_name
      when /^arch$/; if val.empty? then val = arch else arch = val end
      when /^archdir$/; archdir_override = val; next
@@ -152,7 +152,7 @@ index 03c3332..79b8e44 100755
      when /^sitearch/; val = '$(arch)' if val.empty?
      end
      case val
-@@ -214,11 +218,11 @@ print <<EOS
+@@ -217,11 +221,11 @@ print <<EOS
  EOS
  print <<EOS unless v_disabled["sitedir"]
    CONFIG["sitelibdir"] = "$(sitedir)#{path_version}"

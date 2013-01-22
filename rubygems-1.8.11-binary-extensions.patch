@@ -11,7 +11,7 @@ diff --git a/lib/rubygems/specification.rb b/lib/rubygems/specification.rb
 index 97db19e..263e7d3 100644
 --- a/lib/rubygems/specification.rb
 +++ b/lib/rubygems/specification.rb
-@@ -1250,6 +1250,12 @@ class Gem::Specification
+@@ -1256,6 +1256,12 @@ class Gem::Specification
        File.join full_gem_path, path
      end
  
@@ -24,7 +24,7 @@ index 97db19e..263e7d3 100644
      # gem directories must come after -I and ENV['RUBYLIB']
      insert_index = Gem.load_path_insert_index
  
-@@ -1368,11 +1374,16 @@ class Gem::Specification
+@@ -1374,11 +1380,16 @@ class Gem::Specification
  
    def contains_requirable_file? file
      root     = full_gem_path
@@ -43,7 +43,7 @@ index 97db19e..263e7d3 100644
      end
    end
  
-@@ -1668,6 +1679,23 @@ class Gem::Specification
+@@ -1674,6 +1685,23 @@ class Gem::Specification
    end
  
    ##
@@ -85,7 +85,7 @@ diff --git a/lib/rubygems/installer.rb b/lib/rubygems/installer.rb
 index 74d803d..0063c7f 100644
 --- a/lib/rubygems/installer.rb
 +++ b/lib/rubygems/installer.rb
-@@ -641,7 +641,7 @@ TEXT
+@@ -642,7 +642,7 @@ TEXT
        say "This could take a while..."
      end
  
@@ -98,7 +98,7 @@ diff --git a/lib/rubygems/specification.rb b/lib/rubygems/specification.rb
 index 263e7d3..d31b93b 100644
 --- a/lib/rubygems/specification.rb
 +++ b/lib/rubygems/specification.rb
-@@ -1683,16 +1683,15 @@ class Gem::Specification
+@@ -1689,16 +1689,15 @@ class Gem::Specification
    # eg: /usr/local/lib/ruby/1.8/exts/mygem-1.0
  
    def ext_dir
@@ -135,7 +135,7 @@ diff --git a/lib/rubygems/specification.rb b/lib/rubygems/specification.rb
 index d31b93b..e65ea2d 100644
 --- a/lib/rubygems/specification.rb
 +++ b/lib/rubygems/specification.rb
-@@ -1250,11 +1250,7 @@ class Gem::Specification
+@@ -1256,11 +1256,7 @@ class Gem::Specification
        File.join full_gem_path, path
      end
  
@@ -148,7 +148,7 @@ index d31b93b..e65ea2d 100644
  
      # gem directories must come after -I and ENV['RUBYLIB']
      insert_index = Gem.load_path_insert_index
-@@ -1691,7 +1687,10 @@ class Gem::Specification
+@@ -1697,7 +1693,10 @@ class Gem::Specification
    # gem directory. eg: /usr/local/lib/ruby/1.8/gems
  
    def exts_dir
@@ -178,7 +178,7 @@ diff --git a/lib/rubygems/installer.rb b/lib/rubygems/installer.rb
 index 0063c7f..83b8fd5 100644
 --- a/lib/rubygems/installer.rb
 +++ b/lib/rubygems/installer.rb
-@@ -641,7 +641,7 @@ TEXT
+@@ -642,7 +642,7 @@ TEXT
        say "This could take a while..."
      end
  
@@ -191,7 +191,7 @@ diff --git a/lib/rubygems/specification.rb b/lib/rubygems/specification.rb
 index e65ea2d..8be2ade 100644
 --- a/lib/rubygems/specification.rb
 +++ b/lib/rubygems/specification.rb
-@@ -1250,7 +1250,7 @@ class Gem::Specification
+@@ -1256,7 +1256,7 @@ class Gem::Specification
        File.join full_gem_path, path
      end
  
@@ -200,7 +200,7 @@ index e65ea2d..8be2ade 100644
  
      # gem directories must come after -I and ENV['RUBYLIB']
      insert_index = Gem.load_path_insert_index
-@@ -1679,7 +1679,7 @@ class Gem::Specification
+@@ -1685,7 +1685,7 @@ class Gem::Specification
    # eg: /usr/local/lib/ruby/1.8/exts/mygem-1.0
  
    def ext_dir
@@ -274,7 +274,7 @@ diff --git a/lib/rubygems/specification.rb b/lib/rubygems/specification.rb
 index 8be2ade..f54210a 100644
 --- a/lib/rubygems/specification.rb
 +++ b/lib/rubygems/specification.rb
-@@ -1687,10 +1687,7 @@ class Gem::Specification
+@@ -1693,10 +1693,7 @@ class Gem::Specification
    # gem directory. eg: /usr/local/lib/ruby/1.8/gems
  
    def exts_dir

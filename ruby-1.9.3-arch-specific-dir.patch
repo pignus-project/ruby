@@ -88,7 +88,7 @@ diff --git a/tool/mkconfig.rb b/tool/mkconfig.rb
 index d9e26c1..03c3332 100755
 --- a/tool/mkconfig.rb
 +++ b/tool/mkconfig.rb
-@@ -43,6 +43,7 @@ vars = {}
+@@ -44,6 +44,7 @@ vars = {}
  continued_name = nil
  continued_line = nil
  path_version = "/$(ruby_version)"
@@ -96,7 +96,7 @@ index d9e26c1..03c3332 100755
  File.foreach "config.status" do |line|
    next if /^#/ =~ line
    name = nil
-@@ -78,6 +79,7 @@ File.foreach "config.status" do |line|
+@@ -79,6 +80,7 @@ File.foreach "config.status" do |line|
      when /^RUBY_INSTALL_NAME$/; next if $install_name
      when /^RUBY_SO_NAME$/; next if $so_name
      when /^arch$/; if val.empty? then val = arch else arch = val end
@@ -104,7 +104,7 @@ index d9e26c1..03c3332 100755
      when /^sitearch/; val = '$(arch)' if val.empty?
      end
      case val
-@@ -208,7 +210,7 @@ print(*v_fast)
+@@ -211,7 +213,7 @@ print(*v_fast)
  print(*v_others)
  print <<EOS
    CONFIG["rubylibdir"] = "$(rubylibprefix)#{path_version}"
