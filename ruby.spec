@@ -69,7 +69,7 @@
 # Might not be needed in the future, if we are lucky enough.
 # https://bugzilla.redhat.com/show_bug.cgi?id=888262
 %global tapset_root %{_datadir}/systemtap
-%global tapset_dir %{tapset_root}/tapset/
+%global tapset_dir %{tapset_root}/tapset
 %global tapset_libdir %(echo %{_libdir} | sed 's/64//')*
 
 %global _normalized_cpu %(echo %{_target_cpu} | sed 's/^ppc/powerpc/;s/i.86/i386/;s/sparcv./sparc/')
@@ -522,7 +522,7 @@ mkdir -p %{buildroot}%{tapset_dir}
 sed -e "s|@LIBRARY_PATH@|%{tapset_libdir}/libruby.so.%{ruby_version}|" \
   %{SOURCE2} > %{buildroot}%{tapset_dir}/libruby.so.%{ruby_version}.stp
 # Escape '*/' in comment.
-sed -r "s|( \*.*\*)\/(.*)|\1\\\/\2|" %{buildroot}%{tapset_dir}/libruby.so.%{ruby_version}.stp
+sed -i -r "s|( \*.*\*)\/(.*)|\1\\\/\2|" %{buildroot}%{tapset_dir}/libruby.so.%{ruby_version}.stp
 
 %check
 DISABLE_TESTS=""
