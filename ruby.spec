@@ -7,7 +7,7 @@
 
 %global ruby_version %{major_minor_version}.%{teeny_version}
 %global ruby_version_patch_level %{major_minor_version}.%{teeny_version}.%{patch_level}
-%global ruby_abi %{ruby_version}
+%global ruby_release %{ruby_version}
 
 # Specify the named version. It has precedense to revision.
 #%%global milestone preview2
@@ -161,7 +161,7 @@ Ruby or an application embedding Ruby.
 Summary:    Libraries necessary to run Ruby
 Group:      Development/Libraries
 License:    Ruby or BSD
-Provides:   ruby(abi) = %{ruby_abi}
+Provides:   ruby(release) = %{ruby_release}
 
 %description libs
 This package includes the libruby, necessary to run Ruby.
@@ -172,7 +172,7 @@ Summary:    The Ruby standard for packaging ruby libraries
 Version:    %{rubygems_version}
 Group:      Development/Libraries
 License:    Ruby or MIT
-Requires:   ruby(abi) = %{ruby_abi}
+Requires:   ruby(release) = %{ruby_release}
 Requires:   rubygem(rdoc) >= %{rdoc_version}
 Requires:   rubygem(io-console) >= %{io_console_version}
 Requires:   rubygem(psych) >= %{psych_version}
@@ -202,7 +202,7 @@ Summary:    Ruby based make-like utility
 Version:    %{rake_version}
 Group:      Development/Libraries
 License:    Ruby or MIT
-Requires:   ruby(abi) = %{ruby_abi}
+Requires:   ruby(release) = %{ruby_release}
 Requires:   ruby(rubygems) >= %{rubygems_version}
 Provides:   rake = %{version}-%{release}
 Provides:   rubygem(rake) = %{version}-%{release}
@@ -232,7 +232,7 @@ Summary:    A tool to generate HTML and command-line documentation for Ruby proj
 Version:    %{rdoc_version}
 Group:      Development/Libraries
 License:    GPLv2 and Ruby and MIT
-Requires:   ruby(abi) = %{ruby_abi}
+Requires:   ruby(release) = %{ruby_release}
 Requires:   ruby(rubygems) >= %{rubygems_version}
 Requires:   ruby(irb) = %{irb_version}
 Requires:   rubygem(json) >= %{json_version}
@@ -264,7 +264,7 @@ Summary:    BigDecimal provides arbitrary-precision floating point decimal arith
 Version:    %{bigdecimal_version}
 Group:      Development/Libraries
 License:    GPL+ or Artistic
-Requires:   ruby(abi) = %{ruby_abi}
+Requires:   ruby(release) = %{ruby_release}
 Requires:   ruby(rubygems) >= %{rubygems_version}
 Provides:   rubygem(bigdecimal) = %{version}-%{release}
 
@@ -285,7 +285,7 @@ conversion between base 10 and base 2.
 Summary:    IO/Console is a simple console utilizing library
 Version:    %{io_console_version}
 Group:      Development/Libraries
-Requires:   ruby(abi) = %{ruby_abi}
+Requires:   ruby(release) = %{ruby_release}
 Requires:   ruby(rubygems) >= %{rubygems_version}
 Provides:   rubygem(io-console) = %{version}-%{release}
 
@@ -299,7 +299,7 @@ Summary:    This is a JSON implementation as a Ruby extension in C
 Version:    %{json_version}
 Group:      Development/Libraries
 License:    Ruby or GPLv2
-Requires:   ruby(abi) = %{ruby_abi}
+Requires:   ruby(release) = %{ruby_release}
 Requires:   ruby(rubygems) >= %{rubygems_version}
 Provides:   rubygem(json) = %{version}-%{release}
 
@@ -315,7 +315,7 @@ Summary:    Minitest provides a complete suite of testing facilities
 Version:    %{minitest_version}
 Group:      Development/Libraries
 License:    MIT
-Requires:   ruby(abi) = %{ruby_abi}
+Requires:   ruby(release) = %{ruby_release}
 Requires:   ruby(rubygems) >= %{rubygems_version}
 Provides:   rubygem(minitest) = %{version}-%{release}
 BuildArch:  noarch
@@ -340,7 +340,7 @@ Summary:    A libyaml wrapper for Ruby
 Version:    %{psych_version}
 Group:      Development/Libraries
 License:    MIT
-Requires:   ruby(abi) = %{ruby_abi}
+Requires:   ruby(release) = %{ruby_release}
 Requires:   ruby(rubygems) >= %{rubygems_version}
 Provides:   rubygem(psych) = %{version}-%{release}
 
