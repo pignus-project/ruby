@@ -407,10 +407,8 @@ make %{?_smp_mflags} COPY="cp -p" Q=
 rm -rf %{buildroot}
 make install DESTDIR=%{buildroot}
 
-# On F-18 and below, also provide %%{hame}-%%{major_minor_version}.pc
-%if 0%{?fedora} <= 18
-cp -p %{buildroot}%{_libdir}/pkgconfig/%{name}{,-%{major_minor_version}}.pc
-%endif
+# Rename the ruby executable. It is replaced by RubyPick.
+mv %{buildroot}%{_bindir}/%{name}{,-mri}
 
 # Dump the macros into macro.ruby to use them to build other Ruby libraries.
 mkdir -p %{buildroot}%{_sysconfdir}/rpm
@@ -551,7 +549,7 @@ make check TESTS="-v $DISABLE_TESTS"
 %doc GPL
 %doc LEGAL
 %{_bindir}/erb
-%{_bindir}/ruby
+%{_bindir}/%{name}-mri
 %{_bindir}/testrb
 %{_mandir}/man1/erb*
 %{_mandir}/man1/ruby*
