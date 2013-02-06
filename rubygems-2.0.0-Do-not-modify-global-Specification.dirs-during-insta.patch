@@ -1,0 +1,33 @@
+From 95ee154e3f3d324f5dcd47ed76f26194f727b5d3 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?V=C3=ADt=20Ondruch?= <vondruch@redhat.com>
+Date: Wed, 6 Feb 2013 14:07:30 +0100
+Subject: [PATCH] Do not modify global Specification.dirs during installation.
+
+While gems are installed into --install-dir just fine even without
+modifications of Specification.dirs, change in it makes inaccessible
+gems already present on the system.
+---
+ lib/rubygems/dependency_installer.rb | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
+
+diff --git a/lib/rubygems/dependency_installer.rb b/lib/rubygems/dependency_installer.rb
+index ed90af0..8b6f93f 100644
+--- a/lib/rubygems/dependency_installer.rb
++++ b/lib/rubygems/dependency_installer.rb
+@@ -58,12 +58,7 @@ class Gem::DependencyInstaller
+ 
+   def initialize(options = {})
+     if options[:install_dir] then
+-      @gem_home = options[:install_dir]
+-
+-      # HACK shouldn't change the global settings
+-      Gem::Specification.dirs = @gem_home
+-      Gem.ensure_gem_subdirectories @gem_home
+-      options[:install_dir] = @gem_home # FIX: because we suck and reuse below
++      Gem.ensure_gem_subdirectories options[:install_dir]
+     end
+ 
+     options = DEFAULT_OPTIONS.merge options
+-- 
+1.8.1
+

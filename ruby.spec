@@ -110,14 +110,12 @@ Patch9: rubygems-1.8.11-binary-extensions.patch
 Patch10: ruby-2.0.0-Expand-ruby.pc-variable-by-configuration-process.patch
 # Make mkmf verbose by default
 Patch12: ruby-1.9.3-mkmf-verbose.patch
-# http://bugs.ruby-lang.org/issues/7629
-# https://bugzilla.redhat.com/show_bug.cgi?id=895173
-# save the proc made from the given block
-# Fixed in p374
-#Patch13: ruby-1.9.3-p327-PR7629-save-proc.patch
-# Fixes issues mentioned in rhbz#789532, comment 8.
-# TODO: Should be probably upstreamed with #5281.
-Patch14: ruby-2.0.0-Expand-ruby.pc-variable-by-configuration-process.patch
+# This slightly changes behavior of "gem install --install-dir" behavior.
+# Without this patch, Specifications.dirs is modified and gems installed on
+# the system cannot be required anymore. This causes later issues when RDoc
+# documentation should be generated, since json gem is sudenly not accessible.
+# https://github.com/rubygems/rubygems/pull/442
+Patch13: rubygems-2.0.0-Do-not-modify-global-Specification.dirs-during-insta.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Requires: ruby(rubygems) >= %{rubygems_version}
@@ -379,8 +377,7 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 %patch9 -p1
 %patch10 -p1
 %patch12 -p1
-#%%patch13 -p1
-%patch14 -p1
+%patch13 -p1
 
 # Provide an example of usage of the tapset:
 cp -a %{SOURCE3} .
