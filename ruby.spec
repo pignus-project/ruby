@@ -13,7 +13,7 @@
 #%%global milestone preview2
 
 # Keep the revision enabled for pre-releases from SVN.
-%global revision 38929
+%global revision 39070
 
 %global ruby_archive %{name}-%{ruby_version}
 
@@ -42,7 +42,7 @@
 %global ruby_vendorlibdir %{_datadir}/ruby/%{ruby_vendordir}
 %global ruby_vendorarchdir %{_libdir}/ruby/%{ruby_vendordir}
 
-%global rubygems_version 2.0.0.preview3.1
+%global rubygems_version 2.0.0.rc.2
 
 # The RubyGems library has to stay out of Ruby directory three, since the
 # RubyGems should be share by all Ruby implementations.
@@ -61,7 +61,7 @@
 %global irb_version %{ruby_version_patch_level}
 %global rdoc_version 4.0.0.preview3.1
 %global bigdecimal_version 1.1.0
-%global io_console_version 0.3
+%global io_console_version 0.4.1
 %global json_version 1.7.5
 %global minitest_version 4.3.2
 %global psych_version 2.0.0
