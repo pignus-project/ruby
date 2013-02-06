@@ -140,6 +140,10 @@ BuildRequires: tk-devel
 BuildRequires: procps
 BuildRequires: %{_bindir}/dtrace
 
+# This package provides %%{_bindir}/ruby-mri therefore it is marked by this
+# virtual provide. It can be installed as dependency of rubypick.
+Provides: ruby(runtime_executable) = %{ruby_release}
+
 %description
 Ruby is the interpreted scripting language for quick and easy
 object-oriented programming.  It has many features to process text
