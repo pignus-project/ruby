@@ -219,7 +219,7 @@ specified in standard Ruby syntax.
 Summary:    The Interactive Ruby
 Version:    %{irb_version}
 Group:      Development/Libraries
-Requires:   %{name}-libs = %{ruby_version_patch_level}
+Requires:   %{name}-libs%{?_isa} = %{ruby_version_patch_level}
 Provides:   irb = %{version}-%{release}
 Provides:   ruby(irb) = %{version}-%{release}
 BuildArch:  noarch
