@@ -104,7 +104,7 @@ Patch4: ruby-1.9.3-fix-s390x-build.patch
 Patch8: ruby-1.9.3-custom-rubygems-location.patch
 # Add support for installing binary extensions according to FHS.
 # https://github.com/rubygems/rubygems/issues/210
-Patch9: rubygems-1.8.11-binary-extensions.patch
+Patch9: rubygems-2.0.0-binary-extensions.patch
 # Fixes issues mentioned in rhbz#789532, comment 8.
 # TODO: Should be probably upstreamed with #5281.
 Patch10: ruby-2.0.0-Expand-ruby.pc-variable-by-configuration-process.patch
