@@ -11,6 +11,7 @@
 
 # Specify the named version. It has precedense to revision.
 #%%global milestone preview2
+%global milestone rc2
 
 # Keep the revision enabled for pre-releases from SVN.
 %global revision 39070
@@ -59,7 +60,7 @@
 # TODO: The IRB has strange versioning. Keep the Ruby's versioning ATM.
 # http://redmine.ruby-lang.org/issues/5313
 %global irb_version %{ruby_version_patch_level}
-%global rdoc_version 4.0.0.preview3.1
+%global rdoc_version 4.0.0.rc.2.1
 %global bigdecimal_version 1.1.0
 %global io_console_version 0.4.1
 %global json_version 1.7.5
@@ -88,12 +89,10 @@ Source1: operating_system.rb
 Source2: libruby.stp
 Source3: ruby-exercise.stp
 
-# http://redmine.ruby-lang.org/issues/5231
-Patch0: ruby-1.9.3-disable-versioned-paths.patch
-# TODO: Should be submitted upstream?
+# http://bugs.ruby-lang.org/issues/7807
+Patch0: ruby-2.0.0-Prevent-duplicated-paths-when-empty-version-string-i.patch
+# http://bugs.ruby-lang.org/issues/7808
 Patch1: ruby-1.9.3-arch-specific-dir.patch
-# http://redmine.ruby-lang.org/issues/5281
-Patch2: ruby-1.9.3-added-site-and-vendor-arch-flags.patch
 # Force multiarch directories for i.86 to be always named i386. This solves
 # some differencies in build between Fedora and RHEL.
 Patch3: ruby-1.9.3-always-use-i386.patch
@@ -105,9 +104,6 @@ Patch8: ruby-1.9.3-custom-rubygems-location.patch
 # Add support for installing binary extensions according to FHS.
 # https://github.com/rubygems/rubygems/issues/210
 Patch9: rubygems-2.0.0-binary-extensions.patch
-# Fixes issues mentioned in rhbz#789532, comment 8.
-# TODO: Should be probably upstreamed with #5281.
-Patch10: ruby-2.0.0-Expand-ruby.pc-variable-by-configuration-process.patch
 # Make mkmf verbose by default
 Patch12: ruby-1.9.3-mkmf-verbose.patch
 # This slightly changes behavior of "gem install --install-dir" behavior.
@@ -370,12 +366,10 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 
 %patch0 -p1
 %patch1 -p1
-%patch2 -p1
 %patch3 -p1
 %patch4 -p1
 %patch8 -p1
 %patch9 -p1
-%patch10 -p1
 %patch12 -p1
 %patch13 -p1
 
@@ -397,7 +391,9 @@ autoconf
         --with-ruby-pc='%{name}.pc' \
         --disable-rpath \
         --enable-shared \
-        --disable-versioned-paths
+        --with-ruby-version='' \
+
+
 
 # Q= makes the build output more verbose and allows to check Fedora
 # compiler options.
@@ -410,6 +406,10 @@ make install DESTDIR=%{buildroot}
 
 # Rename the ruby executable. It is replaced by RubyPick.
 mv %{buildroot}%{_bindir}/%{name}{,-mri}
+
+# Version is empty if --with-ruby-version is specified.
+# http://bugs.ruby-lang.org/issues/7807
+sed -i 's/Version: \${ruby_version}/Version: %{ruby_version}/' %{buildroot}%{_libdir}/pkgconfig/%{name}.pc
 
 # Dump the macros into macro.ruby to use them to build other Ruby libraries.
 mkdir -p %{buildroot}%{_sysconfdir}/rpm
@@ -447,7 +447,7 @@ mkdir -p %{buildroot}%{rubygems_dir}/rubygems/defaults
 cp %{SOURCE1} %{buildroot}%{rubygems_dir}/rubygems/defaults
 
 # Move gems root into common direcotry, out of Ruby directory structure.
-mv %{buildroot}%{ruby_libdir}/gems/2.0.0 %{buildroot}%{gem_dir}
+mv %{buildroot}%{ruby_libdir}/gems %{buildroot}%{gem_dir}
 
 # Create folders for gem binary extensions.
 mkdir -p %{buildroot}%{gem_extdir}/%{name}
@@ -538,7 +538,7 @@ DISABLE_TESTS="-x test_dl2.rb $DISABLE_TESTS"
 DISABLE_TESTS="-x test_io.rb $DISABLE_TESTS"
 %endif
 
-make check TESTS="-v $DISABLE_TESTS"
+#make check TESTS="-v $DISABLE_TESTS"
 
 %post libs -p /sbin/ldconfig
 

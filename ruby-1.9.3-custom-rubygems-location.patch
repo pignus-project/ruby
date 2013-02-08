@@ -15,9 +15,9 @@ diff --git a/configure.in b/configure.in
 index 748edc9..6a16745 100644
 --- a/configure.in
 +++ b/configure.in
-@@ -3224,6 +3224,13 @@ until VENDORARCH_DIR=`eval echo \\"${dir}\\"`; test "x${dir}" = "x${VENDORARCH_D
-     dir="${VENDORARCH_DIR}"
- done
+@@ -3256,6 +3256,13 @@ until VENDORARCH_DIR=`eval echo \\"${dir}\\"`; test "x${dir}" = "x${VENDORARCH_D
+             [vendorarchdir=$withval],
+             [vendorarchdir=${multiarch+'${rubyarchprefix}/vendor_ruby/${ruby_version}'}${multiarch-'${vendorlibdir}/${sitearch}'}])
  
 +AC_ARG_WITH(rubygemsdir,
 +           AS_HELP_STRING([--with-rubygemsdir=DIR], [custom rubygems directory]),
@@ -28,27 +28,15 @@ index 748edc9..6a16745 100644
 +
  if test "${LOAD_RELATIVE+set}"; then
      AC_DEFINE_UNQUOTED(LOAD_RELATIVE, $LOAD_RELATIVE)
-     RUBY_EXEC_PREFIX=""
-@@ -3317,6 +3324,7 @@ AC_SUBST(sitedir)dnl
- AC_SUBST(sitearchdir)dnl
+     RUBY_EXEC_PREFIX='""'
+@@ -3316,6 +3323,7 @@ @@ AC_SUBST(sitedir)dnl
  AC_SUBST(vendordir)dnl
+ AC_SUBST(vendorlibdir)dnl
  AC_SUBST(vendorarchdir)dnl
 +AC_SUBST(rubygemsdir)dnl
  
  configure_args=$ac_configure_args
  AC_SUBST(configure_args)dnl
-diff --git a/tool/mkconfig.rb b/tool/mkconfig.rb
-index 79b8e44..9cef0c6 100755
---- a/tool/mkconfig.rb
-+++ b/tool/mkconfig.rb
-@@ -86,6 +86,7 @@ File.foreach "config.status" do |line|
-     when /^sitearchdir$/; sitearchdir_override = val; next
-     when /^vendorarchdir$/; vendorarchdir_override = val; next
-     when /^sitearch/; val = '$(arch)' if val.empty?
-+    when /^rubygemsdir/; next if val.empty?
-     end
-     case val
-     when /^\$\(ac_\w+\)$/; next
 diff --git a/tool/rbinstall.rb b/tool/rbinstall.rb
 index 17294a2..2757a73 100755
 --- a/tool/rbinstall.rb
@@ -81,7 +69,7 @@ diff --git a/version.c b/version.c
 index 962f39f..979701d 100644
 --- a/version.c
 +++ b/version.c
-@@ -104,6 +104,10 @@ const char ruby_initial_load_paths[] =
+@@ -99,6 +99,10 @@ const char ruby_initial_load_paths[] =
  #endif
  #endif
  
@@ -90,8 +78,8 @@ index 962f39f..979701d 100644
 +#endif
 +
      RUBY_LIB "\0"
- #ifdef RUBY_THIN_ARCHLIB
-     RUBY_THIN_ARCHLIB "\0"
--- 
+ #ifdef RUBY_THINARCH
+     RUBY_ARCH_LIB_FOR(RUBY_THINARCH) "\0"
+--- 
 1.8.0
 

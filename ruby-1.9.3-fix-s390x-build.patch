@@ -1,4 +1,4 @@
-From d710179fcc088a201339a28fa6a5779da8e6ab62 Mon Sep 17 00:00:00 2001
+From d006c4d04aecbe80469a26a6114b776e9de4e3c8 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?V=C3=ADt=20Ondruch?= <vondruch@redhat.com>
 Date: Mon, 19 Nov 2012 14:39:19 +0100
 Subject: [PATCH] Fix s390x build.
@@ -8,7 +8,7 @@ Subject: [PATCH] Fix s390x build.
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/ext/tk/extconf.rb b/ext/tk/extconf.rb
-index 72dd6cf..5c6081e 100644
+index 8f3bff8..69e90a1 100644
 --- a/ext/tk/extconf.rb
 +++ b/ext/tk/extconf.rb
 @@ -114,7 +114,7 @@ def is_macosx?
@@ -21,5 +21,5 @@ index 72dd6cf..5c6081e 100644
  
  def check_tcltk_version(version)
 -- 
-1.8.0
+1.8.1
 

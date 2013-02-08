@@ -14,20 +14,16 @@ diff --git a/lib/rubygems/dependency_installer.rb b/lib/rubygems/dependency_inst
 index ed90af0..8b6f93f 100644
 --- a/lib/rubygems/dependency_installer.rb
 +++ b/lib/rubygems/dependency_installer.rb
-@@ -58,12 +58,7 @@ class Gem::DependencyInstaller
+@@ -60,9 +60,6 @@ class Gem::DependencyInstaller
+     @install_dir = options[:install_dir] || Gem.dir
  
-   def initialize(options = {})
      if options[:install_dir] then
--      @gem_home = options[:install_dir]
--
--      # HACK shouldn't change the global settings
--      Gem::Specification.dirs = @gem_home
--      Gem.ensure_gem_subdirectories @gem_home
--      options[:install_dir] = @gem_home # FIX: because we suck and reuse below
-+      Gem.ensure_gem_subdirectories options[:install_dir]
+-      # HACK shouldn't change the global settings, needed for -i behavior
+-      # maybe move to the install command?  See also github #442
+-      Gem::Specification.dirs = @install_dir
+       Gem.ensure_gem_subdirectories @install_dir
      end
  
-     options = DEFAULT_OPTIONS.merge options
 -- 
 1.8.1
 
