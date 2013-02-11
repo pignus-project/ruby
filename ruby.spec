@@ -40,7 +40,7 @@
 # TODO: The IRB has strange versioning. Keep the Ruby's versioning ATM.
 # http://redmine.ruby-lang.org/issues/5313
 %global irb_version %{ruby_version_patch_level}
-%global rdoc_version 3.9.4
+%global rdoc_version 3.9.5
 %global bigdecimal_version 1.1.0
 %global io_console_version 0.3
 %global json_version 1.5.4
