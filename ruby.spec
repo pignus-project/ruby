@@ -110,7 +110,7 @@ Patch12: ruby-1.9.3-mkmf-verbose.patch
 # Without this patch, Specifications.dirs is modified and gems installed on
 # the system cannot be required anymore. This causes later issues when RDoc
 # documentation should be generated, since json gem is sudenly not accessible.
-# https://github.com/rubygems/rubygems/pull/442
+# https://github.com/rubygems/rubygems/pull/452
 Patch13: rubygems-2.0.0-Do-not-modify-global-Specification.dirs-during-insta.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}

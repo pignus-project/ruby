@@ -1,29 +1,105 @@
-From 95ee154e3f3d324f5dcd47ed76f26194f727b5d3 Mon Sep 17 00:00:00 2001
+From b95b9942361104dc5b7fd08eb4970f893d8c1a54 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?V=C3=ADt=20Ondruch?= <vondruch@redhat.com>
-Date: Wed, 6 Feb 2013 14:07:30 +0100
-Subject: [PATCH] Do not modify global Specification.dirs during installation.
+Date: Wed, 13 Feb 2013 13:12:30 +0100
+Subject: [PATCH 1/2] Remove duplicated check.
+
+The loaded specifications are rejected already in #gather_dependencies,
+so this condition cannot trigger.
+---
+ lib/rubygems/dependency_installer.rb | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/lib/rubygems/dependency_installer.rb b/lib/rubygems/dependency_installer.rb
+index d811f62..dffa8df 100644
+--- a/lib/rubygems/dependency_installer.rb
++++ b/lib/rubygems/dependency_installer.rb
+@@ -319,9 +319,6 @@ class Gem::DependencyInstaller
+ 
+     last = @gems_to_install.size - 1
+     @gems_to_install.each_with_index do |spec, index|
+-      # REFACTOR more current spec set hardcoding, should be abstracted?
+-      next if Gem::Specification.include?(spec) and index != last
+-
+       # TODO: make this sorta_verbose so other users can benefit from it
+       say "Installing gem #{spec.full_name}" if Gem.configuration.really_verbose
+ 
+-- 
+1.8.1.2
+
+
+From 2fa9087b1986db6c7945c0f997fed2bfff5ce06a Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?V=C3=ADt=20Ondruch?= <vondruch@redhat.com>
+Date: Wed, 13 Feb 2013 15:47:47 +0100
+Subject: [PATCH 2/2] Do not modify global Specification.dirs during
+ installation.
 
 While gems are installed into --install-dir just fine even without
 modifications of Specification.dirs, change in it makes inaccessible
 gems already present on the system.
 ---
- lib/rubygems/dependency_installer.rb | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+ lib/rubygems/dependency_installer.rb | 15 ++++++---------
+ 1 file changed, 6 insertions(+), 9 deletions(-)
 
 diff --git a/lib/rubygems/dependency_installer.rb b/lib/rubygems/dependency_installer.rb
-index ed90af0..8b6f93f 100644
+index dffa8df..841f26a 100644
 --- a/lib/rubygems/dependency_installer.rb
 +++ b/lib/rubygems/dependency_installer.rb
-@@ -60,9 +60,6 @@ class Gem::DependencyInstaller
-     @install_dir = options[:install_dir] || Gem.dir
+@@ -57,17 +57,14 @@ class Gem::DependencyInstaller
+   # :build_args:: See Gem::Installer::new
+ 
+   def initialize(options = {})
+-    @install_dir = options[:install_dir] || Gem.dir
  
      if options[:install_dir] then
 -      # HACK shouldn't change the global settings, needed for -i behavior
 -      # maybe move to the install command?  See also github #442
 -      Gem::Specification.dirs = @install_dir
-       Gem.ensure_gem_subdirectories @install_dir
+-      Gem.ensure_gem_subdirectories @install_dir
++      Gem.ensure_gem_subdirectories options[:install_dir]
      end
  
+     options = DEFAULT_OPTIONS.merge options
+ 
++    @install_dir         = options[:install_dir]
+     @bin_dir             = options[:bin_dir]
+     @dev_shallow         = options[:dev_shallow]
+     @development         = options[:development]
+@@ -91,7 +88,7 @@ class Gem::DependencyInstaller
+     @installed_gems = []
+     @toplevel_specs = nil
+ 
+-    @cache_dir = options[:cache_dir] || @install_dir
++    @cache_dir = options[:cache_dir] || @install_dir || Gem.dir
+ 
+     # Set with any errors that SpecFetcher finds while search through
+     # gemspecs for a dep
+@@ -185,7 +182,7 @@ class Gem::DependencyInstaller
+     # that this isn't dependent only on the currently installed gems
+     dependency_list.specs.reject! { |spec|
+       not keep_names.include?(spec.full_name) and
+-      Gem::Specification.include?(spec)
++      (!@install_dir && Gem::Specification.include?(spec))
+     }
+ 
+     unless dependency_list.ok? or @ignore_dependencies or @force then
+@@ -237,7 +234,7 @@ class Gem::DependencyInstaller
+           to_do.push t.spec
+         end
+ 
+-        results.remove_installed! dep
++        results.remove_installed! dep unless @install_dir
+ 
+         @available << results
+         results.inject_into_list dependency_list
+@@ -349,7 +346,7 @@ class Gem::DependencyInstaller
+                                 :force               => @force,
+                                 :format_executable   => @format_executable,
+                                 :ignore_dependencies => @ignore_dependencies,
+-                                :install_dir         => @install_dir,
++                                :install_dir         => (@install_dir || Gem.dir),
+                                 :security_policy     => @security_policy,
+                                 :user_install        => @user_install,
+                                 :wrappers            => @wrappers,
 -- 
-1.8.1
+1.8.1.2
 
