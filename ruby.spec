@@ -13,7 +13,7 @@
 #%%global milestone preview2
 
 # Keep the revision enabled for pre-releases from SVN.
-%global revision 39217
+%global revision 39237
 
 %global ruby_archive %{name}-%{ruby_version}
 
