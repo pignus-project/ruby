@@ -1,4 +1,4 @@
-From 5afb0d89ab0e6297b333f45b4bd30a20024e80c7 Mon Sep 17 00:00:00 2001
+From 1e109d1a0265dfdde2324a6a97e4225eb4343efc Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?V=C3=ADt=20Ondruch?= <vondruch@redhat.com>
 Date: Fri, 8 Feb 2013 22:48:41 +0100
 Subject: [PATCH] Prevent duplicated paths when empty version string is
@@ -10,10 +10,10 @@ Subject: [PATCH] Prevent duplicated paths when empty version string is
  2 files changed, 13 insertions(+)
 
 diff --git a/configure.in b/configure.in
-index 5850bbf..7604bb8 100644
+index e83cfb4..d6af000 100644
 --- a/configure.in
 +++ b/configure.in
-@@ -3265,6 +3265,9 @@ shvar_to_cpp RIDIR "${ridir}"
+@@ -3308,6 +3308,9 @@ shvar_to_cpp RIDIR "${ridir}"
  if test ${RUBY_LIB_VERSION_STYLE+set}; then
      AC_DEFINE_UNQUOTED(RUBY_LIB_VERSION_STYLE, $RUBY_LIB_VERSION_STYLE !<verconf>!)
  else
@@ -24,7 +24,7 @@ index 5850bbf..7604bb8 100644
  fi
  AC_DEFINE_UNQUOTED(RUBY_EXEC_PREFIX, ${RUBY_EXEC_PREFIX})
 diff --git a/version.c b/version.c
-index 282960d..54c4513 100644
+index 6ba6453..c78f609 100644
 --- a/version.c
 +++ b/version.c
 @@ -39,9 +39,15 @@
@@ -43,7 +43,7 @@ index 282960d..54c4513 100644
  #ifndef RUBY_ARCH_LIB_FOR
  #define RUBY_ARCH_LIB_FOR(arch)        RUBY_LIB         "/"arch
  #endif
-@@ -77,8 +83,10 @@ const char ruby_initial_load_paths[] =
+@@ -79,8 +85,10 @@ const char ruby_initial_load_paths[] =
      RUBY_SITE_ARCH_LIB_FOR(RUBY_THINARCH) "\0"
  #endif
      RUBY_SITE_ARCH_LIB_FOR(RUBY_SITEARCH) "\0"
@@ -54,7 +54,7 @@ index 282960d..54c4513 100644
  
  #ifndef NO_RUBY_VENDOR_LIB
      RUBY_VENDOR_LIB2 "\0"
-@@ -86,8 +94,10 @@ const char ruby_initial_load_paths[] =
+@@ -88,8 +96,10 @@ const char ruby_initial_load_paths[] =
      RUBY_VENDOR_ARCH_LIB_FOR(RUBY_THINARCH) "\0"
  #endif
      RUBY_VENDOR_ARCH_LIB_FOR(RUBY_SITEARCH) "\0"
@@ -66,5 +66,5 @@ index 282960d..54c4513 100644
      RUBY_LIB "\0"
  #ifdef RUBY_THINARCH
 -- 
-1.8.1
+1.8.1.2
 

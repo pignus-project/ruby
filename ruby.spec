@@ -11,10 +11,9 @@
 
 # Specify the named version. It has precedense to revision.
 #%%global milestone preview2
-%global milestone rc2
 
 # Keep the revision enabled for pre-releases from SVN.
-%global revision 39070
+%global revision 39217
 
 %global ruby_archive %{name}-%{ruby_version}
 
@@ -63,7 +62,7 @@
 %global rdoc_version 4.0.0.rc.2.1
 %global bigdecimal_version 1.1.0
 %global io_console_version 0.4.1
-%global json_version 1.7.5
+%global json_version 1.7.7
 %global minitest_version 4.3.2
 %global psych_version 2.0.0
 
@@ -112,6 +111,9 @@ Patch12: ruby-1.9.3-mkmf-verbose.patch
 # documentation should be generated, since json gem is sudenly not accessible.
 # https://github.com/rubygems/rubygems/pull/452
 Patch13: rubygems-2.0.0-Do-not-modify-global-Specification.dirs-during-insta.patch
+# This prevents issues, when ruby configuration specifies --with-ruby-version=''.
+# https://github.com/rubygems/rubygems/pull/455
+Patch14: rubygems-2.0.0-Fixes-for-empty-ruby-version.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Requires: ruby(rubygems) >= %{rubygems_version}
@@ -372,6 +374,7 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 %patch9 -p1
 %patch12 -p1
 %patch13 -p1
+%patch14 -p1
 
 # Provide an example of usage of the tapset:
 cp -a %{SOURCE3} .
@@ -538,7 +541,7 @@ DISABLE_TESTS="-x test_dl2.rb $DISABLE_TESTS"
 DISABLE_TESTS="-x test_io.rb $DISABLE_TESTS"
 %endif
 
-#make check TESTS="-v $DISABLE_TESTS"
+make check TESTS="-v $DISABLE_TESTS"
 
 %post libs -p /sbin/ldconfig
 
