@@ -1,7 +1,7 @@
 From b95b9942361104dc5b7fd08eb4970f893d8c1a54 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?V=C3=ADt=20Ondruch?= <vondruch@redhat.com>
 Date: Wed, 13 Feb 2013 13:12:30 +0100
-Subject: [PATCH 1/2] Remove duplicated check.
+Subject: [PATCH 1/3] Remove duplicated check.
 
 The loaded specifications are rejected already in #gather_dependencies,
 so this condition cannot trigger.
@@ -30,7 +30,7 @@ index d811f62..dffa8df 100644
 From 2fa9087b1986db6c7945c0f997fed2bfff5ce06a Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?V=C3=ADt=20Ondruch?= <vondruch@redhat.com>
 Date: Wed, 13 Feb 2013 15:47:47 +0100
-Subject: [PATCH 2/2] Do not modify global Specification.dirs during
+Subject: [PATCH 2/3] Do not modify global Specification.dirs during
  installation.
 
 While gems are installed into --install-dir just fine even without
@@ -100,6 +100,53 @@ index dffa8df..841f26a 100644
                                  :security_policy     => @security_policy,
                                  :user_install        => @user_install,
                                  :wrappers            => @wrappers,
+-- 
+1.8.1.2
+
+
+From d473204ce920702dd87257db49355929f31530d4 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?V=C3=ADt=20Ondruch?= <vondruch@redhat.com>
+Date: Fri, 15 Feb 2013 17:02:44 +0100
+Subject: [PATCH 3/3] Default to Gem.dir as late as possible.
+
+---
+ lib/rubygems/dependency_installer.rb | 2 +-
+ lib/rubygems/installer.rb            | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/lib/rubygems/dependency_installer.rb b/lib/rubygems/dependency_installer.rb
+index 841f26a..abcfa0f 100644
+--- a/lib/rubygems/dependency_installer.rb
++++ b/lib/rubygems/dependency_installer.rb
+@@ -346,7 +346,7 @@ class Gem::DependencyInstaller
+                                 :force               => @force,
+                                 :format_executable   => @format_executable,
+                                 :ignore_dependencies => @ignore_dependencies,
+-                                :install_dir         => (@install_dir || Gem.dir),
++                                :install_dir         => @install_dir,
+                                 :security_policy     => @security_policy,
+                                 :user_install        => @user_install,
+                                 :wrappers            => @wrappers,
+diff --git a/lib/rubygems/installer.rb b/lib/rubygems/installer.rb
+index 780a88b..6543130 100644
+--- a/lib/rubygems/installer.rb
++++ b/lib/rubygems/installer.rb
+@@ -535,13 +535,13 @@ class Gem::Installer
+       :bin_dir      => nil,
+       :env_shebang  => false,
+       :force        => false,
+-      :install_dir  => Gem.dir,
+       :only_install_dir => false
+     }.merge options
+ 
+     @env_shebang         = options[:env_shebang]
+     @force               = options[:force]
+-    @gem_home            = options[:install_dir]
++    @install_dir         = options[:install_dir]
++    @gem_home            = options[:install_dir] || Gem.dir
+     @ignore_dependencies = options[:ignore_dependencies]
+     @format_executable   = options[:format_executable]
+     @security_policy     = options[:security_policy]
 -- 
 1.8.1.2
 
