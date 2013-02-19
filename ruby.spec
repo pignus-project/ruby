@@ -445,17 +445,20 @@ cat >> %{buildroot}%{_sysconfdir}/rpm/macros.rubygems << \EOF
 %%gem_docdir %%{gem_dir}/doc/%%{gem_name}-%%{version}
 
 # Install gem into appropriate directory.
-# -n<name>      Allows to override gem for installation.
-%%gem_install(n:) \
+# -n<gem_file>      Overrides gem file name for installation.
+# -d<install_dir>   Set installation directory.
+%%gem_install(d:n:) \
+mkdir -p '%%{-d*}%%{!?-d:.%{gem_dir}}' \
+\
 CONFIGURE_ARGS="--with-cflags='%%{optflags}' $CONFIGURE_ARGS" \\\
 gem install \\\
         -V \\\
         --local \\\
-        --install-dir .%{gem_dir} \\\
+        --install-dir '%%{-d*}%%{!?-d:.%{gem_dir}}' \\\
         --bindir .%{_bindir} \\\
         --force \\\
         --document=ri,rdoc \\\
-        %%{-n*}%%{!?-n:%{gem_name}-%{version}.gem}
+        '%%{-n*}%%{!?-n:%{gem_name}-%{version}.gem}'
 EOF
 
 # Install custom operating_system.rb.
