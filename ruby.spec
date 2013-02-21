@@ -103,6 +103,8 @@ Patch4: ruby-1.9.3-fix-s390x-build.patch
 Patch8: ruby-1.9.3-custom-rubygems-location.patch
 # Add support for installing binary extensions according to FHS.
 # https://github.com/rubygems/rubygems/issues/210
+# Note that 8th patch might be resolved by
+# https://bugs.ruby-lang.org/issues/7897
 Patch9: rubygems-2.0.0-binary-extensions.patch
 # Make mkmf verbose by default
 Patch12: ruby-1.9.3-mkmf-verbose.patch
