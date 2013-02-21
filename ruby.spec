@@ -27,6 +27,7 @@
 
 
 %global release 1
+%{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 %global ruby_libdir %{_datadir}/%{name}
 %global ruby_libarchdir %{_libdir}/%{name}
@@ -77,7 +78,7 @@
 Summary: An interpreter of object-oriented scripting language
 Name: ruby
 Version: %{ruby_version_patch_level}
-Release: %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}
+Release: %{release_string}
 Group: Development/Languages
 # Public Domain for example for: include/ruby/st.h, strftime.c, ...
 License: (Ruby or BSD) and Public Domain
@@ -262,6 +263,11 @@ This package contains documentation for %{name}.
 %package -n rubygem-bigdecimal
 Summary:    BigDecimal provides arbitrary-precision floating point decimal arithmetic
 Version:    %{bigdecimal_version}
+# This could colide with previous releases of bigdecimal. Prefix
+# the bigdecimal release number with Ruby version to avoid collisions (this
+# breaks prerelease versioning, but I see no way around).
+# https://bugs.ruby-lang.org/issues/7761
+Release:    %{major_version}%{minor_version}%{teeny_version}.%{release_string}
 Group:      Development/Libraries
 License:    GPL+ or Artistic
 Requires:   ruby(release)
