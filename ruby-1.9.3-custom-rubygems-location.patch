@@ -14,9 +14,9 @@ diff --git a/configure.in b/configure.in
 index 1627d12..e064b2b 100644
 --- a/configure.in
 +++ b/configure.in
-@@ -3256,6 +3256,13 @@ AC_ARG_WITH(vendorarchdir,
+@@ -3292,6 +3292,13 @@ AC_ARG_WITH(vendorarchdir,
              [vendorarchdir=$withval],
-             [vendorarchdir=${multiarch+'${rubyarchprefix}/vendor_ruby/${ruby_version}'}${multiarch-'${vendorlibdir}/${sitearch}'}])
+             [vendorarchdir=${multiarch+'${rubysitearchprefix}/vendor_ruby/${ruby_version}'}${multiarch-'${vendorlibdir}/${sitearch}'}])
  
 +AC_ARG_WITH(rubygemsdir,
 +           AS_HELP_STRING([--with-rubygemsdir=DIR], [custom rubygems directory]),
@@ -25,10 +25,10 @@ index 1627d12..e064b2b 100644
 +    AC_DEFINE_UNQUOTED(RUBYGEMS_DIR,"$rubygemsdir" !<verconf>!)
 +fi
 +
- if test "${LOAD_RELATIVE+set}"; then
-     AC_DEFINE_UNQUOTED(LOAD_RELATIVE, $LOAD_RELATIVE)
-     RUBY_EXEC_PREFIX='""'
-@@ -3316,6 +3323,7 @@ AC_SUBST(sitearchdir)dnl
+ unexpand_shvar rubylibprefix       exec_prefix libdir RUBY_BASE_NAME
+ unexpand_shvar rubyarchprefix      exec_prefix libdir arch RUBY_BASE_NAME archlibdir rubylibprefix
+ unexpand_shvar rubysitearchprefix  exec_prefix libdir sitearch arch RUBY_BASE_NAME archlibdir sitearchlibdir rubylibprefix
+@@ -3358,6 +3365,7 @@ AC_SUBST(sitearchdir)dnl
  AC_SUBST(vendordir)dnl
  AC_SUBST(vendorlibdir)dnl
  AC_SUBST(vendorarchdir)dnl

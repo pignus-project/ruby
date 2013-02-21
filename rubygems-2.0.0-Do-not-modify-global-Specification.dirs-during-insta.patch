@@ -131,7 +131,7 @@ diff --git a/lib/rubygems/installer.rb b/lib/rubygems/installer.rb
 index 780a88b..6543130 100644
 --- a/lib/rubygems/installer.rb
 +++ b/lib/rubygems/installer.rb
-@@ -535,13 +535,13 @@ class Gem::Installer
+@@ -536,13 +536,13 @@ class Gem::Installer
        :bin_dir      => nil,
        :env_shebang  => false,
        :force        => false,

@@ -85,7 +85,7 @@ diff --git a/lib/rubygems/installer.rb b/lib/rubygems/installer.rb
 index 780a88b..854c177 100644
 --- a/lib/rubygems/installer.rb
 +++ b/lib/rubygems/installer.rb
-@@ -642,7 +642,7 @@ TEXT
+@@ -645,7 +645,7 @@ TEXT
        say "This could take a while..."
      end
  
@@ -178,7 +178,7 @@ diff --git a/lib/rubygems/installer.rb b/lib/rubygems/installer.rb
 index 854c177..f1f2ad7 100644
 --- a/lib/rubygems/installer.rb
 +++ b/lib/rubygems/installer.rb
-@@ -642,7 +642,7 @@ TEXT
+@@ -645,7 +645,7 @@ TEXT
        say "This could take a while..."
      end
  
@@ -304,7 +304,7 @@ diff --git a/lib/rubygems/installer.rb b/lib/rubygems/installer.rb
 index f1f2ad7..e1577fc 100644
 --- a/lib/rubygems/installer.rb
 +++ b/lib/rubygems/installer.rb
-@@ -642,7 +642,7 @@ TEXT
+@@ -645,7 +645,7 @@ TEXT
        say "This could take a while..."
      end
  
@@ -360,7 +360,7 @@ diff --git a/lib/rubygems/installer.rb b/lib/rubygems/installer.rb
 index e1577fc..1492c68 100644
 --- a/lib/rubygems/installer.rb
 +++ b/lib/rubygems/installer.rb
-@@ -642,7 +642,7 @@ TEXT
+@@ -645,7 +645,7 @@ TEXT
        say "This could take a while..."
      end
  
