@@ -392,7 +392,7 @@ autoconf
 
 %configure \
         --with-rubylibprefix='%{ruby_libdir}' \
-        --with-archdir='%{ruby_libarchdir}' \
+        --with-rubyarchdir='%{ruby_libarchdir}' \
         --with-sitedir='%{ruby_sitelibdir}' \
         --with-sitearchdir='%{ruby_sitearchdir}' \
         --with-vendordir='%{ruby_vendorlibdir}' \

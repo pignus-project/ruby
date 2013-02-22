@@ -15,8 +15,8 @@ index d6af000..1c094a3 100644
  rubylibdir='${rubylibprefix}/${ruby_version}'
  rubyarchdir=${multiarch+'${rubyarchprefix}/${ruby_version}'}${multiarch-'${rubylibdir}/${arch}'}
  
-+AC_ARG_WITH(archdir,
-+     AS_HELP_STRING([--with-archdir=DIR], [architecture specific ruby libraries [[LIBDIR/RUBY_BASE_NAME/ARCH]]]),
++AC_ARG_WITH(rubyarchdir,
++     AS_HELP_STRING([--with-rubyarchdir=DIR], [architecture specific ruby libraries [[LIBDIR/RUBY_BASE_NAME/ARCH]]]),
 +            [rubyarchdir=$withval])
 +
  rubyarchprefix=${multiarch+'${archlibdir}/${RUBY_BASE_NAME}'}${multiarch-'${rubylibprefix}/${arch}'}
