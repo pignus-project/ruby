@@ -560,9 +560,9 @@ DISABLE_TESTS="-x test_dl2.rb $DISABLE_TESTS"
 %endif
 
 %ifarch ppc ppc64
-# test_ioctl_linux(TestIO) fails with #<Errno::EINVAL: Invalid argument - /dev/urandom>.
-# https://bugs.ruby-lang.org/issues/7718
-DISABLE_TESTS="-x test_io.rb $DISABLE_TESTS"
+# test_spawn_too_long_path(TestProcess) fails with [Errno::ENOENT, Errno::E2BIG, nil] expected but nothing was raised.
+# https://bugs.ruby-lang.org/issues/7904
+DISABLE_TESTS="-x test_process.rb $DISABLE_TESTS"
 %endif
 
 # The TestRbConfig errors, which does not respect configuration options.
