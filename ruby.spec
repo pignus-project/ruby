@@ -566,7 +566,7 @@ DISABLE_TESTS="-x test_process.rb $DISABLE_TESTS"
 %endif
 
 # The TestRbConfig errors, which does not respect configuration options.
-# http://bugs.ruby-lang.org/issues/7902
+# http://bugs.ruby-lang.org/issues/7912
 DISABLE_TESTS="-x test_rbconfig.rb $DISABLE_TESTS"
 
 make check TESTS="-v $DISABLE_TESTS"
