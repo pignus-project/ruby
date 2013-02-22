@@ -101,6 +101,9 @@ Patch2: ruby-2.0.0-ext-bigdecimal-bigdecimal.gemspec-bump-to-1.2.0.patch
 Patch3: ruby-1.9.3-always-use-i386.patch
 # http://redmine.ruby-lang.org/issues/5465
 Patch4: ruby-1.9.3-fix-s390x-build.patch
+# Fixes random WEBRick test failures.
+# https://bugs.ruby-lang.org/issues/6573.
+Patch5: ruby-1.9.3.p195-fix-webrick-tests.patch
 # Allows to install RubyGems into custom directory, outside of Ruby's tree.
 # http://redmine.ruby-lang.org/issues/5617
 Patch8: ruby-1.9.3-custom-rubygems-location.patch
@@ -377,6 +380,7 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
 %patch8 -p1
 %patch9 -p1
 %patch12 -p1
