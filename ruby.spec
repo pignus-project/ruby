@@ -61,7 +61,7 @@
 # http://redmine.ruby-lang.org/issues/5313
 %global irb_version %{ruby_version_patch_level}
 %global rdoc_version 4.0.0
-%global bigdecimal_version 1.1.0
+%global bigdecimal_version 1.2.0
 %global io_console_version 0.4.1
 %global json_version 1.7.7
 %global minitest_version 4.3.2
@@ -93,6 +93,9 @@ Source3: ruby-exercise.stp
 Patch0: ruby-2.0.0-Prevent-duplicated-paths-when-empty-version-string-i.patch
 # http://bugs.ruby-lang.org/issues/7808
 Patch1: ruby-1.9.3-arch-specific-dir.patch
+# Fixes rubygem-bigdecimla version.
+# https://bugs.ruby-lang.org/issues/7761
+Patch2: ruby-2.0.0-ext-bigdecimal-bigdecimal.gemspec-bump-to-1.2.0.patch
 # Force multiarch directories for i.86 to be always named i386. This solves
 # some differencies in build between Fedora and RHEL.
 Patch3: ruby-1.9.3-always-use-i386.patch
@@ -265,11 +268,6 @@ This package contains documentation for %{name}.
 %package -n rubygem-bigdecimal
 Summary:    BigDecimal provides arbitrary-precision floating point decimal arithmetic
 Version:    %{bigdecimal_version}
-# This could colide with previous releases of bigdecimal. Prefix
-# the bigdecimal release number with Ruby version to avoid collisions (this
-# breaks prerelease versioning, but I see no way around).
-# https://bugs.ruby-lang.org/issues/7761
-Release:    %{major_version}%{minor_version}%{teeny_version}.%{release_string}
 Group:      Development/Libraries
 License:    GPL+ or Artistic
 Requires:   ruby(release)
@@ -376,6 +374,7 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 %patch3 -p1
 %patch4 -p1
 %patch8 -p1
