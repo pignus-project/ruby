@@ -26,7 +26,7 @@
 %endif
 
 
-%global release 1
+%global release 2
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 %global ruby_libdir %{_datadir}/%{name}
@@ -123,6 +123,9 @@ Patch13: rubygems-2.0.0-Do-not-modify-global-Specification.dirs-during-insta.pat
 # This prevents issues, when ruby configuration specifies --with-ruby-version=''.
 # https://github.com/rubygems/rubygems/pull/455
 Patch14: rubygems-2.0.0-Fixes-for-empty-ruby-version.patch
+# Fixes issues with wrong value of Rubygem's shebang introduced in r39267.
+# https://bugs.ruby-lang.org/issues/7915
+Patch15: ruby-2.0.0-revert-unexpand-exec-prefix.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Requires: ruby(rubygems) >= %{rubygems_version}
@@ -386,6 +389,7 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 %patch12 -p1
 %patch13 -p1
 %patch14 -p1
+%patch15 -p1
 
 # Provide an example of usage of the tapset:
 cp -a %{SOURCE3} .
@@ -850,6 +854,9 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Fri Feb 22 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.0-0.2.r39387
+- Fix issues with wrong value of Rubygem's shebang introduced in r39267.
+
 * Fri Feb 22 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.0-0.1.r39387
 - Upgrade to Ruby 2.0.0 (r39387).
 - Introduce %%gem_install macro.
