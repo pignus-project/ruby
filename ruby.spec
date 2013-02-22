@@ -850,6 +850,23 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Fri Feb 22 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.0-0.1.r39387
+- Upgrade to Ruby 2.0.0 (r39387).
+- Introduce %%gem_install macro.
+- Build against libdb instead of libdb4 (rhbz#894022).
+- Move native extensions from exts to ruby directory.
+- Enable most of the PPC test suite.
+- Change ruby(abi) -> ruby(release).
+- Rename ruby executable to ruby-mri, to be prepared for RubyPick.
+- Add ruby(runtime_executable) virtual provide, which is later used
+  by RubyPick.
+- RDoc now depends on JSON.
+- Try to make -doc subpackage noarch again, since the new RDoc should resolve
+  the arch dependent issues (https://github.com/rdoc/rdoc/issues/71).
+- Enable SystemTap support.
+- Add TapSet for Ruby.
+- Split Psych into rubygem-psych subpackage.
+
 * Mon Feb 11 2013 Mamoru TASAKA <mtasaka@fedoraproject.org> - 1.9.3.385-28
 - Update to 1.9.3 p385
 
