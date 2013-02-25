@@ -13,7 +13,7 @@
 #%%global milestone preview2
 
 # Keep the revision enabled for pre-releases from SVN.
-%global revision 39387
+#%%global revision 39387
 
 %global ruby_archive %{name}-%{ruby_version}
 
@@ -26,7 +26,7 @@
 %endif
 
 
-%global release 3
+%global release 1
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 %global ruby_libdir %{_datadir}/%{name}
@@ -62,7 +62,7 @@
 %global irb_version %{ruby_version_patch_level}
 %global rdoc_version 4.0.0
 %global bigdecimal_version 1.2.0
-%global io_console_version 0.4.1
+%global io_console_version 0.4.2
 %global json_version 1.7.7
 %global minitest_version 4.3.2
 %global psych_version 2.0.0
@@ -93,9 +93,6 @@ Source3: ruby-exercise.stp
 Patch0: ruby-2.0.0-Prevent-duplicated-paths-when-empty-version-string-i.patch
 # http://bugs.ruby-lang.org/issues/7808
 Patch1: ruby-1.9.3-arch-specific-dir.patch
-# Fixes rubygem-bigdecimla version.
-# https://bugs.ruby-lang.org/issues/7761
-Patch2: ruby-2.0.0-ext-bigdecimal-bigdecimal.gemspec-bump-to-1.2.0.patch
 # Force multiarch directories for i.86 to be always named i386. This solves
 # some differencies in build between Fedora and RHEL.
 Patch3: ruby-1.9.3-always-use-i386.patch
@@ -380,7 +377,6 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 
 %patch0 -p1
 %patch1 -p1
-%patch2 -p1
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
@@ -866,6 +862,9 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Mon Feb 25 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.0-1
+- Update to Ruby 2.0.0-p0.
+
 * Mon Feb 25 2013 Mamoru TASAKA <mtasaka@fedoraprojec.org> - 2.0.0.0-0.3.r39387
 - Move test-unit.gemspec to -libs subpackage for now because rubygems
   2.0.0 does not create this
