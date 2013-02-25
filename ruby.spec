@@ -26,7 +26,7 @@
 %endif
 
 
-%global release 2
+%global release 3
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 %global ruby_libdir %{_datadir}/%{name}
@@ -766,6 +766,15 @@ make check TESTS="-v $DISABLE_TESTS"
 
 %{tapset_root}
 
+# TODO rubygems 2.0.0 does not create test-unit gemspec
+# TODO for now put this in ruby-libs rpm
+# TODO check if the following can be removed after
+# TODO test-unit rebuild
+%dir %{gem_dir}
+%dir %{gem_dir}/specifications
+%dir %{gem_dir}/specifications/default
+%{gem_dir}/specifications/default/test-unit-*.gemspec
+
 %files -n rubygems
 %{_bindir}/gem
 %{rubygems_dir}
@@ -785,6 +794,9 @@ make check TESTS="-v $DISABLE_TESTS"
 %exclude %{gem_dir}/specifications/rake-%{rake_version}.gemspec
 %exclude %{gem_dir}/specifications/rdoc-%{rdoc_version}.gemspec
 %exclude %{gem_dir}/specifications/psych-%{psych_version}.gemspec
+# TODO rubygems 2.0.0 does not create test-unit gemspec
+# TODO where to put test-unit-*.gemspec??
+%exclude %{gem_dir}/specifications/default/test-unit-*.gemspec
 
 %files -n rubygems-devel
 %config(noreplace) %{_sysconfdir}/rpm/macros.rubygems
@@ -854,6 +866,10 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Mon Feb 25 2013 Mamoru TASAKA <mtasaka@fedoraprojec.org> - 2.0.0.0-0.3.r39387
+- Move test-unit.gemspec to -libs subpackage for now because rubygems
+  2.0.0 does not create this
+
 * Fri Feb 22 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.0-0.2.r39387
 - Fix issues with wrong value of Rubygem's shebang introduced in r39267.
 
