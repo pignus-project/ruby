@@ -54,7 +54,7 @@
 # TODO: These folders should go into rubygem-filesystem but how to achieve it,
 # since noarch package cannot provide arch dependent subpackages?
 # http://rpm.org/ticket/78
-%global gem_extdir %{_exec_prefix}/lib{,64}/gems
+%global gem_extdir_mri %{_exec_prefix}/lib{,64}/gems
 
 %global rake_version 0.9.6
 # TODO: The IRB has strange versioning. Keep the Ruby's versioning ATM.
@@ -449,7 +449,7 @@ cat >> %{buildroot}%{_sysconfdir}/rpm/macros.rubygems << \EOF
 
 # Common gem locations and files.
 %%gem_instdir %%{gem_dir}/gems/%%{gem_name}-%%{version}
-%%gem_extdir %%{_libdir}/gems/%{name}/%%{gem_name}-%%{version}
+%%gem_extdir_mri %%{_libdir}/gems/%{name}/%%{gem_name}-%%{version}
 %%gem_libdir %%{gem_instdir}/lib
 %%gem_cache %%{gem_dir}/cache/%%{gem_name}-%%{version}.gem
 %%gem_spec %%{gem_dir}/specifications/%%{gem_name}-%%{version}.gemspec
@@ -480,9 +480,9 @@ cp %{SOURCE1} %{buildroot}%{rubygems_dir}/rubygems/defaults
 mv %{buildroot}%{ruby_libdir}/gems %{buildroot}%{gem_dir}
 
 # Create folders for gem binary extensions.
-mkdir -p %{buildroot}%{gem_extdir}/%{name}
+mkdir -p %{buildroot}%{gem_extdir_mri}/%{name}
 
-# Move bundled rubygems to %%gem_dir and %%gem_extdir
+# Move bundled rubygems to %%gem_dir and %%gem_extdir_mri
 # make symlinks for io-console and bigdecimal, which are considered to be part of stdlib by other Gems
 mkdir -p %{buildroot}%{gem_dir}/gems/rake-%{rake_version}/lib
 mv %{buildroot}%{ruby_libdir}/rake* %{buildroot}%{gem_dir}/gems/rake-%{rake_version}/lib
@@ -864,6 +864,8 @@ make check TESTS="-v $DISABLE_TESTS"
 %changelog
 * Mon Feb 25 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.0-1
 - Update to Ruby 2.0.0-p0.
+- Change %{ruby_extdir} to %{ruby_extdir_mri} in preparation for better
+  JRuby support.
 
 * Mon Feb 25 2013 Mamoru TASAKA <mtasaka@fedoraprojec.org> - 2.0.0.0-0.3.r39387
 - Move test-unit.gemspec to -libs subpackage for now because rubygems
