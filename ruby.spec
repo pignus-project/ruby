@@ -26,7 +26,7 @@
 %endif
 
 
-%global release 1
+%global release 2
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 %global ruby_libdir %{_datadir}/%{name}
@@ -469,7 +469,8 @@ gem install \\\
         --bindir .%%{_bindir} \\\
         --force \\\
         --document=ri,rdoc \\\
-        %%{-n*}%%{!?-n:%%{gem_name}-%%{version}.gem}
+        %%{-n*}%%{!?-n:%%{gem_name}-%%{version}.gem} \
+%%{nil}
 EOF
 
 # Install custom operating_system.rb.
@@ -862,6 +863,9 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Mon Feb 25 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.0-2
+- Prevent squash of %%gem_install with following line.
+
 * Mon Feb 25 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.0-1
 - Update to Ruby 2.0.0-p0.
 - Change %{ruby_extdir} to %{ruby_extdir_mri} in preparation for better
