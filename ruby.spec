@@ -26,7 +26,7 @@
 %endif
 
 
-%global release 2
+%global release 3
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 %global ruby_libdir %{_datadir}/%{name}
@@ -863,6 +863,10 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Tue Mar 05 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.0-3
+- Avoid "method redefined;" warnings due to modified operating_system.rb.
+- Fix strange paths created during build of binary gems.
+
 * Mon Feb 25 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.0-2
 - Prevent squash of %%gem_install with following line.
 

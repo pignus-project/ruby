@@ -39,6 +39,15 @@ module Gem
     end
 
     ##
+    # Remove methods we are going to override. This avoids "method redefined;"
+    # warnings otherwise issued by Ruby.
+
+    remove_method :default_dir if method_defined? :default_dir
+    remove_method :default_path if method_defined? :default_path
+    remove_method :default_bindir if method_defined? :default_bindir
+    remove_method :default_ext_dir_for if method_defined? :default_ext_dir_for
+
+    ##
     # RubyGems default overrides.
 
     def default_dir
