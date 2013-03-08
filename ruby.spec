@@ -26,7 +26,7 @@
 %endif
 
 
-%global release 3
+%global release 4
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 %global ruby_libdir %{_datadir}/%{name}
@@ -600,7 +600,7 @@ make check TESTS="-v $DISABLE_TESTS"
 %doc README.EXT
 %lang(ja) %doc README.EXT.ja
 
-%config(noreplace) %{_sysconfdir}/rpm/macros.ruby
+%{_sysconfdir}/rpm/macros.ruby
 
 %{_includedir}/*
 %{_libdir}/libruby.so
@@ -796,7 +796,7 @@ make check TESTS="-v $DISABLE_TESTS"
 %exclude %{gem_dir}/specifications/default/test-unit-*.gemspec
 
 %files -n rubygems-devel
-%config(noreplace) %{_sysconfdir}/rpm/macros.rubygems
+%{_sysconfdir}/rpm/macros.rubygems
 
 %files -n rubygem-rake
 %{_bindir}/rake
@@ -863,6 +863,9 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Fri Mar 08 2013 Mamoru TASAKA <mtasaka@fedoraproject.org> - 2.0.0.0-4
+- Don't mark rpm config file as %%config (fpc#259)
+
 * Tue Mar 05 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.0-3
 - Avoid "method redefined;" warnings due to modified operating_system.rb.
 - Fix strange paths created during build of binary gems.
