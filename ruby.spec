@@ -26,7 +26,7 @@
 %endif
 
 
-%global release 4
+%global release 5
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 %global ruby_libdir %{_datadir}/%{name}
@@ -74,6 +74,10 @@
 %global tapset_libdir %(echo %{_libdir} | sed 's/64//')*
 
 %global _normalized_cpu %(echo %{_target_cpu} | sed 's/^ppc/powerpc/;s/i.86/i386/;s/sparcv./sparc/')
+
+%if 0%{?fedora} >= 19
+%global with_rubypick 1
+%endif
 
 Summary: An interpreter of object-oriented scripting language
 Name: ruby
@@ -419,7 +423,7 @@ rm -rf %{buildroot}
 make install DESTDIR=%{buildroot}
 
 # Rename the ruby executable. It is replaced by RubyPick.
-mv %{buildroot}%{_bindir}/%{name}{,-mri}
+%{?with_rubypick:mv %{buildroot}%{_bindir}/%{name}{,-mri}}
 
 # Version is empty if --with-ruby-version is specified.
 # http://bugs.ruby-lang.org/issues/7807
@@ -585,7 +589,7 @@ make check TESTS="-v $DISABLE_TESTS"
 %doc GPL
 %doc LEGAL
 %{_bindir}/erb
-%{_bindir}/%{name}-mri
+%{_bindir}/%{name}%{?with_rubypick:-mri}
 %{_bindir}/testrb
 %{_mandir}/man1/erb*
 %{_mandir}/man1/ruby*
@@ -863,6 +867,9 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Thu Mar 21 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.0-5
+- Make Ruby buildable without rubypick.
+
 * Fri Mar 08 2013 Mamoru TASAKA <mtasaka@fedoraproject.org> - 2.0.0.0-4
 - Don't mark rpm config file as %%config (fpc#259)
 
