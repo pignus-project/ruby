@@ -26,7 +26,7 @@
 %endif
 
 
-%global release 5
+%global release 6
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 %global ruby_libdir %{_datadir}/%{name}
@@ -95,8 +95,6 @@ Source3: ruby-exercise.stp
 
 # http://bugs.ruby-lang.org/issues/7807
 Patch0: ruby-2.0.0-Prevent-duplicated-paths-when-empty-version-string-i.patch
-# http://bugs.ruby-lang.org/issues/7808
-Patch1: ruby-1.9.3-arch-specific-dir.patch
 # Force multiarch directories for i.86 to be always named i386. This solves
 # some differencies in build between Fedora and RHEL.
 Patch3: ruby-1.9.3-always-use-i386.patch
@@ -383,7 +381,6 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 %setup -q -n %{ruby_archive}
 
 %patch0 -p1
-%patch1 -p1
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
@@ -403,24 +400,27 @@ autoconf
 
 %configure \
         --with-rubylibprefix='%{ruby_libdir}' \
-        --with-rubyarchdir='%{ruby_libarchdir}' \
+        --with-rubyarchprefix='%{ruby_libarchdir}' \
         --with-sitedir='%{ruby_sitelibdir}' \
         --with-sitearchdir='%{ruby_sitearchdir}' \
         --with-vendordir='%{ruby_vendorlibdir}' \
         --with-vendorarchdir='%{ruby_vendorarchdir}' \
         --with-rubyhdrdir='%{_includedir}' \
+	--with-rubyarchhdrdir='$(archincludedir)' \
+	--with-sitearchhdrdir='$(sitehdrdir)/$(arch)' \
+	--with-vendorarchhdrdir='$(vendorhdrdir)/$(arch)' \
         --with-rubygemsdir='%{rubygems_dir}' \
         --with-ruby-pc='%{name}.pc' \
         --disable-rpath \
         --enable-shared \
         --with-ruby-version='' \
+        --enable-multiarch \
 
 
 
 # Q= makes the build output more verbose and allows to check Fedora
 # compiler options.
 make %{?_smp_mflags} COPY="cp -p" Q=
-
 
 %install
 rm -rf %{buildroot}
@@ -871,6 +871,9 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Fri Mar 22 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.0-6
+- Fix RbConfig::CONFIG['exec_prefix'] returns empty string (rhbz#924851).
+
 * Thu Mar 21 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.0-5
 - Make Ruby buildable without rubypick.
 - Prevent random test failures.
