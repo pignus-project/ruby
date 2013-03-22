@@ -406,9 +406,9 @@ autoconf
         --with-vendordir='%{ruby_vendorlibdir}' \
         --with-vendorarchdir='%{ruby_vendorarchdir}' \
         --with-rubyhdrdir='%{_includedir}' \
-	--with-rubyarchhdrdir='$(archincludedir)' \
-	--with-sitearchhdrdir='$(sitehdrdir)/$(arch)' \
-	--with-vendorarchhdrdir='$(vendorhdrdir)/$(arch)' \
+        --with-rubyarchhdrdir='$(archincludedir)' \
+        --with-sitearchhdrdir='$(sitehdrdir)/$(arch)' \
+        --with-vendorarchhdrdir='$(vendorhdrdir)/$(arch)' \
         --with-rubygemsdir='%{rubygems_dir}' \
         --with-ruby-pc='%{name}.pc' \
         --disable-rpath \
