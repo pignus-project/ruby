@@ -1,0 +1,49 @@
+Index: ChangeLog
+===================================================================
+--- ChangeLog	(revision 39727)
++++ ChangeLog	(revision 39728)
+@@ -1,3 +1,15 @@
++Tue Mar 12 00:56:19 2013  KOSAKI Motohiro  <kosaki.motohiro@gmail.com>
++
++	* test/thread/test_queue.rb (TestQueue#test_thr_kill): reduce
++	  iterations from 2000 to 250. When running on uniprocessor
++	  systems, every th.kill needs TIME_QUANTUM_USEC time (i.e.
++	  100msec on posix systems). Because, "r.read 1" is 3 steps
++	  operations that 1) release GVL 2) read 3) acquire gvl and
++	  (1) invoke context switch to main thread. and then, main
++	  thread's th.kill resume (1), but not (2). Thus read interrupt
++	  need TIME_QUANTUM_USEC. Then maximum iteration is 30sec/100msec
++	  = 300.
++
+ Sun Feb 24 15:16:00 2013  Eric Hodel  <drbrain@segment7.net>
+ 
+ 	* lib/net/http.rb:  Removed duplicate Accept-Encoding in Net::HTTP#get.
+Index: test/thread/test_queue.rb
+===================================================================
+--- test/thread/test_queue.rb	(revision 39727)
++++ test/thread/test_queue.rb	(revision 39728)
+@@ -85,7 +85,7 @@
+     bug5343 = '[ruby-core:39634]'
+     Dir.mktmpdir {|d|
+       timeout = 30
+-      total_count = 2000
++      total_count = 250
+       begin
+         assert_normal_exit(<<-"_eom", bug5343, {:timeout => timeout, :chdir=>d})
+           require "thread"
+@@ -98,7 +98,8 @@
+               r.read 1
+             }
+             queue.pop
+-            th.kill.join
++            th.kill
++            th.join
+           end
+         _eom
+       rescue Timeout::Error
+
+Property changes on: .
+___________________________________________________________________
+Modified: svn:mergeinfo
+   Merged /trunk:r39688
+

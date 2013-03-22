@@ -127,6 +127,9 @@ Patch14: rubygems-2.0.0-Fixes-for-empty-ruby-version.patch
 # Fixes issues with wrong value of Rubygem's shebang introduced in r39267.
 # https://bugs.ruby-lang.org/issues/7915
 Patch15: ruby-2.0.0-revert-unexpand-exec-prefix.patch
+# Fixes test_thr_kill(TestQueue) random test failure.
+# https://bugs.ruby-lang.org/issues/7521
+Patch16: ruby-2.0.0-p57-test_thr_kill.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Requires: ruby(rubygems) >= %{rubygems_version}
@@ -390,6 +393,7 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 %patch13 -p1
 %patch14 -p1
 %patch15 -p1
+%patch16 -p0
 
 # Provide an example of usage of the tapset:
 cp -a %{SOURCE3} .
@@ -869,6 +873,7 @@ make check TESTS="-v $DISABLE_TESTS"
 %changelog
 * Thu Mar 21 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.0-5
 - Make Ruby buildable without rubypick.
+- Prevent random test failures.
 
 * Fri Mar 08 2013 Mamoru TASAKA <mtasaka@fedoraproject.org> - 2.0.0.0-4
 - Don't mark rpm config file as %%config (fpc#259)
