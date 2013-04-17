@@ -29,20 +29,6 @@
 %global release 6
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
-%global ruby_libdir %{_datadir}/%{name}
-%global ruby_libarchdir %{_libdir}/%{name}
-
-# This is the local lib/arch and should not be used for packaging.
-%global ruby_sitedir site_ruby
-%global ruby_sitelibdir %{_prefix}/local/share/ruby/%{ruby_sitedir}
-%global ruby_sitearchdir %{_prefix}/local/%{_lib}/ruby/%{ruby_sitedir}
-
-# This is the general location for libs/archs compatible with all
-# or most of the Ruby versions available in the Fedora repositories.
-%global ruby_vendordir vendor_ruby
-%global ruby_vendorlibdir %{_datadir}/ruby/%{ruby_vendordir}
-%global ruby_vendorarchdir %{_libdir}/ruby/%{ruby_vendordir}
-
 %global rubygems_version 2.0.0
 
 # The RubyGems library has to stay out of Ruby directory three, since the
@@ -92,6 +78,20 @@ Source1: operating_system.rb
 # TODO: Try to push SystemTap support upstream.
 Source2: libruby.stp
 Source3: ruby-exercise.stp
+Source4: macros.ruby
+
+
+# Include the constants defined in macros files.
+# http://http://rpm.org/ticket/866
+%{lua:
+
+for line in io.lines(rpm.expand("%{SOURCE4}")) do
+  if line:sub(1, 1) == "%" then
+    rpm.define(line:sub(2, -1))
+  end
+end
+
+}
 
 # http://bugs.ruby-lang.org/issues/7807
 Patch0: ruby-2.0.0-Prevent-duplicated-paths-when-empty-version-string-i.patch
@@ -435,21 +435,8 @@ sed -i 's/Version: \${ruby_version}/Version: %{ruby_version}/' %{buildroot}%{_li
 
 # Dump the macros into macro.ruby to use them to build other Ruby libraries.
 mkdir -p %{buildroot}%{_sysconfdir}/rpm
-cat >> %{buildroot}%{_sysconfdir}/rpm/macros.ruby << \EOF
-%%ruby_libdir %%{_datadir}/%{name}
-%%ruby_libarchdir %%{_libdir}/%{name}
-
-# This is the local lib/arch and should not be used for packaging.
-%%ruby_sitedir site_ruby
-%%ruby_sitelibdir %%{_prefix}/local/share/%{name}/%%{ruby_sitedir}
-%%ruby_sitearchdir %%{_prefix}/local/%%{_lib}/%{name}/%%{ruby_sitedir}
-
-# This is the general location for libs/archs compatible with all
-# or most of the Ruby versions available in the Fedora repositories.
-%%ruby_vendordir vendor_ruby
-%%ruby_vendorlibdir %%{ruby_libdir}/%%{ruby_vendordir}
-%%ruby_vendorarchdir %%{ruby_libarchdir}/%%{ruby_vendordir}
-EOF
+install -m 644 %{SOURCE4} %{buildroot}%{_sysconfdir}/rpm/macros.ruby
+sed -i "s/%%{name}/%{name}/" %{buildroot}%{_sysconfdir}/rpm/macros.ruby
 
 cat >> %{buildroot}%{_sysconfdir}/rpm/macros.rubygems << \EOF
 # The RubyGems root folder.
