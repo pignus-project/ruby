@@ -1,0 +1,27 @@
+# The RubyGems root folder.
+%gem_dir %{_datadir}/gems
+
+# Common gem locations and files.
+%gem_instdir %{gem_dir}/gems/%{gem_name}-%{version}
+%gem_extdir_mri %{_libdir}/gems/%{name}/%{gem_name}-%{version}
+%gem_libdir %{gem_instdir}/lib
+%gem_cache %{gem_dir}/cache/%{gem_name}-%{version}.gem
+%gem_spec %{gem_dir}/specifications/%{gem_name}-%{version}.gemspec
+%gem_docdir %{gem_dir}/doc/%{gem_name}-%{version}
+
+# Install gem into appropriate directory.
+# -n<gem_file>      Overrides gem file name for installation.
+# -d<install_dir>   Set installation directory.
+%gem_install(d:n:) \
+mkdir -p %{-d*}%{!?-d:.%{gem_dir}} \
+\
+CONFIGURE_ARGS="--with-cflags='%{optflags}' $CONFIGURE_ARGS" \\\
+gem install \\\
+        -V \\\
+        --local \\\
+        --install-dir %{-d*}%{!?-d:.%{gem_dir}} \\\
+        --bindir .%{_bindir} \\\
+        --force \\\
+        --document=ri,rdoc \\\
+        %{-n*}%{!?-n:%{gem_name}-%{version}.gem} \
+%{nil}

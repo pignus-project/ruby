@@ -35,8 +35,6 @@
 # RubyGems should be share by all Ruby implementations.
 %global rubygems_dir %{_datadir}/rubygems
 
-# Specify custom RubyGems root.
-%global gem_dir %{_datadir}/gems
 # TODO: These folders should go into rubygem-filesystem but how to achieve it,
 # since noarch package cannot provide arch dependent subpackages?
 # http://rpm.org/ticket/78
@@ -79,17 +77,37 @@ Source1: operating_system.rb
 Source2: libruby.stp
 Source3: ruby-exercise.stp
 Source4: macros.ruby
+Source5: macros.rubygems
 
 
 # Include the constants defined in macros files.
-# http://http://rpm.org/ticket/866
+# http://rpm.org/ticket/866
 %{lua:
 
-for line in io.lines(rpm.expand("%{SOURCE4}")) do
-  if line:sub(1, 1) == "%" then
-    rpm.define(line:sub(2, -1))
+function source_macros(file)
+  local macro = nil
+
+  for line in io.lines(file) do
+    if not macro and line:match("^%%") then
+      macro = line:match("^%%(.*)$")
+      line = nil
+    end
+
+    if macro then
+      if line and macro:match("^.-%s*\\%s*$") then
+        macro = macro .. '\n' .. line
+      end
+
+      if not macro:match("^.-%s*\\%s*$") then
+        rpm.define(macro)
+        macro = nil
+      end
+    end
   end
 end
+
+source_macros(rpm.expand("%{SOURCE4}"))
+source_macros(rpm.expand("%{SOURCE5}"))
 
 }
 
@@ -433,40 +451,13 @@ make install DESTDIR=%{buildroot}
 # http://bugs.ruby-lang.org/issues/7807
 sed -i 's/Version: \${ruby_version}/Version: %{ruby_version}/' %{buildroot}%{_libdir}/pkgconfig/%{name}.pc
 
-# Dump the macros into macro.ruby to use them to build other Ruby libraries.
+# Move macros file insto proper place and replace the %%{name} macro, since it
+# would be wrongly evaluated during build of other packages.
 mkdir -p %{buildroot}%{_sysconfdir}/rpm
 install -m 644 %{SOURCE4} %{buildroot}%{_sysconfdir}/rpm/macros.ruby
 sed -i "s/%%{name}/%{name}/" %{buildroot}%{_sysconfdir}/rpm/macros.ruby
-
-cat >> %{buildroot}%{_sysconfdir}/rpm/macros.rubygems << \EOF
-# The RubyGems root folder.
-%%gem_dir %{gem_dir}
-
-# Common gem locations and files.
-%%gem_instdir %%{gem_dir}/gems/%%{gem_name}-%%{version}
-%%gem_extdir_mri %%{_libdir}/gems/%{name}/%%{gem_name}-%%{version}
-%%gem_libdir %%{gem_instdir}/lib
-%%gem_cache %%{gem_dir}/cache/%%{gem_name}-%%{version}.gem
-%%gem_spec %%{gem_dir}/specifications/%%{gem_name}-%%{version}.gemspec
-%%gem_docdir %%{gem_dir}/doc/%%{gem_name}-%%{version}
-
-# Install gem into appropriate directory.
-# -n<gem_file>      Overrides gem file name for installation.
-# -d<install_dir>   Set installation directory.
-%%gem_install(d:n:) \
-mkdir -p %%{-d*}%%{!?-d:.%%{gem_dir}} \
-\
-CONFIGURE_ARGS="--with-cflags='%%{optflags}' $CONFIGURE_ARGS" \\\
-gem install \\\
-        -V \\\
-        --local \\\
-        --install-dir %%{-d*}%%{!?-d:.%%{gem_dir}} \\\
-        --bindir .%%{_bindir} \\\
-        --force \\\
-        --document=ri,rdoc \\\
-        %%{-n*}%%{!?-n:%%{gem_name}-%%{version}.gem} \
-%%{nil}
-EOF
+install -m 644 %{SOURCE5} %{buildroot}%{_sysconfdir}/rpm/macros.rubygems
+sed -i "s/%%{name}/%{name}/" %{buildroot}%{_sysconfdir}/rpm/macros.rubygems
 
 # Install custom operating_system.rb.
 mkdir -p %{buildroot}%{rubygems_dir}/rubygems/defaults
