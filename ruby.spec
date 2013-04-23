@@ -35,11 +35,6 @@
 # RubyGems should be share by all Ruby implementations.
 %global rubygems_dir %{_datadir}/rubygems
 
-# TODO: These folders should go into rubygem-filesystem but how to achieve it,
-# since noarch package cannot provide arch dependent subpackages?
-# http://rpm.org/ticket/78
-%global gem_extdir_mri %{_exec_prefix}/lib{,64}/gems
-
 %global rake_version 0.9.6
 # TODO: The IRB has strange versioning. Keep the Ruby's versioning ATM.
 # http://redmine.ruby-lang.org/issues/5313
@@ -467,7 +462,10 @@ cp %{SOURCE1} %{buildroot}%{rubygems_dir}/rubygems/defaults
 mv %{buildroot}%{ruby_libdir}/gems %{buildroot}%{gem_dir}
 
 # Create folders for gem binary extensions.
-mkdir -p %{buildroot}%{gem_extdir_mri}/%{name}
+# TODO: These folders should go into rubygem-filesystem but how to achieve it,
+# since noarch package cannot provide arch dependent subpackages?
+# http://rpm.org/ticket/78
+mkdir -p %{buildroot}%{_exec_prefix}/lib{,64}/gems/%{name}
 
 # Move bundled rubygems to %%gem_dir and %%gem_extdir_mri
 # make symlinks for io-console and bigdecimal, which are considered to be part of stdlib by other Gems
