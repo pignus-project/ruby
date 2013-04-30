@@ -26,3 +26,12 @@ gem install \\\
         --document=ri,rdoc \\\
         %{-n*}%{!?-n:%{gem_name}-%{version}.gem} \
 %{nil}
+
+# For rubygems packages we want to filter out any provides caused by private
+# libs in %%{gem_archdir}.
+#
+# Note that this must be invoked in the spec file, preferably as
+# "%{?rubygems_default_filter}", before any %description block.
+%rubygems_default_filter %{expand: \
+%global __provides_exclude_from %{?__provides_exclude_from:%{__provides_exclude_from}|}^%{gem_extdir_mri}/.*\\\\.so$ \
+}

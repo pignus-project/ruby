@@ -26,7 +26,7 @@
 %endif
 
 
-%global release 6
+%global release 7
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 %global rubygems_version 2.0.0
@@ -849,6 +849,11 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Fri Apr 19 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.0-7
+- Macro definition moved into macros.ruby and macros.rubygems files.
+- Added filtering macros.
+- Filter automatically generated provides of private libraries (rhbz#947408).
+
 * Fri Mar 22 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.0-6
 - Fix RbConfig::CONFIG['exec_prefix'] returns empty string (rhbz#924851).
 
