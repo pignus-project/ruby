@@ -11,3 +11,12 @@
 %ruby_vendordir vendor_ruby
 %ruby_vendorlibdir %{ruby_libdir}/%{ruby_vendordir}
 %ruby_vendorarchdir %{ruby_libarchdir}/%{ruby_vendordir}
+
+# For ruby packages we want to filter out any provides caused by private
+# libs in %%{ruby_vendorarchdir}/%%{ruby_sitearchdir}.
+#
+# Note that this must be invoked in the spec file, preferably as
+# "%{?ruby_default_filter}", before any %description block.
+%ruby_default_filter %{expand: \
+%global __provides_exclude_from %{?__provides_exclude_from:%{__provides_exclude_from}|}^(%{ruby_vendorarchdir}|%{ruby_sitearchdir})/.*\\\\.so$ \
+}
