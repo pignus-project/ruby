@@ -63,7 +63,7 @@ diff --git a/test/rubygems/test_gem.rb b/test/rubygems/test_gem.rb
 index bf77009..9ee78f7 100644
 --- a/test/rubygems/test_gem.rb
 +++ b/test/rubygems/test_gem.rb
-@@ -1186,8 +1186,10 @@ class TestGem < Gem::TestCase
+@@ -1198,8 +1198,10 @@ class TestGem < Gem::TestCase
    end
  
    def test_self_user_dir

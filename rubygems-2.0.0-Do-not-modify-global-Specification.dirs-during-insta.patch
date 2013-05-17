@@ -13,7 +13,7 @@ diff --git a/lib/rubygems/dependency_installer.rb b/lib/rubygems/dependency_inst
 index d811f62..dffa8df 100644
 --- a/lib/rubygems/dependency_installer.rb
 +++ b/lib/rubygems/dependency_installer.rb
-@@ -319,9 +319,6 @@ class Gem::DependencyInstaller
+@@ -330,9 +330,6 @@ class Gem::DependencyInstaller
  
      last = @gems_to_install.size - 1
      @gems_to_install.each_with_index do |spec, index|
@@ -64,7 +64,7 @@ index dffa8df..841f26a 100644
      @bin_dir             = options[:bin_dir]
      @dev_shallow         = options[:dev_shallow]
      @development         = options[:development]
-@@ -91,7 +88,7 @@ class Gem::DependencyInstaller
+@@ -92,7 +89,7 @@ class Gem::DependencyInstaller
      @installed_gems = []
      @toplevel_specs = nil
  
@@ -73,7 +73,7 @@ index dffa8df..841f26a 100644
  
      # Set with any errors that SpecFetcher finds while search through
      # gemspecs for a dep
-@@ -185,7 +182,7 @@ class Gem::DependencyInstaller
+@@ -202,7 +199,7 @@ class Gem::DependencyInstaller
      # that this isn't dependent only on the currently installed gems
      dependency_list.specs.reject! { |spec|
        not keep_names.include?(spec.full_name) and
@@ -82,7 +82,7 @@ index dffa8df..841f26a 100644
      }
  
      unless dependency_list.ok? or @ignore_dependencies or @force then
-@@ -237,7 +234,7 @@ class Gem::DependencyInstaller
+@@ -254,7 +251,7 @@ class Gem::DependencyInstaller
            to_do.push t.spec
          end
  
@@ -91,7 +91,7 @@ index dffa8df..841f26a 100644
  
          @available << results
          results.inject_into_list dependency_list
-@@ -349,7 +346,7 @@ class Gem::DependencyInstaller
+@@ -360,7 +357,7 @@ class Gem::DependencyInstaller
                                  :force               => @force,
                                  :format_executable   => @format_executable,
                                  :ignore_dependencies => @ignore_dependencies,
@@ -118,7 +118,7 @@ diff --git a/lib/rubygems/dependency_installer.rb b/lib/rubygems/dependency_inst
 index 841f26a..abcfa0f 100644
 --- a/lib/rubygems/dependency_installer.rb
 +++ b/lib/rubygems/dependency_installer.rb
-@@ -346,7 +346,7 @@ class Gem::DependencyInstaller
+@@ -357,7 +357,7 @@ class Gem::DependencyInstaller
                                  :force               => @force,
                                  :format_executable   => @format_executable,
                                  :ignore_dependencies => @ignore_dependencies,
@@ -131,7 +131,7 @@ diff --git a/lib/rubygems/installer.rb b/lib/rubygems/installer.rb
 index 780a88b..6543130 100644
 --- a/lib/rubygems/installer.rb
 +++ b/lib/rubygems/installer.rb
-@@ -536,13 +536,13 @@ class Gem::Installer
+@@ -537,13 +537,13 @@ class Gem::Installer
        :bin_dir      => nil,
        :env_shebang  => false,
        :force        => false,

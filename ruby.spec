@@ -1,7 +1,7 @@
 %global major_version 2
 %global minor_version 0
 %global teeny_version 0
-%global patch_level 0
+%global patch_level 195
 
 %global major_minor_version %{major_version}.%{minor_version}
 
@@ -26,10 +26,10 @@
 %endif
 
 
-%global release 7
+%global release 8
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
-%global rubygems_version 2.0.0
+%global rubygems_version 2.0.2
 
 # The RubyGems library has to stay out of Ruby directory three, since the
 # RubyGems should be share by all Ruby implementations.
@@ -66,7 +66,7 @@ Group: Development/Languages
 # Public Domain for example for: include/ruby/st.h, strftime.c, ...
 License: (Ruby or BSD) and Public Domain
 URL: http://ruby-lang.org/
-Source0: ftp://ftp.ruby-lang.org/pub/%{name}/%{major_minor_version}/%{ruby_archive}.tar.gz
+Source0: ftp://ftp.ruby-lang.org/pub/%{name}/%{major_minor_version}/%{ruby_archive}.tar.bz2
 Source1: operating_system.rb
 # TODO: Try to push SystemTap support upstream.
 Source2: libruby.stp
@@ -137,10 +137,8 @@ Patch13: rubygems-2.0.0-Do-not-modify-global-Specification.dirs-during-insta.pat
 Patch14: rubygems-2.0.0-Fixes-for-empty-ruby-version.patch
 # Fixes issues with wrong value of Rubygem's shebang introduced in r39267.
 # https://bugs.ruby-lang.org/issues/7915
+# TODO:
 Patch15: ruby-2.0.0-revert-unexpand-exec-prefix.patch
-# Fixes test_thr_kill(TestQueue) random test failure.
-# https://bugs.ruby-lang.org/issues/7521
-Patch16: ruby-2.0.0-p57-test_thr_kill.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Requires: ruby(rubygems) >= %{rubygems_version}
@@ -405,7 +403,6 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 %patch13 -p1
 %patch14 -p1
 %patch15 -p1
-%patch16 -p0
 
 # Provide an example of usage of the tapset:
 cp -a %{SOURCE3} .
@@ -849,6 +846,10 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Fri May 17 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.195-8
+- Update to Ruby 2.0.0-p195 (rhbz#917374).
+- Fix object taint bypassing in DL and Fiddle (CVE-2013-2065).
+
 * Fri Apr 19 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.0-7
 - Macro definition moved into macros.ruby and macros.rubygems files.
 - Added filtering macros.

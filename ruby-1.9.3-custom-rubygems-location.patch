@@ -14,7 +14,7 @@ diff --git a/configure.in b/configure.in
 index 1627d12..e064b2b 100644
 --- a/configure.in
 +++ b/configure.in
-@@ -3292,6 +3292,13 @@ AC_ARG_WITH(vendorarchdir,
+@@ -3349,6 +3349,13 @@ AC_ARG_WITH(vendorarchdir,
              [vendorarchdir=$withval],
              [vendorarchdir=${multiarch+'${rubysitearchprefix}/vendor_ruby/${ruby_version}'}${multiarch-'${vendorlibdir}/${sitearch}'}])
  
@@ -28,7 +28,7 @@ index 1627d12..e064b2b 100644
  unexpand_shvar rubylibprefix       exec_prefix libdir RUBY_BASE_NAME
  unexpand_shvar rubyarchprefix      exec_prefix libdir arch RUBY_BASE_NAME archlibdir rubylibprefix
  unexpand_shvar rubysitearchprefix  exec_prefix libdir sitearch arch RUBY_BASE_NAME archlibdir sitearchlibdir rubylibprefix
-@@ -3358,6 +3365,7 @@ AC_SUBST(sitearchdir)dnl
+@@ -3415,6 +3422,7 @@ AC_SUBST(sitearchdir)dnl
  AC_SUBST(vendordir)dnl
  AC_SUBST(vendorlibdir)dnl
  AC_SUBST(vendorarchdir)dnl
