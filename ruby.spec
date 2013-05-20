@@ -135,10 +135,6 @@ Patch13: rubygems-2.0.0-Do-not-modify-global-Specification.dirs-during-insta.pat
 # This prevents issues, when ruby configuration specifies --with-ruby-version=''.
 # https://github.com/rubygems/rubygems/pull/455
 Patch14: rubygems-2.0.0-Fixes-for-empty-ruby-version.patch
-# Fixes issues with wrong value of Rubygem's shebang introduced in r39267.
-# https://bugs.ruby-lang.org/issues/7915
-# TODO:
-Patch15: ruby-2.0.0-revert-unexpand-exec-prefix.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Requires: ruby(rubygems) >= %{rubygems_version}
@@ -402,7 +398,6 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 %patch12 -p1
 %patch13 -p1
 %patch14 -p1
-%patch15 -p1
 
 # Provide an example of usage of the tapset:
 cp -a %{SOURCE3} .
