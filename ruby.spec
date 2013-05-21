@@ -140,6 +140,12 @@ Patch14: rubygems-2.0.0-Fixes-for-empty-ruby-version.patch
 # it is resolved in upstream.
 # https://bugs.ruby-lang.org/issues/8384
 Patch15: ruby-2.0.0-p195-Fix-build-against-OpenSSL-with-enabled-ECC-curves.patch
+# Adds aarch64 support.
+# http://bugs.ruby-lang.org/issues/8331
+# https://bugzilla.redhat.com/show_bug.cgi?id=926463
+# Please note that this is the BZ patch, it might be good idea to update it
+# with its upstream version when available.
+Patch16: ruby-2.0.0-p195-aarch64.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Requires: ruby(rubygems) >= %{rubygems_version}
@@ -404,6 +410,7 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 %patch13 -p1
 %patch14 -p1
 %patch15 -p1
+%patch16 -p1
 
 # Provide an example of usage of the tapset:
 cp -a %{SOURCE3} .
@@ -851,6 +858,7 @@ make check TESTS="-v $DISABLE_TESTS"
 - Update to Ruby 2.0.0-p195 (rhbz#917374).
 - Fix object taint bypassing in DL and Fiddle (CVE-2013-2065).
 - Fix build against OpenSSL with enabled ECC curves.
+- Add aarch64 support (rhbz#926463).
 
 * Fri Apr 19 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.0-7
 - Macro definition moved into macros.ruby and macros.rubygems files.
