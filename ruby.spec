@@ -135,6 +135,11 @@ Patch13: rubygems-2.0.0-Do-not-modify-global-Specification.dirs-during-insta.pat
 # This prevents issues, when ruby configuration specifies --with-ruby-version=''.
 # https://github.com/rubygems/rubygems/pull/455
 Patch14: rubygems-2.0.0-Fixes-for-empty-ruby-version.patch
+# Although this does not directly affects Fedora ATM, it might be issue when
+# rebuilding package on different platform (RHEL7). Please keep the patch until
+# it is resolved in upstream.
+# https://bugs.ruby-lang.org/issues/8384
+Patch15: ruby-2.0.0-p195-Fix-build-against-OpenSSL-with-enabled-ECC-curves.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Requires: ruby(rubygems) >= %{rubygems_version}
@@ -398,6 +403,7 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 %patch12 -p1
 %patch13 -p1
 %patch14 -p1
+%patch15 -p1
 
 # Provide an example of usage of the tapset:
 cp -a %{SOURCE3} .
@@ -844,6 +850,7 @@ make check TESTS="-v $DISABLE_TESTS"
 * Fri May 17 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.195-8
 - Update to Ruby 2.0.0-p195 (rhbz#917374).
 - Fix object taint bypassing in DL and Fiddle (CVE-2013-2065).
+- Fix build against OpenSSL with enabled ECC curves.
 
 * Fri Apr 19 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.0-7
 - Macro definition moved into macros.ruby and macros.rubygems files.
