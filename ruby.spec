@@ -73,6 +73,7 @@ Source2: libruby.stp
 Source3: ruby-exercise.stp
 Source4: macros.ruby
 Source5: macros.rubygems
+Source6: abrt_prelude.rb
 
 
 # Include the constants defined in macros files.
@@ -144,6 +145,10 @@ Patch15: ruby-2.0.0-p195-Fix-build-against-OpenSSL-with-enabled-ECC-curves.patch
 # Please note that this is the BZ patch, it might be good idea to update it
 # with its upstream version when available.
 Patch16: ruby-2.0.0-p195-aarch64.patch
+# Adds support for '--with-prelude' configuration option. This allows to built
+# in support for ABRT.
+# http://bugs.ruby-lang.org/issues/8566
+Patch17: ruby-2.1.0-Allow-to-specify-additional-preludes-by-configuratio.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Requires: ruby(rubygems) >= %{rubygems_version}
@@ -408,9 +413,15 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 %patch14 -p1
 %patch15 -p1
 %patch16 -p1
+%patch17 -p1
 
 # Provide an example of usage of the tapset:
 cp -a %{SOURCE3} .
+
+# Make abrt_prelude.rb available for compilation process. The prelude must be
+# available together with Ruby's source due to
+# https://github.com/ruby/ruby/blob/trunk/tool/compile_prelude.rb#L26
+cp -a %{SOURCE6} .
 
 %build
 autoconf
@@ -432,6 +443,7 @@ autoconf
         --enable-shared \
         --with-ruby-version='' \
         --enable-multiarch \
+        --with-prelude=./abrt_prelude.rb \
 
 
 
@@ -560,6 +572,11 @@ DISABLE_TESTS="-x test_process.rb $DISABLE_TESTS"
 # The TestRbConfig errors, which does not respect configuration options.
 # http://bugs.ruby-lang.org/issues/7912
 DISABLE_TESTS="-x test_rbconfig.rb $DISABLE_TESTS"
+
+# test_debug(TestRubyOptions) fails due to LoadError reported in debug mode,
+# when abrt.rb cannot be required (seems to be easier way then customizing
+# the test suite).
+touch abrt.rb
 
 make check TESTS="-v $DISABLE_TESTS"
 
@@ -855,6 +872,7 @@ make check TESTS="-v $DISABLE_TESTS"
 - Update to Ruby 2.0.0-p247 (rhbz#979605).
 - Fix CVE-2013-4073.
 - Fix for wrong makefiles created by mkmf (rhbz#921650).
+- Add support for ABRT autoloading.
 
 * Fri May 17 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.195-8
 - Update to Ruby 2.0.0-p195 (rhbz#917374).
