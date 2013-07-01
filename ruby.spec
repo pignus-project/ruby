@@ -1,7 +1,7 @@
 %global major_version 2
 %global minor_version 0
 %global teeny_version 0
-%global patch_level 195
+%global patch_level 247
 
 %global major_minor_version %{major_version}.%{minor_version}
 
@@ -26,7 +26,7 @@
 %endif
 
 
-%global release 8
+%global release 9
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 %global rubygems_version 2.0.2
@@ -111,8 +111,6 @@ Patch0: ruby-2.0.0-Prevent-duplicated-paths-when-empty-version-string-i.patch
 # Force multiarch directories for i.86 to be always named i386. This solves
 # some differencies in build between Fedora and RHEL.
 Patch3: ruby-1.9.3-always-use-i386.patch
-# http://redmine.ruby-lang.org/issues/5465
-Patch4: ruby-1.9.3-fix-s390x-build.patch
 # Fixes random WEBRick test failures.
 # https://bugs.ruby-lang.org/issues/6573.
 Patch5: ruby-1.9.3.p195-fix-webrick-tests.patch
@@ -402,7 +400,6 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 
 %patch0 -p1
 %patch3 -p1
-%patch4 -p1
 %patch5 -p1
 %patch8 -p1
 %patch9 -p1
@@ -854,6 +851,11 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Mon Jul 01 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.247-9
+- Update to Ruby 2.0.0-p247 (rhbz#979605).
+- Fix CVE-2013-4073.
+- Fix for wrong makefiles created by mkmf (rhbz#921650).
+
 * Fri May 17 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.195-8
 - Update to Ruby 2.0.0-p195 (rhbz#917374).
 - Fix object taint bypassing in DL and Fiddle (CVE-2013-2065).
