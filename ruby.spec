@@ -154,6 +154,9 @@ Patch16: ruby-2.0.0-p195-aarch64.patch
 # in support for ABRT.
 # http://bugs.ruby-lang.org/issues/8566
 Patch17: ruby-2.1.0-Allow-to-specify-additional-preludes-by-configuratio.patch
+# Fixes issues with DESTDIR.
+# https://bugs.ruby-lang.org/issues/8115
+Patch18: ruby-2.0.0-p247-Revert-mkmf.rb-prefix-install_dirs-only-with-DESTDIR.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Requires: ruby(rubygems) >= %{rubygems_version}
@@ -419,6 +422,7 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 %patch15 -p1
 %patch16 -p1
 %patch17 -p1
+%patch18 -p1
 
 # Provide an example of usage of the tapset:
 cp -a %{SOURCE3} .
