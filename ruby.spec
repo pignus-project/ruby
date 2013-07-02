@@ -26,7 +26,7 @@
 %endif
 
 
-%global release 9
+%global release 10
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 %global rubygems_version 2.0.2
@@ -74,6 +74,11 @@ Source3: ruby-exercise.stp
 Source4: macros.ruby
 Source5: macros.rubygems
 Source6: abrt_prelude.rb
+# This wrapper fixes https://bugzilla.redhat.com/show_bug.cgi?id=977941
+# Hopefully, it will get removed soon:
+# https://fedorahosted.org/fpc/ticket/312
+# https://bugzilla.redhat.com/show_bug.cgi?id=977941
+Source7: config.h
 
 
 # Include the constants defined in macros files.
@@ -434,7 +439,7 @@ autoconf
         --with-vendordir='%{ruby_vendorlibdir}' \
         --with-vendorarchdir='%{ruby_vendorarchdir}' \
         --with-rubyhdrdir='%{_includedir}' \
-        --with-rubyarchhdrdir='$(archincludedir)' \
+        --with-rubyarchhdrdir='%{_includedir}' \
         --with-sitearchhdrdir='$(sitehdrdir)/$(arch)' \
         --with-vendorarchhdrdir='$(vendorhdrdir)/$(arch)' \
         --with-rubygemsdir='%{rubygems_dir}' \
@@ -454,6 +459,11 @@ make %{?_smp_mflags} COPY="cp -p" Q=
 %install
 rm -rf %{buildroot}
 make install DESTDIR=%{buildroot}
+
+# Rename ruby/config.h to ruby/config-<arch>.h to avoid file conflicts on
+# multilib systems and install config.h wrapper
+mv %{buildroot}%{_includedir}/%{name}/config.h %{buildroot}%{_includedir}/%{name}/config-%{_arch}.h
+install -m644 %{SOURCE7} %{buildroot}%{_includedir}/%{name}/config.h
 
 # Rename the ruby executable. It is replaced by RubyPick.
 %{?with_rubypick:mv %{buildroot}%{_bindir}/%{name}{,-mri}}
@@ -868,6 +878,9 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Tue Jul 02 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.247-10
+- Better support for build without configuration (rhbz#977941).
+
 * Mon Jul 01 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.247-9
 - Update to Ruby 2.0.0-p247 (rhbz#979605).
 - Fix CVE-2013-4073.
