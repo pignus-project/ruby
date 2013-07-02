@@ -26,10 +26,10 @@
 %endif
 
 
-%global release 10
+%global release 11
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
-%global rubygems_version 2.0.2
+%global rubygems_version 2.0.3
 
 # The RubyGems library has to stay out of Ruby directory three, since the
 # RubyGems should be share by all Ruby implementations.
@@ -882,6 +882,9 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Tue Jul 02 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.247-11
+- Fix RubyGems version.
+
 * Tue Jul 02 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.247-10
 - Better support for build without configuration (rhbz#977941).
 
