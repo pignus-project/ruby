@@ -26,7 +26,7 @@
 %endif
 
 
-%global release 11
+%global release 12
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 %global rubygems_version 2.0.3
@@ -882,6 +882,10 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Thu Jul 04 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.247-12
+- Fix RubyGems search paths when building gems with native extension
+  (rhbz#979133).
+
 * Tue Jul 02 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.247-11
 - Fix RubyGems version.
 

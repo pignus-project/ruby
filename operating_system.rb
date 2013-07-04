@@ -28,7 +28,13 @@ module Gem
     # platform independent (:gem_dir) and dependent (:ext_dir) files.
 
     def default_dirs
-      @libdir ||= ConfigMap[:sitelibdir] == ConfigMap[:sitearchdir] ? ConfigMap[:datadir] : ConfigMap[:libdir]
+      @libdir ||= case RUBY_PLATFORM
+      when 'java'
+        ConfigMap[:datadir]
+      else
+        ConfigMap[:libdir]
+      end
+
       @default_dirs ||= Hash[default_locations.collect do |destination, path|
         [destination, {
           :bin_dir => File.join(path, ConfigMap[:bindir].split(File::SEPARATOR).last),
