@@ -581,12 +581,6 @@ DISABLE_TESTS=""
 DISABLE_TESTS="-x test_dl2.rb $DISABLE_TESTS"
 %endif
 
-%ifarch ppc ppc64
-# test_spawn_too_long_path(TestProcess) fails with [Errno::ENOENT, Errno::E2BIG, nil] expected but nothing was raised.
-# https://bugs.ruby-lang.org/issues/7904
-DISABLE_TESTS="-x test_process.rb $DISABLE_TESTS"
-%endif
-
 # test_debug(TestRubyOptions) fails due to LoadError reported in debug mode,
 # when abrt.rb cannot be required (seems to be easier way then customizing
 # the test suite).
