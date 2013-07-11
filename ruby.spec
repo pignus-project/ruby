@@ -587,10 +587,6 @@ DISABLE_TESTS="-x test_dl2.rb $DISABLE_TESTS"
 DISABLE_TESTS="-x test_process.rb $DISABLE_TESTS"
 %endif
 
-# The TestRbConfig errors, which does not respect configuration options.
-# http://bugs.ruby-lang.org/issues/7912
-DISABLE_TESTS="-x test_rbconfig.rb $DISABLE_TESTS"
-
 # test_debug(TestRubyOptions) fails due to LoadError reported in debug mode,
 # when abrt.rb cannot be required (seems to be easier way then customizing
 # the test suite).
