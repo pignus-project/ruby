@@ -26,7 +26,7 @@
 %endif
 
 
-%global release 12
+%global release 13
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 %global rubygems_version 2.0.3
@@ -157,6 +157,9 @@ Patch17: ruby-2.1.0-Allow-to-specify-additional-preludes-by-configuratio.patch
 # Fixes issues with DESTDIR.
 # https://bugs.ruby-lang.org/issues/8115
 Patch18: ruby-2.0.0-p247-Revert-mkmf.rb-prefix-install_dirs-only-with-DESTDIR.patch
+# Fixes multilib conlicts of .gemspec files.
+# https://bugs.ruby-lang.org/issues/8623
+Patch19: ruby-2.0.0-p247-Make-stable-Gem-Specification.files-in-default-.gems.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Requires: ruby(rubygems) >= %{rubygems_version}
@@ -423,6 +426,7 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 %patch16 -p1
 %patch17 -p1
 %patch18 -p1
+%patch19 -p1
 
 # Provide an example of usage of the tapset:
 cp -a %{SOURCE3} .
@@ -882,6 +886,9 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Thu Jul 11 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.247-13
+- Fixes multilib conlicts of .gemspec files.
+
 * Thu Jul 04 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.247-12
 - Fix RubyGems search paths when building gems with native extension
   (rhbz#979133).
