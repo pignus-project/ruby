@@ -542,6 +542,9 @@ mkdir -p %{buildroot}%{_libdir}/gems/%{name}/psych-%{psych_version}/lib
 mv %{buildroot}%{ruby_libdir}/psych* %{buildroot}%{gem_dir}/gems/psych-%{psych_version}/lib
 mv %{buildroot}%{ruby_libarchdir}/psych.so %{buildroot}%{_libdir}/gems/%{name}/psych-%{psych_version}/lib/
 mv %{buildroot}%{gem_dir}/specifications/default/psych-%{psych_version}.gemspec %{buildroot}%{gem_dir}/specifications
+ln -s %{gem_dir}/gems/psych-%{psych_version}/lib/psych %{buildroot}%{ruby_libdir}/psych
+ln -s %{gem_dir}/gems/psych-%{psych_version}/lib/psych.rb %{buildroot}%{ruby_libdir}/psych.rb
+ln -s %{_libdir}/gems/%{name}/psych-%{psych_version}/lib/psych.so %{buildroot}%{ruby_libarchdir}/psych.so
 
 # Adjust the gemspec files so that the gems will load properly
 sed -i '/^end$/ i\
@@ -643,6 +646,7 @@ make check TESTS="-v $DISABLE_TESTS"
 %exclude %{ruby_libdir}/irb.rb
 %exclude %{ruby_libdir}/tcltk.rb
 %exclude %{ruby_libdir}/tk*.rb
+%exclude %{ruby_libdir}/psych.rb
 %{ruby_libdir}/cgi
 %{ruby_libdir}/date
 %{ruby_libdir}/digest
@@ -862,6 +866,8 @@ make check TESTS="-v $DISABLE_TESTS"
 %{gem_dir}/specifications/minitest-%{minitest_version}.gemspec
 
 %files -n rubygem-psych
+%{ruby_libdir}/psych
+%{ruby_libarchdir}/psych.so
 %{_libdir}/gems/%{name}/psych-%{psych_version}
 %{gem_dir}/gems/psych-%{psych_version}
 %{gem_dir}/specifications/psych-%{psych_version}.gemspec
@@ -878,6 +884,7 @@ make check TESTS="-v $DISABLE_TESTS"
 %changelog
 * Thu Jul 11 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.247-13
 - Fixes multilib conlicts of .gemspec files.
+- Make symlinks for psych gem to ruby stdlib dirs (rhbz#979133).
 
 * Thu Jul 04 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.247-12
 - Fix RubyGems search paths when building gems with native extension
