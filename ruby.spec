@@ -181,6 +181,8 @@ BuildRequires: tk-devel
 # Needed to pass test_set_program_name(TestRubyOptions)
 BuildRequires: procps
 BuildRequires: %{_bindir}/dtrace
+# Unbundle cert.pem
+BuildRequires: ca-certificates
 
 # This package provides %%{_bindir}/ruby-mri therefore it is marked by this
 # virtual provide. It can be installed as dependency of rubypick.
@@ -223,6 +225,7 @@ Requires:   ruby(release)
 Requires:   rubygem(rdoc) >= %{rdoc_version}
 Requires:   rubygem(io-console) >= %{io_console_version}
 Requires:   rubygem(psych) >= %{psych_version}
+Requires:   ca-certificates
 Provides:   gem = %{version}-%{release}
 Provides:   ruby(rubygems) = %{version}-%{release}
 BuildArch:  noarch
@@ -486,6 +489,11 @@ install -m 644 %{SOURCE4} %{buildroot}%{_sysconfdir}/rpm/macros.ruby
 sed -i "s/%%{name}/%{name}/" %{buildroot}%{_sysconfdir}/rpm/macros.ruby
 install -m 644 %{SOURCE5} %{buildroot}%{_sysconfdir}/rpm/macros.rubygems
 sed -i "s/%%{name}/%{name}/" %{buildroot}%{_sysconfdir}/rpm/macros.rubygems
+
+# Kill bundled cert.pem
+mkdir -p %{buildroot}%{rubygems_dir}/rubygems/ssl_certs/
+ln -sf %{_sysconfdir}/pki/tls/cert.pem \
+  %{buildroot}%{rubygems_dir}/rubygems/ssl_certs/ca-bundle.pem
 
 # Install custom operating_system.rb.
 mkdir -p %{buildroot}%{rubygems_dir}/rubygems/defaults
@@ -884,6 +892,7 @@ make check TESTS="-v $DISABLE_TESTS"
 * Thu Jul 11 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.247-13
 - Fixes multilib conlicts of .gemspec files.
 - Make symlinks for psych gem to ruby stdlib dirs (rhbz#979133).
+- Use system-wide cert.pem.
 
 * Thu Jul 04 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.247-12
 - Fix RubyGems search paths when building gems with native extension
