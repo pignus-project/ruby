@@ -198,7 +198,6 @@ straight-forward, and extensible.
 %package devel
 Summary:    A Ruby development environment
 Group:      Development/Languages
-# Requires:   %{name}-libs = %{version}-%{release}
 Requires:   %{name}%{?_isa} = %{version}-%{release}
 
 %description devel
@@ -932,7 +931,7 @@ make check TESTS="-v $DISABLE_TESTS"
 
 * Mon Feb 25 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.0-1
 - Update to Ruby 2.0.0-p0.
-- Change %{ruby_extdir} to %{ruby_extdir_mri} in preparation for better
+- Change %%{ruby_extdir} to %%{ruby_extdir_mri} in preparation for better
   JRuby support.
 
 * Mon Feb 25 2013 Mamoru TASAKA <mtasaka@fedoraprojec.org> - 2.0.0.0-0.3.r39387
