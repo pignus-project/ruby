@@ -26,7 +26,7 @@
 %endif
 
 
-%global release 13
+%global release 14
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 %global rubygems_version 2.0.3
@@ -874,6 +874,7 @@ make check TESTS="-v $DISABLE_TESTS"
 
 %files -n rubygem-psych
 %{ruby_libdir}/psych
+%{ruby_libdir}/psych.rb
 %{ruby_libarchdir}/psych.so
 %{_libdir}/gems/%{name}/psych-%{psych_version}
 %{gem_dir}/gems/psych-%{psych_version}
@@ -889,6 +890,10 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Mon Jul 15 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.247-14
+- Add forgotten psych.rb link into rubygem-psych to fix "private method `load'
+  called for Psych:Moduler" error (rhbz#979133).
+
 * Thu Jul 11 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.247-13
 - Fixes multilib conlicts of .gemspec files.
 - Make symlinks for psych gem to ruby stdlib dirs (rhbz#979133).
