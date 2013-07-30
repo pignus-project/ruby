@@ -26,7 +26,7 @@
 %endif
 
 
-%global release 14
+%global release 15
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 %global rubygems_version 2.0.3
@@ -549,9 +549,13 @@ mkdir -p %{buildroot}%{_libdir}/gems/%{name}/psych-%{psych_version}/lib
 mv %{buildroot}%{ruby_libdir}/psych* %{buildroot}%{gem_dir}/gems/psych-%{psych_version}/lib
 mv %{buildroot}%{ruby_libarchdir}/psych.so %{buildroot}%{_libdir}/gems/%{name}/psych-%{psych_version}/lib/
 mv %{buildroot}%{gem_dir}/specifications/default/psych-%{psych_version}.gemspec %{buildroot}%{gem_dir}/specifications
-ln -s %{gem_dir}/gems/psych-%{psych_version}/lib/psych %{buildroot}%{ruby_libdir}/psych
-ln -s %{gem_dir}/gems/psych-%{psych_version}/lib/psych.rb %{buildroot}%{ruby_libdir}/psych.rb
-ln -s %{_libdir}/gems/%{name}/psych-%{psych_version}/lib/psych.so %{buildroot}%{ruby_libarchdir}/psych.so
+# The links should replace directory, which RPM cannot handle and it is causing
+# issues during upgrade from F18 to F19. As a workaround the links are placed
+# into vendor direcories. This could be changed back as soon as F18 is EOLed.
+# https://bugzilla.redhat.com/show_bug.cgi?id=988490
+ln -s %{gem_dir}/gems/psych-%{psych_version}/lib/psych %{buildroot}%{ruby_vendorlibdir}/psych
+ln -s %{gem_dir}/gems/psych-%{psych_version}/lib/psych.rb %{buildroot}%{ruby_vendorlibdir}/psych.rb
+ln -s %{_libdir}/gems/%{name}/psych-%{psych_version}/lib/psych.so %{buildroot}%{ruby_vendorarchdir}/psych.so
 
 # Adjust the gemspec files so that the gems will load properly
 sed -i '/^end$/ i\
@@ -653,7 +657,6 @@ make check TESTS="-v $DISABLE_TESTS"
 %exclude %{ruby_libdir}/irb.rb
 %exclude %{ruby_libdir}/tcltk.rb
 %exclude %{ruby_libdir}/tk*.rb
-%exclude %{ruby_libdir}/psych.rb
 %{ruby_libdir}/cgi
 %{ruby_libdir}/date
 %{ruby_libdir}/digest
@@ -873,9 +876,9 @@ make check TESTS="-v $DISABLE_TESTS"
 %{gem_dir}/specifications/minitest-%{minitest_version}.gemspec
 
 %files -n rubygem-psych
-%{ruby_libdir}/psych
-%{ruby_libdir}/psych.rb
-%{ruby_libarchdir}/psych.so
+%{ruby_vendorlibdir}/psych
+%{ruby_vendorlibdir}/psych.rb
+%{ruby_vendorarchdir}/psych.so
 %{_libdir}/gems/%{name}/psych-%{psych_version}
 %{gem_dir}/gems/psych-%{psych_version}
 %{gem_dir}/specifications/psych-%{psych_version}.gemspec
@@ -890,6 +893,10 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Tue Jul 30 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.247-15
+- Move Psych symlinks to vendor dir, to prevent F18 -> F19 upgrade issues
+  (rhbz#988490).
+
 * Mon Jul 15 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.247-14
 - Add forgotten psych.rb link into rubygem-psych to fix "private method `load'
   called for Psych:Moduler" error (rhbz#979133).
