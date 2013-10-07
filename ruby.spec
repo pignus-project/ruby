@@ -1,7 +1,7 @@
 %global major_version 2
-%global minor_version 0
+%global minor_version 1
 %global teeny_version 0
-%global patch_level 247
+%global patch_level 0
 
 %global major_minor_version %{major_version}.%{minor_version}
 
@@ -10,7 +10,7 @@
 %global ruby_release %{ruby_version}
 
 # Specify the named version. It has precedense to revision.
-#%%global milestone preview2
+%global milestone preview1
 
 # Keep the revision enabled for pre-releases from SVN.
 #%%global revision 39387
@@ -26,10 +26,10 @@
 %endif
 
 
-%global release 15
+%global release 16
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
-%global rubygems_version 2.0.3
+%global rubygems_version 2.2.0.preview.1
 
 # The RubyGems library has to stay out of Ruby directory three, since the
 # RubyGems should be share by all Ruby implementations.
@@ -39,12 +39,12 @@
 # TODO: The IRB has strange versioning. Keep the Ruby's versioning ATM.
 # http://redmine.ruby-lang.org/issues/5313
 %global irb_version %{ruby_version_patch_level}
-%global rdoc_version 4.0.0
-%global bigdecimal_version 1.2.0
+%global rdoc_version 4.1.0.preview.1
+%global bigdecimal_version 1.2.1
 %global io_console_version 0.4.2
 %global json_version 1.7.7
-%global minitest_version 4.3.2
-%global psych_version 2.0.0
+%global minitest_version 4.7.5
+%global psych_version 2.0.1
 
 # Might not be needed in the future, if we are lucky enough.
 # https://bugzilla.redhat.com/show_bug.cgi?id=888262
@@ -114,52 +114,41 @@ source_macros(rpm.expand("%{SOURCE5}"))
 
 # http://bugs.ruby-lang.org/issues/7807
 Patch0: ruby-2.0.0-Prevent-duplicated-paths-when-empty-version-string-i.patch
+# Allows to override libruby.so placement. Hopefully we will be able to return
+# to plain --with-rubyarchprefix.
+# http://bugs.ruby-lang.org/issues/8973
+Patch1: ruby-2.1.0-Enable-configuration-of-archlibdir.patch
 # Force multiarch directories for i.86 to be always named i386. This solves
 # some differencies in build between Fedora and RHEL.
 Patch3: ruby-1.9.3-always-use-i386.patch
 # Fixes random WEBRick test failures.
 # https://bugs.ruby-lang.org/issues/6573.
 Patch5: ruby-1.9.3.p195-fix-webrick-tests.patch
+# https://github.com/rubygems/rubygems/pull/667
+Patch7: rubygems-2.2.0-DRY-Use-full_require_paths-on-yet-another-place.patch
 # Allows to install RubyGems into custom directory, outside of Ruby's tree.
 # http://redmine.ruby-lang.org/issues/5617
 Patch8: ruby-1.9.3-custom-rubygems-location.patch
 # Add support for installing binary extensions according to FHS.
 # https://github.com/rubygems/rubygems/issues/210
-# Note that 8th patch might be resolved by
-# https://bugs.ruby-lang.org/issues/7897
 Patch9: rubygems-2.0.0-binary-extensions.patch
 # Make mkmf verbose by default
 Patch12: ruby-1.9.3-mkmf-verbose.patch
-# This slightly changes behavior of "gem install --install-dir" behavior.
 # Without this patch, Specifications.dirs is modified and gems installed on
 # the system cannot be required anymore. This causes later issues when RDoc
 # documentation should be generated, since json gem is sudenly not accessible.
-# https://github.com/rubygems/rubygems/pull/452
+# https://github.com/rubygems/rubygems/pull/670
 Patch13: rubygems-2.0.0-Do-not-modify-global-Specification.dirs-during-insta.patch
-# This prevents issues, when ruby configuration specifies --with-ruby-version=''.
-# https://github.com/rubygems/rubygems/pull/455
-Patch14: rubygems-2.0.0-Fixes-for-empty-ruby-version.patch
-# Although this does not directly affects Fedora ATM, it might be issue when
-# rebuilding package on different platform (RHEL7). Please keep the patch until
-# it is resolved in upstream.
-# https://bugs.ruby-lang.org/issues/8384
-Patch15: ruby-2.0.0-p195-Fix-build-against-OpenSSL-with-enabled-ECC-curves.patch
-# Adds aarch64 support.
-# http://bugs.ruby-lang.org/issues/8331
-# https://bugzilla.redhat.com/show_bug.cgi?id=926463
-# Please note that this is the BZ patch, it might be good idea to update it
-# with its upstream version when available.
-Patch16: ruby-2.0.0-p195-aarch64.patch
 # Adds support for '--with-prelude' configuration option. This allows to built
 # in support for ABRT.
 # http://bugs.ruby-lang.org/issues/8566
 Patch17: ruby-2.1.0-Allow-to-specify-additional-preludes-by-configuratio.patch
-# Fixes issues with DESTDIR.
-# https://bugs.ruby-lang.org/issues/8115
-Patch18: ruby-2.0.0-p247-Revert-mkmf.rb-prefix-install_dirs-only-with-DESTDIR.patch
 # Fixes multilib conlicts of .gemspec files.
 # https://bugs.ruby-lang.org/issues/8623
 Patch19: ruby-2.0.0-p247-Make-stable-Gem-Specification.files-in-default-.gems.patch
+# TestMkmf::TestConfig#test_dir_config fails on x86_64.
+# http://bugs.ruby-lang.org/issues/8972
+Patch20: ruby-2.1.0-test_config.rb-fix-library-path.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Requires: ruby(rubygems) >= %{rubygems_version}
@@ -417,18 +406,17 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 %setup -q -n %{ruby_archive}
 
 %patch0 -p1
+%patch1 -p1
 %patch3 -p1
 %patch5 -p1
+%patch7 -p1
 %patch8 -p1
 %patch9 -p1
 %patch12 -p1
 %patch13 -p1
-%patch14 -p1
-%patch15 -p1
-%patch16 -p1
 %patch17 -p1
-%patch18 -p1
 %patch19 -p1
+%patch20 -p1
 
 # Provide an example of usage of the tapset:
 cp -a %{SOURCE3} .
@@ -443,6 +431,7 @@ autoconf
 
 %configure \
         --with-rubylibprefix='%{ruby_libdir}' \
+        --with-archlibdir='%{_libdir}' \
         --with-rubyarchprefix='%{ruby_libarchdir}' \
         --with-sitedir='%{ruby_sitelibdir}' \
         --with-sitearchdir='%{ruby_sitearchdir}' \
@@ -460,7 +449,10 @@ autoconf
         --enable-multiarch \
         --with-prelude=./abrt_prelude.rb \
 
-
+# This avoids regeneration of sizes.c (BASERUBY is needed for that), when
+# configure.in has newer timestamp the sizes.c (after patch is applied).
+# http://bugs.ruby-lang.org/issues/8968
+touch sizes.c
 
 # Q= makes the build output more verbose and allows to check Fedora
 # compiler options.
@@ -599,6 +591,12 @@ DISABLE_TESTS="-x test_dl2.rb $DISABLE_TESTS"
 # when abrt.rb cannot be required (seems to be easier way then customizing
 # the test suite).
 touch abrt.rb
+
+# Fix "./ruby: error while loading shared libraries: libruby.so.2.1: cannot open
+# shared object file: No such file or directory" error.
+# http://bugs.ruby-lang.org/issues/8971
+# Fixed in rev43129.
+sed -i '/yes-test-sample/,/test-knownbugs/ s/MINIRUBY/RUNRUBY/' uncommon.mk
 
 make check TESTS="-v $DISABLE_TESTS"
 
@@ -785,6 +783,7 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libarchdir}/strscan.so
 %{ruby_libarchdir}/syslog.so
 %exclude %{ruby_libarchdir}/tcltklib.so
+%{ruby_libarchdir}/thread.so
 %exclude %{ruby_libarchdir}/tkutil.so
 %{ruby_libarchdir}/zlib.so
 
@@ -893,6 +892,9 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Mon Oct 07 2013 Vít Ondruch <vondruch@redhat.com> - 2.1.0.0-0.16.preview1
+- Update to Ruby 2.1.0.preview1.
+
 * Tue Jul 30 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.247-15
 - Move Psych symlinks to vendor dir, to prevent F18 -> F19 upgrade issues
   (rhbz#988490).

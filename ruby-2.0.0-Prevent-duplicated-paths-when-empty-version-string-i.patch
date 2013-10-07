@@ -1,70 +1,98 @@
-From e943a89efd63dcfb80a0ab8d9a4db37f523f508e Mon Sep 17 00:00:00 2001
+From 35b8c14ddc7f9b38c21c15dfecefa3dff7567981 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?V=C3=ADt=20Ondruch?= <vondruch@redhat.com>
 Date: Fri, 8 Feb 2013 22:48:41 +0100
 Subject: [PATCH] Prevent duplicated paths when empty version string is
  configured.
 
 ---
- configure.in |  3 +++
- version.c    | 10 ++++++++++
- 2 files changed, 13 insertions(+)
+ configure.in | 15 +++++++++------
+ loadpath.c   |  4 ++++
+ 2 files changed, 13 insertions(+), 6 deletions(-)
 
 diff --git a/configure.in b/configure.in
-index 5850bbf..7604bb8 100644
+index 881449e..37d9a62 100644
 --- a/configure.in
 +++ b/configure.in
-@@ -3367,6 +3367,9 @@ unexpand_shvar exec_prefix         prefix
- if test ${RUBY_LIB_VERSION_STYLE+set}; then
-     AC_DEFINE_UNQUOTED(RUBY_LIB_VERSION_STYLE, $RUBY_LIB_VERSION_STYLE !<verconf>!)
- else
-+    if test "x${ruby_version}" = 'x'; then
-+        AC_DEFINE(RUBY_LIB_VERSION_BLANK, 1)
-+    fi
-     AC_DEFINE_UNQUOTED(RUBY_LIB_VERSION, [$RUBY_LIB_VERSION] !<verconf>!)
- fi
- AC_DEFINE_UNQUOTED(RUBY_EXEC_PREFIX, ${RUBY_EXEC_PREFIX})
-diff --git a/version.c b/version.c
-index 282960d..54c4513 100644
---- a/version.c
-+++ b/version.c
-@@ -39,9 +39,15 @@
- #define RUBY_VENDOR_LIB RUBY_LIB_PREFIX"/vendor_ruby"
- #endif
+@@ -3535,8 +3535,6 @@ AC_ARG_WITH(rubylibprefix,
+ 	    fi
+ 	    rubylibprefix="$withval"])
+ AC_SUBST(rubylibprefix)
+-rubylibdir='${rubylibprefix}/${ruby_version}'
+-rubyarchdir=${multiarch+'${rubyarchprefix}/${ruby_version}'}${multiarch-'${rubylibdir}/${arch}'}
  
-+#ifdef RUBY_LIB_VERSION_BLANK
-+#define RUBY_LIB                    RUBY_LIB_PREFIX
-+#define RUBY_SITE_LIB2              RUBY_SITE_LIB
-+#define RUBY_VENDOR_LIB2            RUBY_VENDOR_LIB
-+#else
- #define RUBY_LIB                    RUBY_LIB_PREFIX  "/"RUBY_LIB_VERSION
- #define RUBY_SITE_LIB2              RUBY_SITE_LIB    "/"RUBY_LIB_VERSION
- #define RUBY_VENDOR_LIB2            RUBY_VENDOR_LIB  "/"RUBY_LIB_VERSION
-+#endif
- #ifndef RUBY_ARCH_LIB_FOR
- #define RUBY_ARCH_LIB_FOR(arch)        RUBY_LIB         "/"arch
+ rubyarchprefix=${multiarch+'${archlibdir}/${RUBY_BASE_NAME}'}${multiarch-'${rubylibprefix}/${arch}'}
+ AC_ARG_WITH(rubyarchprefix,
+@@ -3566,6 +3564,7 @@ AC_ARG_WITH(ruby-version,
+             [ruby_version=full])
+ unset RUBY_LIB_VERSION
+ unset RUBY_LIB_VERSION_STYLE
++ruby_version_suffix=/'${ruby_version}'
+ AS_CASE(["$ruby_version"],
+   [full],  [RUBY_LIB_VERSION_STYLE='3	/* full */'],
+   [minor], [RUBY_LIB_VERSION_STYLE='2	/* minor */'])
+@@ -3582,30 +3581,34 @@ if test ${RUBY_LIB_VERSION_STYLE+set}; then
+     ruby_version="`$CPP -I. -I"${srcdir}" -I"${srcdir}/include" conftest.c | sed '/^ruby_version=/!d;s/ //g'`"
+     eval $ruby_version
+ elif test -z "${ruby_version}"; then
+-    AC_MSG_ERROR([No ruby version, No place for bundled libraries])
++    unset ruby_version_suffix
++    AC_DEFINE(RUBY_LIB_VERSION_BLANK, 1)
+ else
+     RUBY_LIB_VERSION="\"${ruby_version}\""
+ fi
+ AC_SUBST(RUBY_LIB_VERSION_STYLE)
+ AC_SUBST(RUBY_LIB_VERSION)
+ 
++rubylibdir='${rubylibprefix}'${ruby_version_suffix}
++rubyarchdir=${multiarch+'${rubyarchprefix}'${ruby_version_suffix}}${multiarch-'${rubylibdir}/${arch}'}
++
+ AC_ARG_WITH(sitedir,
+ 	    AS_HELP_STRING([--with-sitedir=DIR], [site libraries in DIR [[RUBY_LIB_PREFIX/site_ruby]], "no" to disable site directory]),
+             [sitedir=$withval],
+             [sitedir='${rubylibprefix}/site_ruby'])
+-sitelibdir='${sitedir}/${ruby_version}'
++sitelibdir='${sitedir}'${ruby_version_suffix}
+ 
+ AC_ARG_WITH(sitearchdir,
+ 	    AS_HELP_STRING([--with-sitearchdir=DIR],
+ 			   [architecture dependent site libraries in DIR [[SITEDIR/SITEARCH]], "no" to disable site directory]),
+             [sitearchdir=$withval],
+-            [sitearchdir=${multiarch+'${rubysitearchprefix}/site_ruby/${ruby_version}'}${multiarch-'${sitelibdir}/${sitearch}'}])
++            [sitearchdir=${multiarch+'${rubysitearchprefix}/site_ruby'${ruby_version_suffix}}${multiarch-'${sitelibdir}/${sitearch}'}])
+ 
+ AC_ARG_WITH(vendordir,
+ 	    AS_HELP_STRING([--with-vendordir=DIR], [vendor libraries in DIR [[RUBY_LIB_PREFIX/vendor_ruby]], "no" to disable vendor directory]),
+             [vendordir=$withval],
+             [vendordir='${rubylibprefix}/vendor_ruby'])
+-vendorlibdir='${vendordir}/${ruby_version}'
++vendorlibdir='${vendordir}'${ruby_version_suffix}
+ 
+ AC_ARG_WITH(vendorarchdir,
+ 	    AS_HELP_STRING([--with-vendorarchdir=DIR],
+diff --git a/loadpath.c b/loadpath.c
+index 9160031..623dc9d 100644
+--- a/loadpath.c
++++ b/loadpath.c
+@@ -65,7 +65,9 @@ const char ruby_initial_load_paths[] =
+     RUBY_SEARCH_PATH "\0"
  #endif
-@@ -77,8 +83,10 @@ const char ruby_initial_load_paths[] =
+ #ifndef NO_RUBY_SITE_LIB
++#ifndef RUBY_LIB_VERSION_BLANK
+     RUBY_SITE_LIB2 "\0"
++#endif
+ #ifdef RUBY_THINARCH
      RUBY_SITE_ARCH_LIB_FOR(RUBY_THINARCH) "\0"
  #endif
-     RUBY_SITE_ARCH_LIB_FOR(RUBY_SITEARCH) "\0"
-+#ifndef RUBY_LIB_VERSION_BLANK
-     RUBY_SITE_LIB "\0"
+@@ -74,7 +76,9 @@ const char ruby_initial_load_paths[] =
  #endif
-+#endif
  
  #ifndef NO_RUBY_VENDOR_LIB
++#ifndef RUBY_LIB_VERSION_BLANK
      RUBY_VENDOR_LIB2 "\0"
-@@ -86,8 +94,10 @@ const char ruby_initial_load_paths[] =
++#endif
+ #ifdef RUBY_THINARCH
      RUBY_VENDOR_ARCH_LIB_FOR(RUBY_THINARCH) "\0"
  #endif
-     RUBY_VENDOR_ARCH_LIB_FOR(RUBY_SITEARCH) "\0"
-+#ifndef RUBY_LIB_VERSION_BLANK
-     RUBY_VENDOR_LIB "\0"
- #endif
-+#endif
- 
-     RUBY_LIB "\0"
- #ifdef RUBY_THINARCH
 -- 
-1.8.1.2
+1.8.3.1
 

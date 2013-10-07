@@ -1,0 +1,31 @@
+From cf26cdec7bcd0668b8f8347a5f29072c8b8f6e8d Mon Sep 17 00:00:00 2001
+From: nobu <nobu@b2dd03c8-39d4-4d8f-98ff-823fe69b080e>
+Date: Tue, 1 Oct 2013 11:36:47 +0000
+Subject: [PATCH] test_config.rb: fix library path
+
+* test/mkmf/test_config.rb (test_dir_config): fix expected library
+  path.  [ruby-core:57535] [Bug #8972]
+
+git-svn-id: svn+ssh://ci.ruby-lang.org/ruby/trunk@43106 b2dd03c8-39d4-4d8f-98ff-823fe69b080e
+---
+ test/mkmf/test_config.rb | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/test/mkmf/test_config.rb b/test/mkmf/test_config.rb
+index b09dfd6..4a9be57 100644
+--- a/test/mkmf/test_config.rb
++++ b/test/mkmf/test_config.rb
+@@ -8,8 +8,9 @@ class TestMkmf < Test::Unit::TestCase
+   class TestConfig < Test::Unit::TestCase
+     def test_dir_config
+       bug8074 = '[Bug #8074]'
++      lib = RbConfig.expand(RbConfig::MAKEFILE_CONFIG["libdir"], "exec_prefix"=>"")
+       assert_separately %w[-rmkmf - -- --with-foo-dir=/test/foo], %{
+-        assert_equal(%w[/test/foo/include /test/foo/lib], dir_config("foo"), #{bug8074.dump})
++        assert_equal(%w[/test/foo/include /test/foo#{lib}], dir_config("foo"), #{bug8074.dump})
+       }
+     end
+   end
+-- 
+1.8.3.1
+
