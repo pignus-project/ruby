@@ -113,14 +113,14 @@ source_macros(rpm.expand("%{SOURCE5}"))
 }
 
 # http://bugs.ruby-lang.org/issues/7807
-Patch0: ruby-2.0.0-Prevent-duplicated-paths-when-empty-version-string-i.patch
+Patch0: ruby-2.1.0-Prevent-duplicated-paths-when-empty-version-string-i.patch
 # Allows to override libruby.so placement. Hopefully we will be able to return
 # to plain --with-rubyarchprefix.
 # http://bugs.ruby-lang.org/issues/8973
 Patch1: ruby-2.1.0-Enable-configuration-of-archlibdir.patch
 # Force multiarch directories for i.86 to be always named i386. This solves
 # some differencies in build between Fedora and RHEL.
-Patch3: ruby-1.9.3-always-use-i386.patch
+Patch3: ruby-2.1.0-always-use-i386.patch
 # Fixes random WEBRick test failures.
 # https://bugs.ruby-lang.org/issues/6573.
 Patch5: ruby-1.9.3.p195-fix-webrick-tests.patch
@@ -128,17 +128,17 @@ Patch5: ruby-1.9.3.p195-fix-webrick-tests.patch
 Patch7: rubygems-2.2.0-DRY-Use-full_require_paths-on-yet-another-place.patch
 # Allows to install RubyGems into custom directory, outside of Ruby's tree.
 # http://redmine.ruby-lang.org/issues/5617
-Patch8: ruby-1.9.3-custom-rubygems-location.patch
+Patch8: ruby-2.1.0-custom-rubygems-location.patch
 # Add support for installing binary extensions according to FHS.
 # https://github.com/rubygems/rubygems/issues/210
-Patch9: rubygems-2.0.0-binary-extensions.patch
+Patch9: rubygems-2.2.0-binary-extensions.patch
 # Make mkmf verbose by default
 Patch12: ruby-1.9.3-mkmf-verbose.patch
 # Without this patch, Specifications.dirs is modified and gems installed on
 # the system cannot be required anymore. This causes later issues when RDoc
 # documentation should be generated, since json gem is sudenly not accessible.
 # https://github.com/rubygems/rubygems/pull/670
-Patch13: rubygems-2.0.0-Do-not-modify-global-Specification.dirs-during-insta.patch
+Patch13: rubygems-2.2.0-Do-not-modify-global-Specification.dirs-during-insta.patch
 # Adds support for '--with-prelude' configuration option. This allows to built
 # in support for ABRT.
 # http://bugs.ruby-lang.org/issues/8566
