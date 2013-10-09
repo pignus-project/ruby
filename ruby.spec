@@ -587,6 +587,13 @@ DISABLE_TESTS=""
 DISABLE_TESTS="-x test_dl2.rb $DISABLE_TESTS"
 %endif
 
+%ifarch i686
+# TestSprintf#test_float fails on i686
+# http://bugs.ruby-lang.org/issues/8358
+sed -i "/assert_equal(\"0x1p+2\",   sprintf('%.0a', Float('0x1.fp+1')),   \"\[ruby-dev:42551\]\")/ s/^/#/" test/ruby/test_sprintf.rb
+sed -i "/assert_equal(\"-0x1.0p+2\", sprintf('%.1a', Float('-0x1.ffp+1')), \"\[ruby-dev:42551\]\")/ s/^/#/" test/ruby/test_sprintf.rb
+%endif
+
 # test_debug(TestRubyOptions) fails due to LoadError reported in debug mode,
 # when abrt.rb cannot be required (seems to be easier way then customizing
 # the test suite).
@@ -597,6 +604,17 @@ touch abrt.rb
 # http://bugs.ruby-lang.org/issues/8971
 # Fixed in rev43129.
 sed -i '/yes-test-sample/,/test-knownbugs/ s/MINIRUBY/RUNRUBY/' uncommon.mk
+
+# TestSignal#test_hup_me hangs up the test suite.
+# http://bugs.ruby-lang.org/issues/8997
+sed -i '/def test_hup_me/,/end if Process.respond_to/ s/^/#/' test/ruby/test_signal.rb
+
+%ifarch armv7l armv7hl armv7hnl
+# TestProcess#test_clock_getres_constants and TestProcess#test_clock_gettime_constants fails on ARM.
+# http://bugs.ruby-lang.org/issues/9008
+sed -i '/Process.constants.grep(\/\\ACLOCK_\/).each {|n|/ s/$/\n      next if [:CLOCK_REALTIME_ALARM, :CLOCK_BOOTTIME_ALARM].include? n/' \
+  test/ruby/test_process.rb
+%endif
 
 make check TESTS="-v $DISABLE_TESTS"
 
