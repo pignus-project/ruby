@@ -612,6 +612,9 @@ sed -i '/def test_hup_me/,/end if Process.respond_to/ s/^/#/' test/ruby/test_sig
 %ifarch armv7l armv7hl armv7hnl
 # TestProcess#test_clock_getres_constants and TestProcess#test_clock_gettime_constants fails on ARM.
 # http://bugs.ruby-lang.org/issues/9008
+# Kernel issue. Should be fixed in 3.13 kernel.
+# https://lkml.org/lkml/2013/10/18/521
+# http://git.kernel.org/cgit/linux/kernel/git/tip/tip.git/commit/?id=98d6f4dd84a134d942827584a3c5f67ffd8ec35f
 sed -i '/Process.constants.grep(\/\\ACLOCK_\/).each {|n|/ s/$/\n      next if [:CLOCK_REALTIME_ALARM, :CLOCK_BOOTTIME_ALARM].include? n/' \
   test/ruby/test_process.rb
 %endif
