@@ -619,7 +619,9 @@ sed -i '/Process.constants.grep(\/\\ACLOCK_\/).each {|n|/ s/$/\n      next if [:
   test/ruby/test_process.rb
 %endif
 
-make check TESTS="-v $DISABLE_TESTS"
+# Allow MD5 in OpenSSL.
+# https://bugs.ruby-lang.org/issues/9154
+OPENSSL_ENABLE_MD5_VERIFY=1 make check TESTS="-v $DISABLE_TESTS"
 
 %post libs -p /sbin/ldconfig
 
@@ -913,6 +915,9 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Mon Dec 02 2013 Vít Ondruch <vondruch@redhat.com> - 2.1.0.0-0.16.preview1
+- Allow MD5 in OpenSSL for tests.
+
 * Mon Oct 07 2013 Vít Ondruch <vondruch@redhat.com> - 2.1.0.0-0.16.preview1
 - Update to Ruby 2.1.0.preview1.
 
