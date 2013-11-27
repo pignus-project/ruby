@@ -1,7 +1,7 @@
 %global major_version 2
 %global minor_version 0
 %global teeny_version 0
-%global patch_level 247
+%global patch_level 353
 
 %global major_minor_version %{major_version}.%{minor_version}
 
@@ -26,7 +26,7 @@
 %endif
 
 
-%global release 15
+%global release 16
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 %global rubygems_version 2.0.3
@@ -139,11 +139,6 @@ Patch13: rubygems-2.0.0-Do-not-modify-global-Specification.dirs-during-insta.pat
 # This prevents issues, when ruby configuration specifies --with-ruby-version=''.
 # https://github.com/rubygems/rubygems/pull/455
 Patch14: rubygems-2.0.0-Fixes-for-empty-ruby-version.patch
-# Although this does not directly affects Fedora ATM, it might be issue when
-# rebuilding package on different platform (RHEL7). Please keep the patch until
-# it is resolved in upstream.
-# https://bugs.ruby-lang.org/issues/8384
-Patch15: ruby-2.0.0-p195-Fix-build-against-OpenSSL-with-enabled-ECC-curves.patch
 # Adds aarch64 support.
 # http://bugs.ruby-lang.org/issues/8331
 # https://bugzilla.redhat.com/show_bug.cgi?id=926463
@@ -424,7 +419,6 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 %patch12 -p1
 %patch13 -p1
 %patch14 -p1
-%patch15 -p1
 %patch16 -p1
 %patch17 -p1
 %patch18 -p1
@@ -600,7 +594,9 @@ DISABLE_TESTS="-x test_dl2.rb $DISABLE_TESTS"
 # the test suite).
 touch abrt.rb
 
-make check TESTS="-v $DISABLE_TESTS"
+# Allow MD5 in OpenSSL.
+# https://bugs.ruby-lang.org/issues/9154
+OPENSSL_ENABLE_MD5_VERIFY=1 make check TESTS="-v $DISABLE_TESTS"
 
 %post libs -p /sbin/ldconfig
 
@@ -893,6 +889,11 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Mon Nov 25 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.353-16
+- Update to Ruby 2.0.0-p353.
+- Allow MD5 in OpenSSL for tests.
+- Fix heap overflow in floating point parsing (CVE-2013-4164).
+
 * Tue Jul 30 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.247-15
 - Move Psych symlinks to vendor dir, to prevent F18 -> F19 upgrade issues
   (rhbz#988490).
