@@ -39,7 +39,7 @@ index 623dc9d..74c5d9e 100644
 --- a/loadpath.c
 +++ b/loadpath.c
 @@ -86,6 +86,10 @@ const char ruby_initial_load_paths[] =
-     RUBY_VENDOR_LIB "\0"
+ #endif
  #endif
  
 +#ifdef RUBYGEMS_DIR

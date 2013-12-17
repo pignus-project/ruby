@@ -1,4 +1,4 @@
-From 35b8c14ddc7f9b38c21c15dfecefa3dff7567981 Mon Sep 17 00:00:00 2001
+From 763c6571697b0bd551a8a0c27d538d00f161a9f3 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?V=C3=ADt=20Ondruch?= <vondruch@redhat.com>
 Date: Fri, 8 Feb 2013 22:48:41 +0100
 Subject: [PATCH] Prevent duplicated paths when empty version string is
@@ -6,23 +6,23 @@ Subject: [PATCH] Prevent duplicated paths when empty version string is
 
 ---
  configure.in | 15 +++++++++------
- loadpath.c   |  4 ++++
- 2 files changed, 13 insertions(+), 6 deletions(-)
+ loadpath.c   | 12 ++++++++++++
+ 2 files changed, 21 insertions(+), 6 deletions(-)
 
 diff --git a/configure.in b/configure.in
-index 881449e..37d9a62 100644
+index 88d24ee..4a300b9 100644
 --- a/configure.in
 +++ b/configure.in
-@@ -3535,8 +3535,6 @@ AC_ARG_WITH(rubylibprefix,
- 	    fi
- 	    rubylibprefix="$withval"])
- AC_SUBST(rubylibprefix)
+@@ -3608,8 +3608,6 @@ AC_ARG_WITH(rubylibprefix,
+     rubyw_install_name='$(RUBYW_INSTALL_NAME)'
+     ])
+ 
 -rubylibdir='${rubylibprefix}/${ruby_version}'
 -rubyarchdir=${multiarch+'${rubyarchprefix}/${ruby_version}'}${multiarch-'${rubylibdir}/${arch}'}
  
  rubyarchprefix=${multiarch+'${archlibdir}/${RUBY_BASE_NAME}'}${multiarch-'${rubylibprefix}/${arch}'}
  AC_ARG_WITH(rubyarchprefix,
-@@ -3566,6 +3564,7 @@ AC_ARG_WITH(ruby-version,
+@@ -3639,6 +3637,7 @@ AC_ARG_WITH(ruby-version,
              [ruby_version=full])
  unset RUBY_LIB_VERSION
  unset RUBY_LIB_VERSION_STYLE
@@ -30,7 +30,7 @@ index 881449e..37d9a62 100644
  AS_CASE(["$ruby_version"],
    [full],  [RUBY_LIB_VERSION_STYLE='3	/* full */'],
    [minor], [RUBY_LIB_VERSION_STYLE='2	/* minor */'])
-@@ -3582,30 +3581,34 @@ if test ${RUBY_LIB_VERSION_STYLE+set}; then
+@@ -3655,30 +3654,34 @@ if test ${RUBY_LIB_VERSION_STYLE+set}; then
      ruby_version="`$CPP -I. -I"${srcdir}" -I"${srcdir}/include" conftest.c | sed '/^ruby_version=/!d;s/ //g'`"
      eval $ruby_version
  elif test -z "${ruby_version}"; then
@@ -70,29 +70,44 @@ index 881449e..37d9a62 100644
  AC_ARG_WITH(vendorarchdir,
  	    AS_HELP_STRING([--with-vendorarchdir=DIR],
 diff --git a/loadpath.c b/loadpath.c
-index 9160031..623dc9d 100644
+index 9160031..0d4d953 100644
 --- a/loadpath.c
 +++ b/loadpath.c
-@@ -65,7 +65,9 @@ const char ruby_initial_load_paths[] =
+@@ -65,22 +65,34 @@ const char ruby_initial_load_paths[] =
      RUBY_SEARCH_PATH "\0"
  #endif
  #ifndef NO_RUBY_SITE_LIB
-+#ifndef RUBY_LIB_VERSION_BLANK
++#ifdef RUBY_LIB_VERSION_BLANK
++    RUBY_SITE_LIB "\0"
++#else
      RUBY_SITE_LIB2 "\0"
 +#endif
  #ifdef RUBY_THINARCH
      RUBY_SITE_ARCH_LIB_FOR(RUBY_THINARCH) "\0"
  #endif
-@@ -74,7 +76,9 @@ const char ruby_initial_load_paths[] =
+     RUBY_SITE_ARCH_LIB_FOR(RUBY_SITEARCH) "\0"
++#ifndef RUBY_LIB_VERSION_BLANK
+     RUBY_SITE_LIB "\0"
  #endif
++#endif
  
  #ifndef NO_RUBY_VENDOR_LIB
-+#ifndef RUBY_LIB_VERSION_BLANK
++#ifdef RUBY_LIB_VERSION_BLANK
++    RUBY_VENDOR_LIB "\0"
++#else
      RUBY_VENDOR_LIB2 "\0"
 +#endif
  #ifdef RUBY_THINARCH
      RUBY_VENDOR_ARCH_LIB_FOR(RUBY_THINARCH) "\0"
  #endif
+     RUBY_VENDOR_ARCH_LIB_FOR(RUBY_SITEARCH) "\0"
++#ifndef RUBY_LIB_VERSION_BLANK
+     RUBY_VENDOR_LIB "\0"
+ #endif
++#endif
+ 
+     RUBY_LIB "\0"
+ #ifdef RUBY_THINARCH
 -- 
-1.8.3.1
+1.8.4.2
 

@@ -10,10 +10,10 @@
 %global ruby_release %{ruby_version}
 
 # Specify the named version. It has precedense to revision.
-%global milestone preview1
+#%%global milestone preview2
 
 # Keep the revision enabled for pre-releases from SVN.
-#%%global revision 39387
+%global revision 44266
 
 %global ruby_archive %{name}-%{ruby_version}
 
@@ -29,22 +29,23 @@
 %global release 16
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
-%global rubygems_version 2.2.0.preview.1
+%global rubygems_version 2.2.0.rc.1
 
 # The RubyGems library has to stay out of Ruby directory three, since the
 # RubyGems should be share by all Ruby implementations.
 %global rubygems_dir %{_datadir}/rubygems
 
-%global rake_version 0.9.6
 # TODO: The IRB has strange versioning. Keep the Ruby's versioning ATM.
 # http://redmine.ruby-lang.org/issues/5313
 %global irb_version %{ruby_version_patch_level}
-%global rdoc_version 4.1.0.preview.1
-%global bigdecimal_version 1.2.1
+
+%global bigdecimal_version 1.2.3
 %global io_console_version 0.4.2
-%global json_version 1.7.7
+%global json_version 1.8.1
 %global minitest_version 4.7.5
-%global psych_version 2.0.1
+%global psych_version 2.0.2
+%global rake_version 10.1.0
+%global rdoc_version 4.1.0.rc.1
 
 # Might not be needed in the future, if we are lucky enough.
 # https://bugzilla.redhat.com/show_bug.cgi?id=888262
@@ -124,31 +125,15 @@ Patch3: ruby-2.1.0-always-use-i386.patch
 # Fixes random WEBRick test failures.
 # https://bugs.ruby-lang.org/issues/6573.
 Patch5: ruby-1.9.3.p195-fix-webrick-tests.patch
-# https://github.com/rubygems/rubygems/pull/667
-Patch7: rubygems-2.2.0-DRY-Use-full_require_paths-on-yet-another-place.patch
 # Allows to install RubyGems into custom directory, outside of Ruby's tree.
 # http://redmine.ruby-lang.org/issues/5617
 Patch8: ruby-2.1.0-custom-rubygems-location.patch
-# Add support for installing binary extensions according to FHS.
-# https://github.com/rubygems/rubygems/issues/210
-Patch9: rubygems-2.2.0-binary-extensions.patch
 # Make mkmf verbose by default
 Patch12: ruby-1.9.3-mkmf-verbose.patch
-# Without this patch, Specifications.dirs is modified and gems installed on
-# the system cannot be required anymore. This causes later issues when RDoc
-# documentation should be generated, since json gem is sudenly not accessible.
-# https://github.com/rubygems/rubygems/pull/670
-Patch13: rubygems-2.2.0-Do-not-modify-global-Specification.dirs-during-insta.patch
 # Adds support for '--with-prelude' configuration option. This allows to built
 # in support for ABRT.
 # http://bugs.ruby-lang.org/issues/8566
 Patch17: ruby-2.1.0-Allow-to-specify-additional-preludes-by-configuratio.patch
-# Fixes multilib conlicts of .gemspec files.
-# https://bugs.ruby-lang.org/issues/8623
-Patch19: ruby-2.0.0-p247-Make-stable-Gem-Specification.files-in-default-.gems.patch
-# TestMkmf::TestConfig#test_dir_config fails on x86_64.
-# http://bugs.ruby-lang.org/issues/8972
-Patch20: ruby-2.1.0-test_config.rb-fix-library-path.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Requires: ruby(rubygems) >= %{rubygems_version}
@@ -160,7 +145,6 @@ Requires: rubygem(bigdecimal) >= %{bigdecimal_version}
 
 BuildRequires: autoconf
 BuildRequires: gdbm-devel
-BuildRequires: ncurses-devel
 BuildRequires: libdb-devel
 BuildRequires: libffi-devel
 BuildRequires: openssl-devel
@@ -409,14 +393,9 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 %patch1 -p1
 %patch3 -p1
 %patch5 -p1
-%patch7 -p1
 %patch8 -p1
-%patch9 -p1
 %patch12 -p1
-%patch13 -p1
 %patch17 -p1
-%patch19 -p1
-%patch20 -p1
 
 # Provide an example of usage of the tapset:
 cp -a %{SOURCE3} .
@@ -448,11 +427,6 @@ autoconf
         --with-ruby-version='' \
         --enable-multiarch \
         --with-prelude=./abrt_prelude.rb \
-
-# This avoids regeneration of sizes.c (BASERUBY is needed for that), when
-# configure.in has newer timestamp the sizes.c (after patch is applied).
-# http://bugs.ruby-lang.org/issues/8968
-touch sizes.c
 
 # Q= makes the build output more verbose and allows to check Fedora
 # compiler options.
@@ -511,25 +485,25 @@ mv %{buildroot}%{ruby_libdir}/rdoc* %{buildroot}%{gem_dir}/gems/rdoc-%{rdoc_vers
 mv %{buildroot}%{gem_dir}/specifications/default/rdoc-%{rdoc_version}.gemspec %{buildroot}%{gem_dir}/specifications
 
 mkdir -p %{buildroot}%{gem_dir}/gems/bigdecimal-%{bigdecimal_version}/lib
-mkdir -p %{buildroot}%{_libdir}/gems/%{name}/bigdecimal-%{bigdecimal_version}/lib
+mkdir -p %{buildroot}%{_libdir}/gems/%{name}/bigdecimal-%{bigdecimal_version}
 mv %{buildroot}%{ruby_libdir}/bigdecimal %{buildroot}%{gem_dir}/gems/bigdecimal-%{bigdecimal_version}/lib
-mv %{buildroot}%{ruby_libarchdir}/bigdecimal.so %{buildroot}%{_libdir}/gems/%{name}/bigdecimal-%{bigdecimal_version}/lib
+mv %{buildroot}%{ruby_libarchdir}/bigdecimal.so %{buildroot}%{_libdir}/gems/%{name}/bigdecimal-%{bigdecimal_version}
 mv %{buildroot}%{gem_dir}/specifications/default/bigdecimal-%{bigdecimal_version}.gemspec %{buildroot}%{gem_dir}/specifications
 ln -s %{gem_dir}/gems/bigdecimal-%{bigdecimal_version}/lib/bigdecimal %{buildroot}%{ruby_libdir}/bigdecimal
-ln -s %{_libdir}/gems/%{name}/bigdecimal-%{bigdecimal_version}/lib/bigdecimal.so %{buildroot}%{ruby_libarchdir}/bigdecimal.so
+ln -s %{_libdir}/gems/%{name}/bigdecimal-%{bigdecimal_version}/bigdecimal.so %{buildroot}%{ruby_libarchdir}/bigdecimal.so
 
 mkdir -p %{buildroot}%{gem_dir}/gems/io-console-%{io_console_version}/lib
-mkdir -p %{buildroot}%{_libdir}/gems/%{name}/io-console-%{io_console_version}/lib/io
+mkdir -p %{buildroot}%{_libdir}/gems/%{name}/io-console-%{io_console_version}/io
 mv %{buildroot}%{ruby_libdir}/io %{buildroot}%{gem_dir}/gems/io-console-%{io_console_version}/lib
-mv %{buildroot}%{ruby_libarchdir}/io/console.so %{buildroot}%{_libdir}/gems/%{name}/io-console-%{io_console_version}/lib/io
+mv %{buildroot}%{ruby_libarchdir}/io/console.so %{buildroot}%{_libdir}/gems/%{name}/io-console-%{io_console_version}/io
 mv %{buildroot}%{gem_dir}/specifications/default/io-console-%{io_console_version}.gemspec %{buildroot}%{gem_dir}/specifications
 ln -s %{gem_dir}/gems/io-console-%{io_console_version}/lib/io %{buildroot}%{ruby_libdir}/io
-ln -s %{_libdir}/gems/%{name}/io-console-%{io_console_version}/lib/io/console.so %{buildroot}%{ruby_libarchdir}/io/console.so
+ln -s %{_libdir}/gems/%{name}/io-console-%{io_console_version}/io/console.so %{buildroot}%{ruby_libarchdir}/io/console.so
 
 mkdir -p %{buildroot}%{gem_dir}/gems/json-%{json_version}/lib
-mkdir -p %{buildroot}%{_libdir}/gems/%{name}/json-%{json_version}/lib
+mkdir -p %{buildroot}%{_libdir}/gems/%{name}/json-%{json_version}
 mv %{buildroot}%{ruby_libdir}/json* %{buildroot}%{gem_dir}/gems/json-%{json_version}/lib
-mv %{buildroot}%{ruby_libarchdir}/json/ %{buildroot}%{_libdir}/gems/%{name}/json-%{json_version}/lib/
+mv %{buildroot}%{ruby_libarchdir}/json/ %{buildroot}%{_libdir}/gems/%{name}/json-%{json_version}/
 mv %{buildroot}%{gem_dir}/specifications/default/json-%{json_version}.gemspec %{buildroot}%{gem_dir}/specifications
 
 mkdir -p %{buildroot}%{gem_dir}/gems/minitest-%{minitest_version}/lib
@@ -537,9 +511,9 @@ mv %{buildroot}%{ruby_libdir}/minitest %{buildroot}%{gem_dir}/gems/minitest-%{mi
 mv %{buildroot}%{gem_dir}/specifications/default/minitest-%{minitest_version}.gemspec %{buildroot}%{gem_dir}/specifications
 
 mkdir -p %{buildroot}%{gem_dir}/gems/psych-%{psych_version}/lib
-mkdir -p %{buildroot}%{_libdir}/gems/%{name}/psych-%{psych_version}/lib
+mkdir -p %{buildroot}%{_libdir}/gems/%{name}/psych-%{psych_version}
 mv %{buildroot}%{ruby_libdir}/psych* %{buildroot}%{gem_dir}/gems/psych-%{psych_version}/lib
-mv %{buildroot}%{ruby_libarchdir}/psych.so %{buildroot}%{_libdir}/gems/%{name}/psych-%{psych_version}/lib/
+mv %{buildroot}%{ruby_libarchdir}/psych.so %{buildroot}%{_libdir}/gems/%{name}/psych-%{psych_version}/
 mv %{buildroot}%{gem_dir}/specifications/default/psych-%{psych_version}.gemspec %{buildroot}%{gem_dir}/specifications
 # The links should replace directory, which RPM cannot handle and it is causing
 # issues during upgrade from F18 to F19. As a workaround the links are placed
@@ -547,7 +521,7 @@ mv %{buildroot}%{gem_dir}/specifications/default/psych-%{psych_version}.gemspec 
 # https://bugzilla.redhat.com/show_bug.cgi?id=988490
 ln -s %{gem_dir}/gems/psych-%{psych_version}/lib/psych %{buildroot}%{ruby_vendorlibdir}/psych
 ln -s %{gem_dir}/gems/psych-%{psych_version}/lib/psych.rb %{buildroot}%{ruby_vendorlibdir}/psych.rb
-ln -s %{_libdir}/gems/%{name}/psych-%{psych_version}/lib/psych.so %{buildroot}%{ruby_vendorarchdir}/psych.so
+ln -s %{_libdir}/gems/%{name}/psych-%{psych_version}/psych.so %{buildroot}%{ruby_vendorarchdir}/psych.so
 
 # Adjust the gemspec files so that the gems will load properly
 sed -i '/^end$/ i\
@@ -618,6 +592,23 @@ sed -i '/def test_hup_me/,/end if Process.respond_to/ s/^/#/' test/ruby/test_sig
 sed -i '/Process.constants.grep(\/\\ACLOCK_\/).each {|n|/ s/$/\n      next if [:CLOCK_REALTIME_ALARM, :CLOCK_BOOTTIME_ALARM].include? n/' \
   test/ruby/test_process.rb
 %endif
+
+# Errno::EINVAL: Invalid argument - recvmsg(2)
+# Looks to be a problem of Linux 3.12+ and should be possible to remove as soon
+# as Koji builders run fixed kerenel.
+# https://bugs.ruby-lang.org/issues/9124
+sed -i '/^  def test_timestampns/,/^  end/ s/^/#/' test/socket/test_socket.rb
+sed -i '/^  def test_timestamp/,/^  end/ s/^/#/' test/socket/test_socket.rb
+sed -i '/^  def test_udp_server/,/^  end/ s/^/#/' test/socket/test_socket.rb
+sed -i '/^  def test_recvmsg_nonblock_error/,/^  end/ s/^/#/' test/socket/test_nonblock.rb
+sed -i '/^  def test_fd_passing_n/,/^  end/ s/^/#/' test/socket/test_unix.rb
+sed -i '/^  def test_fd_passing_n2/,/^  end/ s/^/#/' test/socket/test_unix.rb
+sed -i '/^  def test_recvmsg/,/^  end/ s/^/#/' test/socket/test_unix.rb
+sed -i '/^  def test_sendcred_ucred/,/^  end/ s/^/#/' test/socket/test_unix.rb
+
+# Segmentation fault.
+# https://bugs.ruby-lang.org/issues/9198
+sed -i '/^  def test_machine_stackoverflow/,/^  end/ s/^/#/' test/ruby/test_exception.rb
 
 # Allow MD5 in OpenSSL.
 # https://bugs.ruby-lang.org/issues/9154
@@ -711,7 +702,6 @@ OPENSSL_ENABLE_MD5_VERIFY=1 make check TESTS="-v $DISABLE_TESTS"
 %dir %{ruby_libarchdir}
 %{ruby_libarchdir}/continuation.so
 %{ruby_libarchdir}/coverage.so
-%{ruby_libarchdir}/curses.so
 %{ruby_libarchdir}/date_core.so
 %{ruby_libarchdir}/dbm.so
 %dir %{ruby_libarchdir}/digest
@@ -798,6 +788,7 @@ OPENSSL_ENABLE_MD5_VERIFY=1 make check TESTS="-v $DISABLE_TESTS"
 %dir %{ruby_libarchdir}/racc
 %{ruby_libarchdir}/racc/cparse.so
 %{ruby_libarchdir}/rbconfig.rb
+%{ruby_libarchdir}/rbconfig/sizeof.so
 %{ruby_libarchdir}/readline.so
 %{ruby_libarchdir}/ripper.so
 %{ruby_libarchdir}/sdbm.so
@@ -915,6 +906,9 @@ OPENSSL_ENABLE_MD5_VERIFY=1 make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Tue Dec 17 2013 Vít Ondruch <vondruch@redhat.com> - 2.1.0.0-0.16.r44266
+- Upgrade to Ruby 2.1.0 (r44266).
+
 * Mon Dec 02 2013 Vít Ondruch <vondruch@redhat.com> - 2.1.0.0-0.16.preview1
 - Allow MD5 in OpenSSL for tests.
 

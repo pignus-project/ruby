@@ -16,7 +16,7 @@ index 7e8ed82..7916993 100644
 @@ -110,6 +110,7 @@ XRUBY_RUBYLIBDIR = @XRUBY_RUBYLIBDIR@
  XRUBY_RUBYHDRDIR = @XRUBY_RUBYHDRDIR@
  
- DEFAULT_PRELUDES = $(@USE_RUBYGEMS@_GEM_PRELUDE)
+ DEFAULT_PRELUDES = $(GEM_PRELUDE)
 +OPTIONAL_PRELUDES = @OPTIONAL_PRELUDES@
  
  #### End of system configuration section. ####
@@ -32,8 +32,8 @@ index 5cfbc3d..3f0a82e 100644
 -PRELUDE_SCRIPTS = $(srcdir)/prelude.rb $(srcdir)/enc/prelude.rb $(DEFAULT_PRELUDES)
 +PRELUDE_SCRIPTS = $(srcdir)/prelude.rb $(srcdir)/enc/prelude.rb $(DEFAULT_PRELUDES) $(OPTIONAL_PRELUDES)
  GEM_PRELUDE = $(srcdir)/gem_prelude.rb
- YES_GEM_PRELUDE = $(GEM_PRELUDE)
- NO_GEM_PRELUDE =
+ PRELUDES      = prelude.c miniprelude.c
+ GOLFPRELUDES = golf_prelude.c
 diff --git a/configure.in b/configure.in
 index 0e371e2..d4f1dcb 100644
 --- a/configure.in

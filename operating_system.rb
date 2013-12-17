@@ -81,5 +81,15 @@ module Gem
       dirs = Gem.default_dirs.detect {|location, paths| paths[:gem_dir] == base_dir}
       dirs && File.join(dirs.last[:ext_dir], RbConfig::CONFIG['RUBY_INSTALL_NAME'])
     end
+
+    # This method should be available since RubyGems 2.2 until RubyGems 3.0.
+    # https://github.com/rubygems/rubygems/issues/749
+    if method_defined? :install_extension_in_lib
+      remove_method :install_extension_in_lib
+
+      def install_extension_in_lib
+        false
+      end
+    end
   end
 end
