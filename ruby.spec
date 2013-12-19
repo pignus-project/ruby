@@ -593,6 +593,10 @@ sed -i '/Process.constants.grep(\/\\ACLOCK_\/).each {|n|/ s/$/\n      next if [:
   test/ruby/test_process.rb
 %endif
 
+# Fix "Could not find 'minitest'" error.
+# http://bugs.ruby-lang.org/issues/9259
+sed -i "/^  gem 'minitest', '~> 4.0'/ s/^/#/" lib/rubygems/test_case.rb
+
 # Errno::EINVAL: Invalid argument - recvmsg(2)
 # Looks to be a problem of Linux 3.12+ and should be possible to remove as soon
 # as Koji builders run fixed kerenel.
