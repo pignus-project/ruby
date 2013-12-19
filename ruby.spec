@@ -13,7 +13,7 @@
 #%%global milestone preview2
 
 # Keep the revision enabled for pre-releases from SVN.
-%global revision 44266
+%global revision 44289
 
 %global ruby_archive %{name}-%{ruby_version}
 
@@ -913,8 +913,8 @@ OPENSSL_ENABLE_MD5_VERIFY=1 make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
-* Tue Dec 17 2013 Vít Ondruch <vondruch@redhat.com> - 2.1.0.0-0.16.r44266
-- Upgrade to Ruby 2.1.0 (r44266).
+* Tue Dec 17 2013 Vít Ondruch <vondruch@redhat.com> - 2.1.0.0-0.16.r44289
+- Upgrade to Ruby 2.1.0 (r44289).
 
 * Mon Dec 02 2013 Vít Ondruch <vondruch@redhat.com> - 2.1.0.0-0.16.preview1
 - Allow MD5 in OpenSSL for tests.
