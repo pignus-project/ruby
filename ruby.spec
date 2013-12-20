@@ -13,7 +13,7 @@
 #%%global milestone preview2
 
 # Keep the revision enabled for pre-releases from SVN.
-%global revision 44289
+%global revision 44362
 
 %global ruby_archive %{name}-%{ruby_version}
 
@@ -29,7 +29,7 @@
 %global release 16
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
-%global rubygems_version 2.2.0.rc.1
+%global rubygems_version 2.2.0
 
 # The RubyGems library has to stay out of Ruby directory three, since the
 # RubyGems should be share by all Ruby implementations.
@@ -45,7 +45,7 @@
 %global minitest_version 4.7.5
 %global psych_version 2.0.2
 %global rake_version 10.1.0
-%global rdoc_version 4.1.0.rc.1
+%global rdoc_version 4.1.0
 
 # Might not be needed in the future, if we are lucky enough.
 # https://bugzilla.redhat.com/show_bug.cgi?id=888262
@@ -134,6 +134,10 @@ Patch12: ruby-1.9.3-mkmf-verbose.patch
 # in support for ABRT.
 # http://bugs.ruby-lang.org/issues/8566
 Patch17: ruby-2.1.0-Allow-to-specify-additional-preludes-by-configuratio.patch
+# Fixes possible "ArgumentError: invalid byte sequence in US-ASCII" error in
+# TestGemRemoteFetcher#test_download_to_cache.
+# http://bugs.ruby-lang.org/issues/9273
+Patch18: ruby-2.1.0-resolv.rb-no-encodings.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Requires: ruby(rubygems) >= %{rubygems_version}
@@ -399,6 +403,7 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 %patch8 -p1
 %patch12 -p1
 %patch17 -p1
+%patch18 -p1
 
 # Provide an example of usage of the tapset:
 cp -a %{SOURCE3} .
@@ -913,8 +918,8 @@ OPENSSL_ENABLE_MD5_VERIFY=1 make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
-* Tue Dec 17 2013 Vít Ondruch <vondruch@redhat.com> - 2.1.0.0-0.16.r44289
-- Upgrade to Ruby 2.1.0 (r44289).
+* Mon Dec 23 2013 Vít Ondruch <vondruch@redhat.com> - 2.1.0.0-0.16.r44362
+- Upgrade to Ruby 2.1.0 (r44362).
 
 * Mon Dec 02 2013 Vít Ondruch <vondruch@redhat.com> - 2.1.0.0-0.16.preview1
 - Allow MD5 in OpenSSL for tests.

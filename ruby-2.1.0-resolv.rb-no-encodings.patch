@@ -1,0 +1,143 @@
+From 1ffbe07e179a2e047d24c7091f6ff013195b1a93 Mon Sep 17 00:00:00 2001
+From: nobu <nobu@b2dd03c8-39d4-4d8f-98ff-823fe69b080e>
+Date: Sat, 21 Dec 2013 03:37:26 +0000
+Subject: [PATCH] resolv.rb: no encodings
+
+* lib/resolv.rb (Resolv::Hosts#lazy_initialize): should not
+  consider encodings in hosts file.  [ruby-core:59239] [Bug #9273]
+* lib/resolv.rb (Resolv::Config.parse_resolv_conf): ditto.
+
+git-svn-id: svn+ssh://ci.ruby-lang.org/ruby/trunk@44312 b2dd03c8-39d4-4d8f-98ff-823fe69b080e
+---
+ ChangeLog                |  7 +++++++
+ lib/resolv.rb            |  4 ++--
+ test/resolv/test_addr.rb | 12 ++++++++++++
+ test/resolv/test_dns.rb  | 13 +++++++++++++
+ 4 files changed, 34 insertions(+), 2 deletions(-)
+
+diff --git a/ChangeLog b/ChangeLog
+index 72eaa6f..93686e9 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,6 +1,13 @@
+ 	  install win32.h.
+ 	  [ruby-core:58801][Bug #9199] reported by arton.
+ 
++Sat Dec 21 12:37:19 2013  Nobuyoshi Nakada  <nobu@ruby-lang.org>
++
++	* lib/resolv.rb (Resolv::Hosts#lazy_initialize): should not
++	  consider encodings in hosts file.  [ruby-core:59239] [Bug #9273]
++
++	* lib/resolv.rb (Resolv::Config.parse_resolv_conf): ditto.
++
+ Fri Dec 20 17:52:50 2013  Koichi Sasada  <ko1@atdot.net>
+ 
+ 	* vm_method.c: check definition of
+diff --git a/lib/resolv.rb b/lib/resolv.rb
+index 6d34a67..0c2b68e 100644
+--- a/lib/resolv.rb
++++ b/lib/resolv.rb
+@@ -187,7 +187,7 @@ class Resolv
+         unless @initialized
+           @name2addr = {}
+           @addr2name = {}
+-          open(@filename) {|f|
++          open(@filename, 'rb') {|f|
+             f.each {|line|
+               line.sub!(/#.*/, '')
+               addr, hostname, *aliases = line.split(/\s+/)
+@@ -920,7 +920,7 @@ class Resolv
+         nameserver = []
+         search = nil
+         ndots = 1
+-        open(filename) {|f|
++        open(filename, 'rb') {|f|
+           f.each {|line|
+             line.sub!(/[#;].*/, '')
+             keyword, *args = line.split(/\s+/)
+diff --git a/test/resolv/test_addr.rb b/test/resolv/test_addr.rb
+index 84bc8c2..d4728e1 100644
+--- a/test/resolv/test_addr.rb
++++ b/test/resolv/test_addr.rb
+@@ -13,4 +13,16 @@ class TestResolvAddr < Test::Unit::TestCase
+       end
+     }
+   end
++
++  def test_invalid_byte_comment
++    bug9273 = '[ruby-core:59239] [Bug #9273]'
++    Tempfile.open('resolv_test_addr_') do |tmpfile|
++      tmpfile.print("\xff\x00\x40")
++      tmpfile.close
++      hosts = Resolv::Hosts.new(tmpfile.path)
++      assert_nothing_raised(ArgumentError, bug9273) do
++        hosts.each_address("") {break}
++      end
++    end
++  end
+ end
+diff --git a/test/resolv/test_dns.rb b/test/resolv/test_dns.rb
+index 0d9565e..e3e38ef 100644
+--- a/test/resolv/test_dns.rb
++++ b/test/resolv/test_dns.rb
+@@ -1,6 +1,7 @@
+ require 'test/unit'
+ require 'resolv'
+ require 'socket'
++require 'tempfile'
+ 
+ class TestResolvDNS < Test::Unit::TestCase
+   def setup
+@@ -150,4 +151,16 @@ class TestResolvDNS < Test::Unit::TestCase
+     }
+   end
+ 
++  def test_invalid_byte_comment
++    bug9273 = '[ruby-core:59239] [Bug #9273]'
++    Tempfile.open('resolv_test_dns_') do |tmpfile|
++      tmpfile.print("\xff\x00\x40")
++      tmpfile.close
++      Resolv::DNS.open(tmpfile.path) do |dns|
++        assert_nothing_raised(ArgumentError, bug9273) do
++          dns.getresources("foo.example.org", Resolv::DNS::Resource::IN::A)
++        end
++      end
++    end
++  end
+ end
+-- 
+1.8.4.2
+
+From 1ef0a76c6c6556bf6ab155e2ad28a23748ee59ef Mon Sep 17 00:00:00 2001
+From: nobu <nobu@b2dd03c8-39d4-4d8f-98ff-823fe69b080e>
+Date: Sat, 21 Dec 2013 07:18:18 +0000
+Subject: [PATCH] test_dns.rb: no server access
+
+* test/resolv/test_dns.rb (test_invalid_byte_comment): get rid of
+  actual server access.  [Bug #9273]
+
+git-svn-id: svn+ssh://ci.ruby-lang.org/ruby/trunk@44318 b2dd03c8-39d4-4d8f-98ff-823fe69b080e
+---
+ test/resolv/test_dns.rb | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/test/resolv/test_dns.rb b/test/resolv/test_dns.rb
+index e3e38ef..07396fb 100644
+--- a/test/resolv/test_dns.rb
++++ b/test/resolv/test_dns.rb
+@@ -156,10 +156,8 @@ class TestResolvDNS < Test::Unit::TestCase
+     Tempfile.open('resolv_test_dns_') do |tmpfile|
+       tmpfile.print("\xff\x00\x40")
+       tmpfile.close
+-      Resolv::DNS.open(tmpfile.path) do |dns|
+-        assert_nothing_raised(ArgumentError, bug9273) do
+-          dns.getresources("foo.example.org", Resolv::DNS::Resource::IN::A)
+-        end
++      assert_nothing_raised(ArgumentError, bug9273) do
++        Resolv::DNS::Config.parse_resolv_conf(tmpfile.path)
+       end
+     end
+   end
+-- 
+1.8.4.2
+
