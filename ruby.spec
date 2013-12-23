@@ -458,11 +458,11 @@ sed -i 's/Version: \${ruby_version}/Version: %{ruby_version}/' %{buildroot}%{_li
 
 # Move macros file insto proper place and replace the %%{name} macro, since it
 # would be wrongly evaluated during build of other packages.
-mkdir -p %{buildroot}%{_sysconfdir}/rpm
-install -m 644 %{SOURCE4} %{buildroot}%{_sysconfdir}/rpm/macros.ruby
-sed -i "s/%%{name}/%{name}/" %{buildroot}%{_sysconfdir}/rpm/macros.ruby
-install -m 644 %{SOURCE5} %{buildroot}%{_sysconfdir}/rpm/macros.rubygems
-sed -i "s/%%{name}/%{name}/" %{buildroot}%{_sysconfdir}/rpm/macros.rubygems
+mkdir -p %{buildroot}%{_exec_prefix}/lib/rpm/macros.d
+install -m 644 %{SOURCE4} %{buildroot}%{_exec_prefix}/lib/rpm/macros.d/macros.ruby
+sed -i "s/%%{name}/%{name}/" %{buildroot}%{_exec_prefix}/lib/rpm/macros.d/macros.ruby
+install -m 644 %{SOURCE5} %{buildroot}%{_exec_prefix}/lib/rpm/macros.d/macros.rubygems
+sed -i "s/%%{name}/%{name}/" %{buildroot}%{_exec_prefix}/lib/rpm/macros.d/macros.rubygems
 
 # Kill bundled cert.pem
 mkdir -p %{buildroot}%{rubygems_dir}/rubygems/ssl_certs/
@@ -651,7 +651,7 @@ OPENSSL_ENABLE_MD5_VERIFY=1 make check TESTS="-v $DISABLE_TESTS"
 %doc README.EXT
 %lang(ja) %doc README.EXT.ja
 
-%{_sysconfdir}/rpm/macros.ruby
+%{_exec_prefix}/lib/rpm/macros.d/macros.ruby
 
 %{_includedir}/*
 %{_libdir}/libruby.so
@@ -848,7 +848,7 @@ OPENSSL_ENABLE_MD5_VERIFY=1 make check TESTS="-v $DISABLE_TESTS"
 %exclude %{gem_dir}/specifications/default/test-unit-*.gemspec
 
 %files -n rubygems-devel
-%{_sysconfdir}/rpm/macros.rubygems
+%{_exec_prefix}/lib/rpm/macros.d/macros.rubygems
 
 %files -n rubygem-rake
 %{_bindir}/rake
@@ -920,6 +920,7 @@ OPENSSL_ENABLE_MD5_VERIFY=1 make check TESTS="-v $DISABLE_TESTS"
 %changelog
 * Mon Dec 23 2013 Vít Ondruch <vondruch@redhat.com> - 2.1.0.0-0.16.r44362
 - Upgrade to Ruby 2.1.0 (r44362).
+- Move RPM macros into /usr/lib/rpm/macros.d directory.
 
 * Mon Dec 02 2013 Vít Ondruch <vondruch@redhat.com> - 2.1.0.0-0.16.preview1
 - Allow MD5 in OpenSSL for tests.
