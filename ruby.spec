@@ -563,6 +563,10 @@ sed -i -r "s|( \*.*\*)\/(.*)|\1\\\/\2|" %{buildroot}%{tapset_dir}/libruby.so.%{r
 %check
 DISABLE_TESTS=""
 
+# Ignore IMAP tests due to expired certificate.
+# http://bugs.ruby-lang.org/issues/9341
+DISABLE_TESTS="-x test_imap.rb $DISABLE_TESTS"
+
 %ifarch armv7l armv7hl armv7hnl
 # test_call_double(DL::TestDL) fails on ARM HardFP
 # http://bugs.ruby-lang.org/issues/6592
