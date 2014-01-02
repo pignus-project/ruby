@@ -6,14 +6,13 @@
 %global major_minor_version %{major_version}.%{minor_version}
 
 %global ruby_version %{major_minor_version}.%{teeny_version}
-%global ruby_version_patch_level %{major_minor_version}.%{teeny_version}.%{patch_level}
 %global ruby_release %{ruby_version}
 
 # Specify the named version. It has precedense to revision.
 #%%global milestone preview2
 
 # Keep the revision enabled for pre-releases from SVN.
-%global revision 44362
+#%%global revision 44362
 
 %global ruby_archive %{name}-%{ruby_version}
 
@@ -22,11 +21,14 @@
 %global development_release %{?milestone}%{?!milestone:%{?revision:r%{revision}}}
 %global ruby_archive %{ruby_archive}-%{?milestone}%{?!milestone:%{?revision:r%{revision}}}
 %else
-%global ruby_archive %{ruby_archive}-p%{patch_level}
+# Ruby will be using semver versioning scheme since Ruby 2.1.0. However, it is
+# unclear ATM what name will be used when next bugfix version is released.
+# http://bugs.ruby-lang.org/issues/8835
+#%%global ruby_archive %{ruby_archive}-p%{patch_level}
 %endif
 
 
-%global release 16
+%global release 17
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 %global rubygems_version 2.2.0
@@ -37,7 +39,7 @@
 
 # TODO: The IRB has strange versioning. Keep the Ruby's versioning ATM.
 # http://redmine.ruby-lang.org/issues/5313
-%global irb_version %{ruby_version_patch_level}
+%global irb_version %{ruby_version}
 
 %global bigdecimal_version 1.2.3
 %global io_console_version 0.4.2
@@ -61,7 +63,7 @@
 
 Summary: An interpreter of object-oriented scripting language
 Name: ruby
-Version: %{ruby_version_patch_level}
+Version: %{ruby_version}
 Release: %{release_string}
 Group: Development/Languages
 # Public Domain for example for: include/ruby/st.h, strftime.c, ...
@@ -247,7 +249,7 @@ specified in standard Ruby syntax.
 Summary:    The Interactive Ruby
 Version:    %{irb_version}
 Group:      Development/Libraries
-Requires:   %{name}-libs = %{ruby_version_patch_level}
+Requires:   %{name}-libs = %{ruby_version}
 Provides:   irb = %{version}-%{release}
 Provides:   ruby(irb) = %{version}-%{release}
 BuildArch:  noarch
@@ -387,8 +389,8 @@ serialize and de-serialize most Ruby objects to and from the YAML format.
 %package tcltk
 Summary:    Tcl/Tk interface for scripting language Ruby
 Group:      Development/Languages
-Requires:   %{name}-libs%{?_isa} = %{ruby_version_patch_level}
-Provides:   ruby(tcltk) = %{ruby_version_patch_level}-%{release}
+Requires:   %{name}-libs%{?_isa} = %{ruby_version}
+Provides:   ruby(tcltk) = %{ruby_version}-%{release}
 
 %description tcltk
 Tcl/Tk interface for the object-oriented scripting language Ruby.
@@ -922,15 +924,10 @@ OPENSSL_ENABLE_MD5_VERIFY=1 make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
-* Mon Dec 23 2013 Vít Ondruch <vondruch@redhat.com> - 2.1.0.0-0.16.r44362
-- Upgrade to Ruby 2.1.0 (r44362).
+* Thu Jan 02 2014 Vít Ondruch <vondruch@redhat.com> - 2.1.0-17
+- Upgrade to Ruby 2.1.0.
 - Move RPM macros into /usr/lib/rpm/macros.d directory.
-
-* Mon Dec 02 2013 Vít Ondruch <vondruch@redhat.com> - 2.1.0.0-0.16.preview1
 - Allow MD5 in OpenSSL for tests.
-
-* Mon Oct 07 2013 Vít Ondruch <vondruch@redhat.com> - 2.1.0.0-0.16.preview1
-- Update to Ruby 2.1.0.preview1.
 
 * Tue Jul 30 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.247-15
 - Move Psych symlinks to vendor dir, to prevent F18 -> F19 upgrade issues
