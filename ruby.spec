@@ -271,8 +271,6 @@ Requires:   rubygem(json) >= %{json_version}
 Provides:   rdoc = %{version}-%{release}
 Provides:   ri = %{version}-%{release}
 Provides:   rubygem(rdoc) = %{version}-%{release}
-Obsoletes:  ruby-rdoc < %{version}
-Obsoletes:  ruby-ri < %{version}
 BuildArch:  noarch
 
 %description -n rubygem-rdoc
