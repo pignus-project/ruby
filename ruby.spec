@@ -462,11 +462,11 @@ sed -i 's/Version: \${ruby_version}/Version: %{ruby_version}/' %{buildroot}%{_li
 
 # Move macros file insto proper place and replace the %%{name} macro, since it
 # would be wrongly evaluated during build of other packages.
-mkdir -p %{buildroot}%{_exec_prefix}/lib/rpm/macros.d
-install -m 644 %{SOURCE4} %{buildroot}%{_exec_prefix}/lib/rpm/macros.d/macros.ruby
-sed -i "s/%%{name}/%{name}/" %{buildroot}%{_exec_prefix}/lib/rpm/macros.d/macros.ruby
-install -m 644 %{SOURCE5} %{buildroot}%{_exec_prefix}/lib/rpm/macros.d/macros.rubygems
-sed -i "s/%%{name}/%{name}/" %{buildroot}%{_exec_prefix}/lib/rpm/macros.d/macros.rubygems
+mkdir -p %{buildroot}%{_rpmconfigdir}/macros.d
+install -m 644 %{SOURCE4} %{buildroot}%{_rpmconfigdir}/macros.d/macros.ruby
+sed -i "s/%%{name}/%{name}/" %{buildroot}%{_rpmconfigdir}/macros.d/macros.ruby
+install -m 644 %{SOURCE5} %{buildroot}%{_rpmconfigdir}/macros.d/macros.rubygems
+sed -i "s/%%{name}/%{name}/" %{buildroot}%{_rpmconfigdir}/macros.d/macros.rubygems
 
 # Kill bundled cert.pem
 mkdir -p %{buildroot}%{rubygems_dir}/rubygems/ssl_certs/
@@ -649,7 +649,7 @@ OPENSSL_ENABLE_MD5_VERIFY=1 make check TESTS="-v $DISABLE_TESTS"
 %doc README.EXT
 %lang(ja) %doc README.EXT.ja
 
-%{_exec_prefix}/lib/rpm/macros.d/macros.ruby
+%{_rpmconfigdir}/macros.d/macros.ruby
 
 %{_includedir}/*
 %{_libdir}/libruby.so
@@ -846,7 +846,7 @@ OPENSSL_ENABLE_MD5_VERIFY=1 make check TESTS="-v $DISABLE_TESTS"
 %exclude %{gem_dir}/specifications/default/test-unit-*.gemspec
 
 %files -n rubygems-devel
-%{_exec_prefix}/lib/rpm/macros.d/macros.rubygems
+%{_rpmconfigdir}/macros.d/macros.rubygems
 
 %files -n rubygem-rake
 %{_bindir}/rake
