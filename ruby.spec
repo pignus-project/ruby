@@ -140,6 +140,9 @@ Patch17: ruby-2.1.0-Allow-to-specify-additional-preludes-by-configuratio.patch
 # TestGemRemoteFetcher#test_download_to_cache.
 # http://bugs.ruby-lang.org/issues/9273
 Patch18: ruby-2.1.0-resolv.rb-no-encodings.patch
+# Backport regenerated certificates for IMAP tests.
+# http://bugs.ruby-lang.org/issues/9341
+Patch19: ruby-2.1.1-fix-test-failures-due-to-expired-certs.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Requires: ruby(rubygems) >= %{rubygems_version}
@@ -404,6 +407,7 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 %patch12 -p1
 %patch17 -p1
 %patch18 -p1
+%patch19 -p1
 
 # Provide an example of usage of the tapset:
 cp -a %{SOURCE3} .
@@ -562,10 +566,6 @@ sed -i -r "s|( \*.*\*)\/(.*)|\1\\\/\2|" %{buildroot}%{tapset_dir}/libruby.so.%{r
 
 %check
 DISABLE_TESTS=""
-
-# Ignore IMAP tests due to expired certificate.
-# http://bugs.ruby-lang.org/issues/9341
-DISABLE_TESTS="-x test_imap.rb $DISABLE_TESTS"
 
 %ifarch armv7l armv7hl armv7hnl
 # test_call_double(DL::TestDL) fails on ARM HardFP
