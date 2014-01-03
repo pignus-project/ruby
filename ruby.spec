@@ -26,10 +26,10 @@
 %endif
 
 
-%global release 16
+%global release 17
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
-%global rubygems_version 2.0.3
+%global rubygems_version 2.0.14
 
 # The RubyGems library has to stay out of Ruby directory three, since the
 # RubyGems should be share by all Ruby implementations.
@@ -889,6 +889,9 @@ OPENSSL_ENABLE_MD5_VERIFY=1 make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Fri Jan 03 2014 Vít Ondruch <vondruch@redhat.com> - 2.0.0.353-17
+- Fix RubyGems version (rhbz#1036708).
+
 * Mon Nov 25 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.353-16
 - Update to Ruby 2.0.0-p353.
 - Allow MD5 in OpenSSL for tests.
