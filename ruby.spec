@@ -155,6 +155,9 @@ Patch18: ruby-2.0.0-p247-Revert-mkmf.rb-prefix-install_dirs-only-with-DESTDIR.pa
 # Fixes multilib conlicts of .gemspec files.
 # https://bugs.ruby-lang.org/issues/8623
 Patch19: ruby-2.0.0-p247-Make-stable-Gem-Specification.files-in-default-.gems.patch
+# Backport regenerated certificates for IMAP tests.
+# http://bugs.ruby-lang.org/issues/9341
+Patch20: ruby-2.1.1-fix-test-failures-due-to-expired-certs.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Requires: ruby(rubygems) >= %{rubygems_version}
@@ -423,6 +426,7 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 %patch17 -p1
 %patch18 -p1
 %patch19 -p1
+%patch20 -p1
 
 # Provide an example of usage of the tapset:
 cp -a %{SOURCE3} .
@@ -891,6 +895,7 @@ OPENSSL_ENABLE_MD5_VERIFY=1 make check TESTS="-v $DISABLE_TESTS"
 %changelog
 * Fri Jan 03 2014 Vít Ondruch <vondruch@redhat.com> - 2.0.0.353-17
 - Fix RubyGems version (rhbz#1036708).
+- Fix FTBFS due to expired certificate for IMAP test case.
 
 * Mon Nov 25 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.353-16
 - Update to Ruby 2.0.0-p353.
