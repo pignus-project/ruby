@@ -585,12 +585,6 @@ sed -i "/assert_equal(\"-0x1.0p+2\", sprintf('%.1a', Float('-0x1.ffp+1')), \"\[r
 # the test suite).
 touch abrt.rb
 
-# Fix "./ruby: error while loading shared libraries: libruby.so.2.1: cannot open
-# shared object file: No such file or directory" error.
-# http://bugs.ruby-lang.org/issues/8971
-# Fixed in rev43129.
-sed -i '/yes-test-sample/,/test-knownbugs/ s/MINIRUBY/RUNRUBY/' uncommon.mk
-
 # TestSignal#test_hup_me hangs up the test suite.
 # http://bugs.ruby-lang.org/issues/8997
 sed -i '/def test_hup_me/,/end if Process.respond_to/ s/^/#/' test/ruby/test_signal.rb
