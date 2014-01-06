@@ -19,7 +19,7 @@ diff --git a/ChangeLog b/ChangeLog
 index 72eaa6f..93686e9 100644
 --- a/ChangeLog
 +++ b/ChangeLog
-@@ -1,6 +1,13 @@
+@@ -67,6 +67,13 @@
  	  install win32.h.
  	  [ruby-core:58801][Bug #9199] reported by arton.
  

@@ -13,7 +13,7 @@ diff --git a/configure.in b/configure.in
 index 88d24ee..4a300b9 100644
 --- a/configure.in
 +++ b/configure.in
-@@ -3608,8 +3608,6 @@ AC_ARG_WITH(rubylibprefix,
+@@ -3618,8 +3618,6 @@ AS_CASE(["$target_os"],
      rubyw_install_name='$(RUBYW_INSTALL_NAME)'
      ])
  
@@ -22,7 +22,7 @@ index 88d24ee..4a300b9 100644
  
  rubyarchprefix=${multiarch+'${archlibdir}/${RUBY_BASE_NAME}'}${multiarch-'${rubylibprefix}/${arch}'}
  AC_ARG_WITH(rubyarchprefix,
-@@ -3639,6 +3637,7 @@ AC_ARG_WITH(ruby-version,
+@@ -3649,6 +3647,7 @@ AC_ARG_WITH(ruby-version,
              [ruby_version=full])
  unset RUBY_LIB_VERSION
  unset RUBY_LIB_VERSION_STYLE
@@ -30,7 +30,7 @@ index 88d24ee..4a300b9 100644
  AS_CASE(["$ruby_version"],
    [full],  [RUBY_LIB_VERSION_STYLE='3	/* full */'],
    [minor], [RUBY_LIB_VERSION_STYLE='2	/* minor */'])
-@@ -3655,30 +3654,34 @@ if test ${RUBY_LIB_VERSION_STYLE+set}; then
+@@ -3665,30 +3664,34 @@ if test ${RUBY_LIB_VERSION_STYLE+set}; then
      ruby_version="`$CPP -I. -I"${srcdir}" -I"${srcdir}/include" conftest.c | sed '/^ruby_version=/!d;s/ //g'`"
      eval $ruby_version
  elif test -z "${ruby_version}"; then
