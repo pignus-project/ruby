@@ -28,7 +28,7 @@
 %endif
 
 
-%global release 17
+%global release 18
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 %global rubygems_version 2.2.0
@@ -916,6 +916,10 @@ OPENSSL_ENABLE_MD5_VERIFY=1 make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Fri Jan 10 2014 Vít Ondruch <vondruch@redhat.com> - 2.1.0-18
+- Detect if rubygems are running under rpmbuild and install gem binary
+  extensions into appropriate place.
+
 * Thu Jan 02 2014 Vít Ondruch <vondruch@redhat.com> - 2.1.0-17
 - Upgrade to Ruby 2.1.0.
 - Move RPM macros into /usr/lib/rpm/macros.d directory.
