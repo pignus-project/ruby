@@ -143,6 +143,12 @@ Patch18: ruby-2.1.0-resolv.rb-no-encodings.patch
 # Backport regenerated certificates for IMAP tests.
 # http://bugs.ruby-lang.org/issues/9341
 Patch19: ruby-2.1.1-fix-test-failures-due-to-expired-certs.patch
+# Fix documentation generated on unexpected places.
+# https://github.com/rubygems/rubygems/issues/758
+# https://github.com/rubygems/rubygems/commit/e088c6824209d98eccb0f1e6c7e21f26b4a1178d
+Patch20: rubygems-2.2.1-Add-BasicSpecification-source_paths.patch
+# https://github.com/rubygems/rubygems/commit/2f03b54b63043aadce9e95b83e98b29712bad21f
+Patch21: rubygems-2.2.1-Use-source_paths-for-fallback-rdoc-plugin.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Requires: ruby(rubygems) >= %{rubygems_version}
@@ -408,6 +414,8 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 %patch17 -p1
 %patch18 -p1
 %patch19 -p1
+%patch20 -p1
+%patch21 -p1
 
 # Provide an example of usage of the tapset:
 cp -a %{SOURCE3} .
@@ -917,6 +925,7 @@ OPENSSL_ENABLE_MD5_VERIFY=1 make check TESTS="-v $DISABLE_TESTS"
 
 %changelog
 * Fri Jan 10 2014 Vít Ondruch <vondruch@redhat.com> - 2.1.0-18
+- Don't generate documentation on unexpected places.
 - Detect if rubygems are running under rpmbuild and install gem binary
   extensions into appropriate place.
 
