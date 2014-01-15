@@ -893,9 +893,10 @@ OPENSSL_ENABLE_MD5_VERIFY=1 make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
-* Fri Jan 03 2014 Vít Ondruch <vondruch@redhat.com> - 2.0.0.353-17
+* Wed Jan 15 2014 Vít Ondruch <vondruch@redhat.com> - 2.0.0.353-17
 - Fix RubyGems version (rhbz#1036708).
 - Fix FTBFS due to expired certificate for IMAP test case.
+- Add support for ppc64le arch (rhbz#1053263).
 
 * Mon Nov 25 2013 Vít Ondruch <vondruch@redhat.com> - 2.0.0.353-16
 - Update to Ruby 2.0.0-p353.

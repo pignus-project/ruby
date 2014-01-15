@@ -20,7 +20,12 @@
 #elif defined(__ia64__)
 #include "ruby/config-ia64.h"
 #elif defined(__powerpc64__)
+#include <endian.h>
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
 #include "ruby/config-ppc64.h"
+#else
+#include "ruby/config-ppc64le.h"
+#endif
 #elif defined(__powerpc__)
 #include "ruby/config-ppc.h"
 #elif defined(__s390x__)
