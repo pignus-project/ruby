@@ -149,6 +149,9 @@ Patch19: ruby-2.1.1-fix-test-failures-due-to-expired-certs.patch
 Patch20: rubygems-2.2.1-Add-BasicSpecification-source_paths.patch
 # https://github.com/rubygems/rubygems/commit/2f03b54b63043aadce9e95b83e98b29712bad21f
 Patch21: rubygems-2.2.1-Use-source_paths-for-fallback-rdoc-plugin.patch
+# TestSprintf#test_float fails on i686
+# http://bugs.ruby-lang.org/issues/8358
+Patch22: ruby-2.2.0-configure.in-use-SSE2.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Requires: ruby(rubygems) >= %{rubygems_version}
@@ -416,6 +419,7 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 %patch19 -p1
 %patch20 -p1
 %patch21 -p1
+%patch22 -p1
 
 # Provide an example of usage of the tapset:
 cp -a %{SOURCE3} .
@@ -579,13 +583,6 @@ DISABLE_TESTS=""
 # test_call_double(DL::TestDL) fails on ARM HardFP
 # http://bugs.ruby-lang.org/issues/6592
 DISABLE_TESTS="-x test_dl2.rb $DISABLE_TESTS"
-%endif
-
-%ifarch i686
-# TestSprintf#test_float fails on i686
-# http://bugs.ruby-lang.org/issues/8358
-sed -i "/assert_equal(\"0x1p+2\",   sprintf('%.0a', Float('0x1.fp+1')),   \"\[ruby-dev:42551\]\")/ s/^/#/" test/ruby/test_sprintf.rb
-sed -i "/assert_equal(\"-0x1.0p+2\", sprintf('%.1a', Float('-0x1.ffp+1')), \"\[ruby-dev:42551\]\")/ s/^/#/" test/ruby/test_sprintf.rb
 %endif
 
 # test_debug(TestRubyOptions) fails due to LoadError reported in debug mode,
@@ -907,6 +904,7 @@ OPENSSL_ENABLE_MD5_VERIFY=1 make check TESTS="-v $DISABLE_TESTS"
   extensions into appropriate place.
 - Add support for ppc64le arch (rhbz#1053263).
 - Re-enable some test cases, which are passing now with Kernel 3.12.8+.
+- Backport fix for floating point issues on i686.
 
 * Thu Jan 02 2014 Vít Ondruch <vondruch@redhat.com> - 2.1.0-17
 - Upgrade to Ruby 2.1.0.
