@@ -611,19 +611,6 @@ sed -i '/Process.constants.grep(\/\\ACLOCK_\/).each {|n|/ s/$/\n      next if [:
 # http://bugs.ruby-lang.org/issues/9259
 sed -i "/^  gem 'minitest', '~> 4.0'/ s/^/#/" lib/rubygems/test_case.rb
 
-# Errno::EINVAL: Invalid argument - recvmsg(2)
-# Looks to be a problem of Linux 3.12+ and should be possible to remove as soon
-# as Koji builders run fixed kerenel.
-# https://bugs.ruby-lang.org/issues/9124
-sed -i '/^  def test_timestampns/,/^  end/ s/^/#/' test/socket/test_socket.rb
-sed -i '/^  def test_timestamp/,/^  end/ s/^/#/' test/socket/test_socket.rb
-sed -i '/^  def test_udp_server/,/^  end/ s/^/#/' test/socket/test_socket.rb
-sed -i '/^  def test_recvmsg_nonblock_error/,/^  end/ s/^/#/' test/socket/test_nonblock.rb
-sed -i '/^  def test_fd_passing_n/,/^  end/ s/^/#/' test/socket/test_unix.rb
-sed -i '/^  def test_fd_passing_n2/,/^  end/ s/^/#/' test/socket/test_unix.rb
-sed -i '/^  def test_recvmsg/,/^  end/ s/^/#/' test/socket/test_unix.rb
-sed -i '/^  def test_sendcred_ucred/,/^  end/ s/^/#/' test/socket/test_unix.rb
-
 # Segmentation fault.
 # https://bugs.ruby-lang.org/issues/9198
 sed -i '/^  def test_machine_stackoverflow/,/^  end/ s/^/#/' test/ruby/test_exception.rb
@@ -929,6 +916,7 @@ OPENSSL_ENABLE_MD5_VERIFY=1 make check TESTS="-v $DISABLE_TESTS"
 - Detect if rubygems are running under rpmbuild and install gem binary
   extensions into appropriate place.
 - Add support for ppc64le arch (rhbz#1053263).
+- Re-enable some test cases, which are passing now with Kernel 3.12.8+.
 
 * Thu Jan 02 2014 Vít Ondruch <vondruch@redhat.com> - 2.1.0-17
 - Upgrade to Ruby 2.1.0.
