@@ -28,7 +28,7 @@
 %endif
 
 
-%global release 18
+%global release 19
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 %global rubygems_version 2.2.0
@@ -172,8 +172,6 @@ BuildRequires: tk-devel
 # Needed to pass test_set_program_name(TestRubyOptions)
 BuildRequires: procps
 BuildRequires: %{_bindir}/dtrace
-# Unbundle cert.pem
-BuildRequires: ca-certificates
 # RubyGems test suite optional dependencies.
 BuildRequires: %{_bindir}/git
 BuildRequires: %{_bindir}/cmake
@@ -219,7 +217,6 @@ Requires:   ruby(release)
 Requires:   rubygem(rdoc) >= %{rdoc_version}
 Requires:   rubygem(io-console) >= %{io_console_version}
 Requires:   rubygem(psych) >= %{psych_version}
-Requires:   ca-certificates
 Provides:   gem = %{version}-%{release}
 Provides:   ruby(rubygems) = %{version}-%{release}
 BuildArch:  noarch
@@ -479,11 +476,6 @@ install -m 644 %{SOURCE4} %{buildroot}%{_rpmconfigdir}/macros.d/macros.ruby
 sed -i "s/%%{name}/%{name}/" %{buildroot}%{_rpmconfigdir}/macros.d/macros.ruby
 install -m 644 %{SOURCE5} %{buildroot}%{_rpmconfigdir}/macros.d/macros.rubygems
 sed -i "s/%%{name}/%{name}/" %{buildroot}%{_rpmconfigdir}/macros.d/macros.rubygems
-
-# Kill bundled cert.pem
-mkdir -p %{buildroot}%{rubygems_dir}/rubygems/ssl_certs/
-ln -sf %{_sysconfdir}/pki/tls/cert.pem \
-  %{buildroot}%{rubygems_dir}/rubygems/ssl_certs/ca-bundle.pem
 
 # Install custom operating_system.rb.
 mkdir -p %{buildroot}%{rubygems_dir}/rubygems/defaults
@@ -898,6 +890,9 @@ OPENSSL_ENABLE_MD5_VERIFY=1 make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Mon Feb 10 2014 Josef Stribny <jstribny@redhat.com> - 2.1.0-19
+- Don't link cert.pem explicitely
+
 * Wed Jan 15 2014 Vít Ondruch <vondruch@redhat.com> - 2.1.0-18
 - Don't generate documentation on unexpected places.
 - Detect if rubygems are running under rpmbuild and install gem binary
