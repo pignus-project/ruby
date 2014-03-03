@@ -82,6 +82,10 @@ Source6: abrt_prelude.rb
 # https://fedorahosted.org/fpc/ticket/312
 # https://bugzilla.redhat.com/show_bug.cgi?id=977941
 Source7: config.h
+# RPM dependency generators.
+Source8: rubygems.attr
+Source9: rubygems.req
+Source10: rubygems.prov
 
 
 # Include the constants defined in macros files.
@@ -477,6 +481,12 @@ sed -i "s/%%{name}/%{name}/" %{buildroot}%{_rpmconfigdir}/macros.d/macros.ruby
 install -m 644 %{SOURCE5} %{buildroot}%{_rpmconfigdir}/macros.d/macros.rubygems
 sed -i "s/%%{name}/%{name}/" %{buildroot}%{_rpmconfigdir}/macros.d/macros.rubygems
 
+# Install dependency generators.
+mkdir -p %{buildroot}%{_rpmconfigdir}/fileattrs
+install -m 644 %{SOURCE8} %{buildroot}%{_rpmconfigdir}/fileattrs
+install -m 755 %{SOURCE9} %{buildroot}%{_rpmconfigdir}
+install -m 755 %{SOURCE10} %{buildroot}%{_rpmconfigdir}
+
 # Install custom operating_system.rb.
 mkdir -p %{buildroot}%{rubygems_dir}/rubygems/defaults
 cp %{SOURCE1} %{buildroot}%{rubygems_dir}/rubygems/defaults
@@ -821,6 +831,9 @@ OPENSSL_ENABLE_MD5_VERIFY=1 make check TESTS="-v $DISABLE_TESTS"
 
 %files -n rubygems-devel
 %{_rpmconfigdir}/macros.d/macros.rubygems
+%{_rpmconfigdir}/fileattrs/rubygems.attr
+%{_rpmconfigdir}/rubygems.req
+%{_rpmconfigdir}/rubygems.prov
 
 %files -n rubygem-rake
 %{_bindir}/rake
@@ -890,6 +903,9 @@ OPENSSL_ENABLE_MD5_VERIFY=1 make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Mon Mar 03 2014 Vít Ondruch <vondruch@redhat.com> - 2.1.0-19
+- Add RPM dependency generators for RubyGems.
+
 * Mon Feb 10 2014 Josef Stribny <jstribny@redhat.com> - 2.1.0-19
 - Don't link cert.pem explicitely
 
