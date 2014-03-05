@@ -1,7 +1,7 @@
 %global major_version 2
 %global minor_version 1
-%global teeny_version 0
-%global patch_level 0
+%global teeny_version 1
+%global patch_level 76
 
 %global major_minor_version %{major_version}.%{minor_version}
 
@@ -28,10 +28,10 @@
 %endif
 
 
-%global release 19
+%global release 18
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
-%global rubygems_version 2.2.0
+%global rubygems_version 2.2.2
 
 # The RubyGems library has to stay out of Ruby directory three, since the
 # RubyGems should be share by all Ruby implementations.
@@ -41,11 +41,11 @@
 # http://redmine.ruby-lang.org/issues/5313
 %global irb_version %{ruby_version}
 
-%global bigdecimal_version 1.2.3
+%global bigdecimal_version 1.2.4
 %global io_console_version 0.4.2
 %global json_version 1.8.1
 %global minitest_version 4.7.5
-%global psych_version 2.0.2
+%global psych_version 2.0.3
 %global rake_version 10.1.0
 %global rdoc_version 4.1.0
 
@@ -140,22 +140,6 @@ Patch12: ruby-1.9.3-mkmf-verbose.patch
 # in support for ABRT.
 # http://bugs.ruby-lang.org/issues/8566
 Patch17: ruby-2.1.0-Allow-to-specify-additional-preludes-by-configuratio.patch
-# Fixes possible "ArgumentError: invalid byte sequence in US-ASCII" error in
-# TestGemRemoteFetcher#test_download_to_cache.
-# http://bugs.ruby-lang.org/issues/9273
-Patch18: ruby-2.1.0-resolv.rb-no-encodings.patch
-# Backport regenerated certificates for IMAP tests.
-# http://bugs.ruby-lang.org/issues/9341
-Patch19: ruby-2.1.1-fix-test-failures-due-to-expired-certs.patch
-# Fix documentation generated on unexpected places.
-# https://github.com/rubygems/rubygems/issues/758
-# https://github.com/rubygems/rubygems/commit/e088c6824209d98eccb0f1e6c7e21f26b4a1178d
-Patch20: rubygems-2.2.1-Add-BasicSpecification-source_paths.patch
-# https://github.com/rubygems/rubygems/commit/2f03b54b63043aadce9e95b83e98b29712bad21f
-Patch21: rubygems-2.2.1-Use-source_paths-for-fallback-rdoc-plugin.patch
-# TestSprintf#test_float fails on i686
-# http://bugs.ruby-lang.org/issues/8358
-Patch22: ruby-2.2.0-configure.in-use-SSE2.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Requires: ruby(rubygems) >= %{rubygems_version}
@@ -416,11 +400,6 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 %patch8 -p1
 %patch12 -p1
 %patch17 -p1
-%patch18 -p1
-%patch19 -p1
-%patch20 -p1
-%patch21 -p1
-%patch22 -p1
 
 # Provide an example of usage of the tapset:
 cp -a %{SOURCE3} .
@@ -903,6 +882,9 @@ OPENSSL_ENABLE_MD5_VERIFY=1 make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Wed Mar 05 2014 Vít Ondruch <vondruch@redhat.com> - 2.1.1-18
+- Update to Ruby 2.1.1.
+
 * Mon Mar 03 2014 Vít Ondruch <vondruch@redhat.com> - 2.1.0-19
 - Add RPM dependency generators for RubyGems.
 
