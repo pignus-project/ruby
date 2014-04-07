@@ -44,7 +44,7 @@ module RubyGemsReq
   def self.rubygems_dependency(specification)
     Helpers::requirement_versions_to_rpm(specification.required_rubygems_version).each do |requirement|
       dependency_string = "ruby(rubygems)"
-      dependency_strint += " #{specification.required_rubygems_version}" if requirement && requirement.length > 0
+      dependency_string += " #{specification.required_rubygems_version}" if requirement && requirement.length > 0
       puts dependency_string
     end
   end
