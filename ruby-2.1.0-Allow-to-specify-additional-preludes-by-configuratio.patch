@@ -1,33 +1,44 @@
+From 996012f6abe0ce4d68a2de9f249935c6d5b467bc Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?V=C3=ADt=20Ondruch?= <vondruch@redhat.com>
+Date: Fri, 4 Oct 2013 22:13:11 +0200
+Subject: [PATCH] Allow to specify addition preludes by configuration option.
+
+---
+ Makefile.in  | 1 +
+ common.mk    | 2 +-
+ configure.in | 7 +++++++
+ 3 files changed, 9 insertions(+), 1 deletion(-)
+
 diff --git a/Makefile.in b/Makefile.in
-index a93a1e6..fb30c19 100644
+index 7e8ed82..7916993 100644
 --- a/Makefile.in
 +++ b/Makefile.in
-@@ -108,6 +108,7 @@ XRUBY_RUBYLIBDIR = @XRUBY_RUBYLIBDIR@
+@@ -114,6 +114,7 @@ XRUBY_RUBYLIBDIR = @XRUBY_RUBYLIBDIR@
  XRUBY_RUBYHDRDIR = @XRUBY_RUBYHDRDIR@
  
- DEFAULT_PRELUDES = $(@USE_RUBYGEMS@_GEM_PRELUDE)
+ DEFAULT_PRELUDES = $(GEM_PRELUDE)
 +OPTIONAL_PRELUDES = @OPTIONAL_PRELUDES@
  
  #### End of system configuration section. ####
  
 diff --git a/common.mk b/common.mk
-index e5069e5..ca5e3f9 100644
+index 5cfbc3d..3f0a82e 100644
 --- a/common.mk
 +++ b/common.mk
-@@ -107,7 +107,7 @@ ALLOBJS       = $(NORMALMAINOBJ) $(MINIOBJS) $(COMMONOBJS) $(DMYEXT)
+@@ -109,7 +109,7 @@ ALLOBJS       = $(NORMALMAINOBJ) $(MINIOBJS) $(COMMONOBJS) $(DMYEXT)
  
  GOLFOBJS      = goruby.$(OBJEXT) golf_prelude.$(OBJEXT)
  
 -PRELUDE_SCRIPTS = $(srcdir)/prelude.rb $(srcdir)/enc/prelude.rb $(DEFAULT_PRELUDES)
 +PRELUDE_SCRIPTS = $(srcdir)/prelude.rb $(srcdir)/enc/prelude.rb $(DEFAULT_PRELUDES) $(OPTIONAL_PRELUDES)
  GEM_PRELUDE = $(srcdir)/gem_prelude.rb
- YES_GEM_PRELUDE = $(GEM_PRELUDE)
- NO_GEM_PRELUDE =
+ PRELUDES      = prelude.c miniprelude.c
+ GOLFPRELUDES = golf_prelude.c
 diff --git a/configure.in b/configure.in
-index 7977aaf..1ef42cd 100644
+index 0e371e2..d4f1dcb 100644
 --- a/configure.in
 +++ b/configure.in
-@@ -3494,6 +3494,13 @@ AC_SUBST(rubyarchhdrdir)dnl
+@@ -3841,6 +3841,13 @@ AC_SUBST(rubyarchhdrdir)dnl
  AC_SUBST(sitearchhdrdir)dnl
  AC_SUBST(vendorarchhdrdir)dnl
  
@@ -41,3 +52,6 @@ index 7977aaf..1ef42cd 100644
  AC_ARG_WITH(mantype,
  	AS_HELP_STRING([--with-mantype=TYPE], [specify man page type; TYPE is one of man and doc]),
  		[
+-- 
+1.8.3.1
+
