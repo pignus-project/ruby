@@ -139,6 +139,8 @@ Patch12: ruby-1.9.3-mkmf-verbose.patch
 # in support for ABRT.
 # http://bugs.ruby-lang.org/issues/8566
 Patch17: ruby-2.1.0-Allow-to-specify-additional-preludes-by-configuratio.patch
+# https://www.ruby-lang.org/en/news/2014/03/10/regression-of-hash-reject-in-ruby-2-1-1/
+Patch18: ruby-2.1.2-p79-hash.c-extra-states.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Requires: ruby(rubygems) >= %{rubygems_version}
@@ -399,6 +401,7 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 %patch8 -p1
 %patch12 -p1
 %patch17 -p1
+%patch18 -p1
 
 # Provide an example of usage of the tapset:
 cp -a %{SOURCE3} .
@@ -881,8 +884,9 @@ OPENSSL_ENABLE_MD5_VERIFY=1 make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
-* Wed Mar 05 2014 Vít Ondruch <vondruch@redhat.com> - 2.1.1-18
+* Tue Apr 08 2014 Vít Ondruch <vondruch@redhat.com> - 2.1.1-18
 - Update to Ruby 2.1.1.
+- Revert regression of Hash#reject.
 
 * Mon Mar 03 2014 Vít Ondruch <vondruch@redhat.com> - 2.1.0-19
 - Add RPM dependency generators for RubyGems.
