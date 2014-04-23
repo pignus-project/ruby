@@ -27,7 +27,7 @@
 %endif
 
 
-%global release 18
+%global release 19
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 %global rubygems_version 2.2.2
@@ -884,6 +884,9 @@ OPENSSL_ENABLE_MD5_VERIFY=1 make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Wed Apr 23 2014 Vít Ondruch <vondruch@redhat.com> - 2.1.1-19
+- Correctly expand $(prefix) in some Makefiles, e.g. eruby.
+
 * Tue Apr 08 2014 Vít Ondruch <vondruch@redhat.com> - 2.1.1-18
 - Update to Ruby 2.1.1.
 - Revert regression of Hash#reject.

@@ -1,16 +1,17 @@
-From 763c6571697b0bd551a8a0c27d538d00f161a9f3 Mon Sep 17 00:00:00 2001
+From e24d97c938c481450ed80ec83e5399595946c1ae Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?V=C3=ADt=20Ondruch?= <vondruch@redhat.com>
 Date: Fri, 8 Feb 2013 22:48:41 +0100
 Subject: [PATCH] Prevent duplicated paths when empty version string is
  configured.
 
 ---
- configure.in | 15 +++++++++------
- loadpath.c   | 12 ++++++++++++
- 2 files changed, 21 insertions(+), 6 deletions(-)
+ configure.in     | 15 +++++++++------
+ loadpath.c       | 12 ++++++++++++
+ tool/mkconfig.rb |  2 +-
+ 3 files changed, 22 insertions(+), 7 deletions(-)
 
 diff --git a/configure.in b/configure.in
-index 88d24ee..4a300b9 100644
+index 17ed3ed..5843651 100644
 --- a/configure.in
 +++ b/configure.in
 @@ -3645,8 +3645,6 @@ AS_CASE(["$target_os"],
@@ -22,7 +23,7 @@ index 88d24ee..4a300b9 100644
  
  rubyarchprefix=${multiarch+'${archlibdir}/${RUBY_BASE_NAME}'}${multiarch-'${rubylibprefix}/${arch}'}
  AC_ARG_WITH(rubyarchprefix,
-@@ -3676,6 +3676,7 @@ AC_ARG_WITH(ruby-version,
+@@ -3676,6 +3674,7 @@ AC_ARG_WITH(ruby-version,
              [ruby_version=full])
  unset RUBY_LIB_VERSION
  unset RUBY_LIB_VERSION_STYLE
@@ -108,6 +109,19 @@ index 9160031..0d4d953 100644
  
      RUBY_LIB "\0"
  #ifdef RUBY_THINARCH
+diff --git a/tool/mkconfig.rb b/tool/mkconfig.rb
+index 07076d4..35e6c3c 100755
+--- a/tool/mkconfig.rb
++++ b/tool/mkconfig.rb
+@@ -121,7 +121,7 @@ File.foreach "config.status" do |line|
+     val = val.gsub(/\$(?:\$|\{?(\w+)\}?)/) {$1 ? "$(#{$1})" : $&}.dump
+     case name
+     when /^prefix$/
+-      val = "(TOPDIR || DESTDIR + #{val})"
++      val = "(((TOPDIR && TOPDIR.empty?) ? nil : TOPDIR) || DESTDIR + #{val})"
+     when /^ARCH_FLAG$/
+       val = "arch_flag || #{val}" if universal
+     when /^UNIVERSAL_ARCHNAMES$/
 -- 
-1.8.4.2
+1.9.0
 
