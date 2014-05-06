@@ -86,37 +86,13 @@ Source8: rubygems.attr
 Source9: rubygems.req
 Source10: rubygems.prov
 
+# %%load function should be supported in RPM 4.12+.
+# http://lists.rpm.org/pipermail/rpm-maint/2014-February/003659.html
+Source100: load.inc
+%include %{SOURCE100}
 
-# Include the constants defined in macros files.
-# http://rpm.org/ticket/866
-%{lua:
-
-function source_macros(file)
-  local macro = nil
-
-  for line in io.lines(file) do
-    if not macro and line:match("^%%") then
-      macro = line:match("^%%(.*)$")
-      line = nil
-    end
-
-    if macro then
-      if line and macro:match("^.-%s*\\%s*$") then
-        macro = macro .. '\n' .. line
-      end
-
-      if not macro:match("^.-%s*\\%s*$") then
-        rpm.define(macro)
-        macro = nil
-      end
-    end
-  end
-end
-
-source_macros(rpm.expand("%{SOURCE4}"))
-source_macros(rpm.expand("%{SOURCE5}"))
-
-}
+%{load %{SOURCE4}}
+%{load %{SOURCE5}}
 
 # http://bugs.ruby-lang.org/issues/7807
 Patch0: ruby-2.1.0-Prevent-duplicated-paths-when-empty-version-string-i.patch
@@ -885,6 +861,7 @@ OPENSSL_ENABLE_MD5_VERIFY=1 make check TESTS="-v $DISABLE_TESTS"
 %changelog
 * Tue May 06 2014 Vít Ondruch <vondruch@redhat.com> - 2.1.1-20
 - Remove useless exclude (rhbz#1065897).
+- Extract load macro into external file and include it.
 
 * Wed Apr 23 2014 Vít Ondruch <vondruch@redhat.com> - 2.1.1-19
 - Correctly expand $(prefix) in some Makefiles, e.g. eruby.
