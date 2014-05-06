@@ -27,7 +27,7 @@
 %endif
 
 
-%global release 19
+%global release 20
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 %global rubygems_version 2.2.2
@@ -650,7 +650,6 @@ OPENSSL_ENABLE_MD5_VERIFY=1 make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/dl
 %{ruby_libdir}/drb
 %{ruby_libdir}/fiddle
-%exclude %{ruby_libdir}/gems
 %exclude %{ruby_libdir}/irb
 %{ruby_libdir}/matrix
 %{ruby_libdir}/net
@@ -884,6 +883,9 @@ OPENSSL_ENABLE_MD5_VERIFY=1 make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Tue May 06 2014 Vít Ondruch <vondruch@redhat.com> - 2.1.1-20
+- Remove useless exclude (rhbz#1065897).
+
 * Wed Apr 23 2014 Vít Ondruch <vondruch@redhat.com> - 2.1.1-19
 - Correctly expand $(prefix) in some Makefiles, e.g. eruby.
 
