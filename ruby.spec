@@ -430,7 +430,7 @@ install -m644 %{SOURCE7} %{buildroot}%{_includedir}/%{name}/config.h
 # http://bugs.ruby-lang.org/issues/7807
 sed -i 's/Version: \${ruby_version}/Version: %{ruby_version}/' %{buildroot}%{_libdir}/pkgconfig/%{name}.pc
 
-# Kill bundled certificates, as they should be part of ca-sertificates.
+# Kill bundled certificates, as they should be part of ca-certificates.
 for cert in \
   Class3PublicPrimaryCertificationAuthority.pem \
   DigiCertHighAssuranceEVRootCA.pem \
