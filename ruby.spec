@@ -430,6 +430,16 @@ install -m644 %{SOURCE7} %{buildroot}%{_includedir}/%{name}/config.h
 # http://bugs.ruby-lang.org/issues/7807
 sed -i 's/Version: \${ruby_version}/Version: %{ruby_version}/' %{buildroot}%{_libdir}/pkgconfig/%{name}.pc
 
+# Kill bundled certificates, as they should be part of ca-sertificates.
+for cert in \
+  Class3PublicPrimaryCertificationAuthority.pem \
+  DigiCertHighAssuranceEVRootCA.pem \
+  EntrustnetSecureServerCertificationAuthority.pem \
+  GeoTrustGlobalCA.pem
+do
+  rm %{buildroot}%{rubygems_dir}/rubygems/ssl_certs/$cert
+done
+
 # Move macros file insto proper place and replace the %%{name} macro, since it
 # would be wrongly evaluated during build of other packages.
 mkdir -p %{buildroot}%{_rpmconfigdir}/macros.d
@@ -862,6 +872,7 @@ OPENSSL_ENABLE_MD5_VERIFY=1 make check TESTS="-v $DISABLE_TESTS"
 * Tue May 06 2014 Vít Ondruch <vondruch@redhat.com> - 2.1.1-20
 - Remove useless exclude (rhbz#1065897).
 - Extract load macro into external file and include it.
+- Kill bundled certificates.
 
 * Wed Apr 23 2014 Vít Ondruch <vondruch@redhat.com> - 2.1.1-19
 - Correctly expand $(prefix) in some Makefiles, e.g. eruby.
