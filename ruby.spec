@@ -1,7 +1,7 @@
 %global major_version 2
 %global minor_version 1
-%global teeny_version 1
-%global patch_level 76
+%global teeny_version 2
+%global patch_level 95
 %global major_minor_version %{major_version}.%{minor_version}
 
 %global ruby_version %{major_minor_version}.%{teeny_version}
@@ -44,7 +44,7 @@
 %global io_console_version 0.4.2
 %global json_version 1.8.1
 %global minitest_version 4.7.5
-%global psych_version 2.0.3
+%global psych_version 2.0.5
 %global rake_version 10.1.0
 %global rdoc_version 4.1.0
 
@@ -115,8 +115,6 @@ Patch12: ruby-1.9.3-mkmf-verbose.patch
 # in support for ABRT.
 # http://bugs.ruby-lang.org/issues/8566
 Patch17: ruby-2.1.0-Allow-to-specify-additional-preludes-by-configuratio.patch
-# https://www.ruby-lang.org/en/news/2014/03/10/regression-of-hash-reject-in-ruby-2-1-1/
-Patch18: ruby-2.1.2-p79-hash.c-extra-states.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Requires: ruby(rubygems) >= %{rubygems_version}
@@ -377,7 +375,6 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 %patch8 -p1
 %patch12 -p1
 %patch17 -p1
-%patch18 -p1
 
 # Provide an example of usage of the tapset:
 cp -a %{SOURCE3} .
@@ -869,6 +866,9 @@ OPENSSL_ENABLE_MD5_VERIFY=1 make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Tue May 20 2014 Josef Stribny <jstribny@redhat.com> - 2.1.2-21
+- Update to Ruby 2.1.2
+
 * Tue May 06 2014 Vít Ondruch <vondruch@redhat.com> - 2.1.1-20
 - Remove useless exclude (rhbz#1065897).
 - Extract load macro into external file and include it.
