@@ -27,7 +27,7 @@
 %endif
 
 
-%global release 20
+%global release 21
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 %global rubygems_version 2.2.2
@@ -63,7 +63,7 @@
 Summary: An interpreter of object-oriented scripting language
 Name: ruby
 Version: %{ruby_version}
-Release: %{release_string}
+Release: %{release_string}.1
 Group: Development/Languages
 # Public Domain for example for: include/ruby/st.h, strftime.c, ...
 License: (Ruby or BSD) and Public Domain
@@ -866,6 +866,9 @@ OPENSSL_ENABLE_MD5_VERIFY=1 make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Wed May 21 2014 Jaroslav Škarvada <jskarvad@redhat.com>
+- Rebuilt for https://fedoraproject.org/wiki/Changes/f21tcl86
+
 * Tue May 20 2014 Josef Stribny <jstribny@redhat.com> - 2.1.2-21
 - Update to Ruby 2.1.2
 
