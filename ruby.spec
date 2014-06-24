@@ -27,7 +27,7 @@
 %endif
 
 
-%global release 22
+%global release 23
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 %global rubygems_version 2.2.2
@@ -63,7 +63,7 @@
 Summary: An interpreter of object-oriented scripting language
 Name: ruby
 Version: %{ruby_version}
-Release: %{release_string}.2
+Release: %{release_string}
 Group: Development/Languages
 # Public Domain for example for: include/ruby/st.h, strftime.c, ...
 License: (Ruby or BSD) and Public Domain
@@ -102,19 +102,22 @@ Patch0: ruby-2.1.0-Prevent-duplicated-paths-when-empty-version-string-i.patch
 Patch1: ruby-2.1.0-Enable-configuration-of-archlibdir.patch
 # Force multiarch directories for i.86 to be always named i386. This solves
 # some differencies in build between Fedora and RHEL.
-Patch3: ruby-2.1.0-always-use-i386.patch
+Patch2: ruby-2.1.0-always-use-i386.patch
 # Fixes random WEBRick test failures.
 # https://bugs.ruby-lang.org/issues/6573.
-Patch5: ruby-1.9.3.p195-fix-webrick-tests.patch
+Patch3: ruby-1.9.3.p195-fix-webrick-tests.patch
 # Allows to install RubyGems into custom directory, outside of Ruby's tree.
 # http://redmine.ruby-lang.org/issues/5617
-Patch8: ruby-2.1.0-custom-rubygems-location.patch
+Patch4: ruby-2.1.0-custom-rubygems-location.patch
 # Make mkmf verbose by default
-Patch12: ruby-1.9.3-mkmf-verbose.patch
+Patch5: ruby-1.9.3-mkmf-verbose.patch
 # Adds support for '--with-prelude' configuration option. This allows to built
 # in support for ABRT.
 # http://bugs.ruby-lang.org/issues/8566
-Patch17: ruby-2.1.0-Allow-to-specify-additional-preludes-by-configuratio.patch
+Patch6: ruby-2.1.0-Allow-to-specify-additional-preludes-by-configuratio.patch
+# Fix build with libffi 3.1
+# https://bugs.ruby-lang.org/issues/9897
+Patch7: ruby-r46485-libffi31.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Requires: ruby(rubygems) >= %{rubygems_version}
@@ -370,11 +373,12 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 %patch3 -p1
+%patch4 -p1
 %patch5 -p1
-%patch8 -p1
-%patch12 -p1
-%patch17 -p1
+%patch6 -p1
+%patch7 -p0
 
 # Provide an example of usage of the tapset:
 cp -a %{SOURCE3} .
@@ -401,6 +405,7 @@ autoconf
         --with-vendorarchhdrdir='$(vendorhdrdir)/$(arch)' \
         --with-rubygemsdir='%{rubygems_dir}' \
         --with-ruby-pc='%{name}.pc' \
+        --with-tcltkversion=8.6 \
         --disable-rpath \
         --enable-shared \
         --with-ruby-version='' \
@@ -866,6 +871,11 @@ OPENSSL_ENABLE_MD5_VERIFY=1 make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Tue Jun 24 2014 Peter Robinson <pbrobinson@fedoraproject.org> 2.1.2-23
+- Fix FTBFS 
+- Specify tcl/tk 8.6
+- Add upstream patch to build with libffi 3.1
+
 * Sun Jun 08 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org>
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
 
