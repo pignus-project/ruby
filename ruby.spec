@@ -554,6 +554,10 @@ DISABLE_TESTS=""
 # test_call_double(DL::TestDL) fails on ARM HardFP
 # http://bugs.ruby-lang.org/issues/6592
 DISABLE_TESTS="-x test_dl2.rb $DISABLE_TESTS"
+
+# Workaround OpenSSL::TestPKeyRSA#test_sign_verify_memory_leak timeouts on ARM.
+# https://bugs.ruby-lang.org/issues/9984
+sed -i -e 's|20_000|10_000|g' test/openssl/test_pkey_rsa.rb
 %endif
 
 # test_debug(TestRubyOptions) fails due to LoadError reported in debug mode,
