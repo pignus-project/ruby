@@ -86,13 +86,10 @@ Source8: rubygems.attr
 Source9: rubygems.req
 Source10: rubygems.prov
 
-# %%load function should be supported in RPM 4.12+.
-# http://lists.rpm.org/pipermail/rpm-maint/2014-February/003659.html
-Source100: load.inc
-%include %{SOURCE100}
-
-%{load %{SOURCE4}}
-%{load %{SOURCE5}}
+# The load directive is supported since RPM 4.12, i.e. F21+. The build process
+# fails on older Fedoras.
+%{?load:%{SOURCE4}}
+%{?load:%{SOURCE5}}
 
 # http://bugs.ruby-lang.org/issues/7807
 Patch0: ruby-2.1.0-Prevent-duplicated-paths-when-empty-version-string-i.patch
@@ -875,6 +872,9 @@ OPENSSL_ENABLE_MD5_VERIFY=1 make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Mon Aug 25 2014 Vít Ondruch <vondruch@redhat.com> - 2.1.2-24
+- Use load macro introduced in RPM 4.12.
+
 * Mon Aug 18 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org>
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_21_22_Mass_Rebuild
 
