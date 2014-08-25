@@ -1,7 +1,6 @@
 %global major_version 2
 %global minor_version 1
 %global teeny_version 2
-%global patch_level 95
 %global major_minor_version %{major_version}.%{minor_version}
 
 %global ruby_version %{major_minor_version}.%{teeny_version}
@@ -19,11 +18,6 @@
 %if 0%{?milestone:1}%{?revision:1} != 0
 %global development_release %{?milestone}%{?!milestone:%{?revision:r%{revision}}}
 %global ruby_archive %{ruby_archive}-%{?milestone}%{?!milestone:%{?revision:r%{revision}}}
-%else
-# Ruby will be using semver versioning scheme since Ruby 2.1.0. However, it is
-# unclear ATM what name will be used when next bugfix version is released.
-# http://bugs.ruby-lang.org/issues/8835
-#%%global ruby_archive %{ruby_archive}-p%{patch_level}
 %endif
 
 
