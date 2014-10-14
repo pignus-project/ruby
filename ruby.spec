@@ -612,8 +612,8 @@ make check TESTS="-v $DISABLE_TESTS"
 # local system administrator.
 %exclude %{ruby_sitelibdir}
 %exclude %{ruby_sitearchdir}
-%{ruby_vendorlibdir}
-%{ruby_vendorarchdir}
+%dir %{ruby_vendorlibdir}
+%dir %{ruby_vendorarchdir}
 
 # List all these files explicitly to prevent surprises
 # Platform independent libraries.
@@ -864,6 +864,7 @@ make check TESTS="-v $DISABLE_TESTS"
 %changelog
 * Wed Oct 29 2014 Vít Ondruch <vondruch@redhat.com> - 2.1.4-23
 - Update to Ruby 2.1.4.
+- Include only vendor directories, not their content (rhbz#1114071).
 - Use load macro introduced in RPM 4.12.
 
 * Mon Aug 18 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org>
