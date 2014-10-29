@@ -1,6 +1,6 @@
 %global major_version 2
 %global minor_version 1
-%global teeny_version 2
+%global teeny_version 4
 %global major_minor_version %{major_version}.%{minor_version}
 
 %global ruby_version %{major_minor_version}.%{teeny_version}
@@ -21,7 +21,7 @@
 %endif
 
 
-%global release 24
+%global release 23
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 %global rubygems_version 2.2.2
@@ -106,9 +106,6 @@ Patch5: ruby-1.9.3-mkmf-verbose.patch
 # in support for ABRT.
 # http://bugs.ruby-lang.org/issues/8566
 Patch6: ruby-2.1.0-Allow-to-specify-additional-preludes-by-configuratio.patch
-# Fix build with libffi 3.1
-# https://bugs.ruby-lang.org/issues/9897
-Patch7: ruby-r46485-libffi31.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Requires: ruby(rubygems) >= %{rubygems_version}
@@ -369,7 +366,6 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
-%patch7 -p0
 
 # Provide an example of usage of the tapset:
 cp -a %{SOURCE3} .
@@ -545,10 +541,6 @@ DISABLE_TESTS=""
 # test_call_double(DL::TestDL) fails on ARM HardFP
 # http://bugs.ruby-lang.org/issues/6592
 DISABLE_TESTS="-x test_dl2.rb $DISABLE_TESTS"
-
-# Workaround OpenSSL::TestPKeyRSA#test_sign_verify_memory_leak timeouts on ARM.
-# https://bugs.ruby-lang.org/issues/9984
-sed -i -e 's|20_000|10_000|g' test/openssl/test_pkey_rsa.rb
 %endif
 
 # test_debug(TestRubyOptions) fails due to LoadError reported in debug mode,
@@ -568,9 +560,13 @@ sed -i "/^  gem 'minitest', '~> 4.0'/ s/^/#/" lib/rubygems/test_case.rb
 # https://bugs.ruby-lang.org/issues/9198
 sed -i '/^  def test_machine_stackoverflow/,/^  end/ s/^/#/' test/ruby/test_exception.rb
 
-# Allow MD5 in OpenSSL.
-# https://bugs.ruby-lang.org/issues/9154
-OPENSSL_ENABLE_MD5_VERIFY=1 make check TESTS="-v $DISABLE_TESTS"
+# Don't test wrap ciphers to prevent "OpenSSL::Cipher::CipherError: wrap mode
+# not allowed" error.
+# https://bugs.ruby-lang.org/issues/10229
+sed -i '/assert(OpenSSL::Cipher::Cipher.new(name).is_a?(OpenSSL::Cipher::Cipher))/i \
+        next if /wrap/ =~ name' test/openssl/test_cipher.rb
+
+make check TESTS="-v $DISABLE_TESTS"
 
 %post libs -p /sbin/ldconfig
 
@@ -866,7 +862,8 @@ OPENSSL_ENABLE_MD5_VERIFY=1 make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
-* Mon Aug 25 2014 Vít Ondruch <vondruch@redhat.com> - 2.1.2-24
+* Wed Oct 29 2014 Vít Ondruch <vondruch@redhat.com> - 2.1.4-23
+- Update to Ruby 2.1.4.
 - Use load macro introduced in RPM 4.12.
 
 * Mon Aug 18 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org>
