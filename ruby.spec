@@ -865,6 +865,7 @@ make check TESTS="-v $DISABLE_TESTS"
 * Wed Oct 29 2014 Vít Ondruch <vondruch@redhat.com> - 2.1.4-23
 - Update to Ruby 2.1.4.
 - Include only vendor directories, not their content (rhbz#1114071).
+- Fix "invalid regex" warning for non-rubygem packages (rhbz#1154067).
 - Use load macro introduced in RPM 4.12.
 
 * Mon Aug 18 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org>
