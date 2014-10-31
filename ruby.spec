@@ -21,7 +21,7 @@
 %endif
 
 
-%global release 23
+%global release 24
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 %global rubygems_version 2.2.2
@@ -862,7 +862,7 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
-* Wed Oct 29 2014 Vít Ondruch <vondruch@redhat.com> - 2.1.4-23
+* Fri Oct 31 2014 Vít Ondruch <vondruch@redhat.com> - 2.1.4-24
 - Update to Ruby 2.1.4.
 - Include only vendor directories, not their content (rhbz#1114071).
 - Fix "invalid regex" warning for non-rubygem packages (rhbz#1154067).
