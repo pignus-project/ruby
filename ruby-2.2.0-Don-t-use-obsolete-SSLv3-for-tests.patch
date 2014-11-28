@@ -1,0 +1,38 @@
+From 75ca3a364e2e35a53a385eab08bebdcb08baeace Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?V=C3=ADt=20Ondruch?= <vondruch@redhat.com>
+Date: Fri, 21 Nov 2014 16:02:52 +0100
+Subject: [PATCH] Don't use obsolete SSLv3 for tests.
+
+SSLv23 should be the most liberal settings according to upstream
+documentation:
+
+https://www.openssl.org/docs/ssl/SSL_CTX_new.html
+---
+ test/openssl/test_ssl_session.rb | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/test/openssl/test_ssl_session.rb b/test/openssl/test_ssl_session.rb
+index 8066ef1..2f3e578 100644
+--- a/test/openssl/test_ssl_session.rb
++++ b/test/openssl/test_ssl_session.rb
+@@ -273,7 +273,7 @@ __EOS__
+ 
+   def test_ctx_client_session_cb
+     called = {}
+-    ctx = OpenSSL::SSL::SSLContext.new("SSLv3")
++    ctx = OpenSSL::SSL::SSLContext.new
+     ctx.session_cache_mode = OpenSSL::SSL::SSLContext::SESSION_CACHE_CLIENT
+ 
+     ctx.session_new_cb = lambda { |ary|
+@@ -345,7 +345,7 @@ __EOS__
+       last_client_session = nil
+       3.times do
+         sock = TCPSocket.new("127.0.0.1", port)
+-        ssl = OpenSSL::SSL::SSLSocket.new(sock, OpenSSL::SSL::SSLContext.new("SSLv3"))
++        ssl = OpenSSL::SSL::SSLSocket.new(sock, OpenSSL::SSL::SSLContext.new(:SSLv23_server))
+         ssl.sync_close = true
+         ssl.session = last_client_session if last_client_session
+         ssl.connect
+-- 
+1.9.3
+

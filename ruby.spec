@@ -1,6 +1,6 @@
 %global major_version 2
 %global minor_version 1
-%global teeny_version 4
+%global teeny_version 5
 %global major_minor_version %{major_version}.%{minor_version}
 
 %global ruby_version %{major_minor_version}.%{teeny_version}
@@ -21,7 +21,7 @@
 %endif
 
 
-%global release 24
+%global release 25
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 %global rubygems_version 2.2.2
@@ -106,6 +106,9 @@ Patch5: ruby-1.9.3-mkmf-verbose.patch
 # in support for ABRT.
 # http://bugs.ruby-lang.org/issues/8566
 Patch6: ruby-2.1.0-Allow-to-specify-additional-preludes-by-configuratio.patch
+# Test are broken due to SSLv3 disabled in Fedora.
+# https://bugs.ruby-lang.org/issues/10046
+Patch7: ruby-2.2.0-Don-t-use-obsolete-SSLv3-for-tests.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Requires: ruby(rubygems) >= %{rubygems_version}
@@ -366,6 +369,7 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
+%patch7 -p1
 
 # Provide an example of usage of the tapset:
 cp -a %{SOURCE3} .
@@ -565,6 +569,10 @@ sed -i '/^  def test_machine_stackoverflow/,/^  end/ s/^/#/' test/ruby/test_exce
 # https://bugs.ruby-lang.org/issues/10229
 sed -i '/assert(OpenSSL::Cipher::Cipher.new(name).is_a?(OpenSSL::Cipher::Cipher))/i \
         next if /wrap/ =~ name' test/openssl/test_cipher.rb
+
+# Test is broken due to SSLv3 disabled in Fedora.
+# https://bugs.ruby-lang.org/issues/10046
+sed -i '/def test_ctx_server_session_cb$/,/^  end$/ s/^/#/' test/openssl/test_ssl_session.rb
 
 make check TESTS="-v $DISABLE_TESTS"
 
@@ -862,6 +870,9 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Thu Nov 20 2014 Vít Ondruch <vondruch@redhat.com> - 2.1.5-25
+- Update to Ruby 2.1.5.
+
 * Fri Oct 31 2014 Vít Ondruch <vondruch@redhat.com> - 2.1.4-24
 - Update to Ruby 2.1.4.
 - Include only vendor directories, not their content (rhbz#1114071).
