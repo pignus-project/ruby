@@ -21,7 +21,7 @@
 %endif
 
 
-%global release 25
+%global release 26
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 %global rubygems_version 2.2.2
@@ -109,6 +109,9 @@ Patch6: ruby-2.1.0-Allow-to-specify-additional-preludes-by-configuratio.patch
 # Test are broken due to SSLv3 disabled in Fedora.
 # https://bugs.ruby-lang.org/issues/10046
 Patch7: ruby-2.2.0-Don-t-use-obsolete-SSLv3-for-tests.patch
+# Disable sse2, already applied upstream
+# https://bugzilla.redhat.com/show_bug.cgi?id=1101811
+Patch8: ruby-nosse2.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Requires: ruby(rubygems) >= %{rubygems_version}
@@ -370,6 +373,7 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
+%patch8 -p1
 
 # Provide an example of usage of the tapset:
 cp -a %{SOURCE3} .
@@ -870,6 +874,9 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Fri Dec 26 2014 Orion Poplwski <orion@cora.nwra.com> - 2.1.5-26
+- Disbable sse2 on i668 (bug #1101811)
+
 * Thu Nov 20 2014 Vít Ondruch <vondruch@redhat.com> - 2.1.5-25
 - Update to Ruby 2.1.5.
 
