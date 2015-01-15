@@ -1,16 +1,16 @@
 %global major_version 2
-%global minor_version 1
-%global teeny_version 5
+%global minor_version 2
+%global teeny_version 0
 %global major_minor_version %{major_version}.%{minor_version}
 
 %global ruby_version %{major_minor_version}.%{teeny_version}
 %global ruby_release %{ruby_version}
 
 # Specify the named version. It has precedense to revision.
-#%%global milestone preview2
+#%%global milestone rc1
 
 # Keep the revision enabled for pre-releases from SVN.
-#%%global revision 44362
+#%%global revision 48936
 
 %global ruby_archive %{name}-%{ruby_version}
 
@@ -21,10 +21,10 @@
 %endif
 
 
-%global release 26
+%global release 1
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
-%global rubygems_version 2.2.2
+%global rubygems_version 2.4.5
 
 # The RubyGems library has to stay out of Ruby directory three, since the
 # RubyGems should be share by all Ruby implementations.
@@ -34,13 +34,15 @@
 # http://redmine.ruby-lang.org/issues/5313
 %global irb_version %{ruby_version}
 
-%global bigdecimal_version 1.2.4
-%global io_console_version 0.4.2
+%global bigdecimal_version 1.2.6
+%global io_console_version 0.4.3
 %global json_version 1.8.1
-%global minitest_version 4.7.5
-%global psych_version 2.0.5
-%global rake_version 10.1.0
-%global rdoc_version 4.1.0
+%global minitest_version 5.4.3
+%global power_assert_version 0.2.2
+%global psych_version 2.0.8
+%global rake_version 10.4.2
+%global rdoc_version 4.2.0
+%global test_unit_version 3.0.8
 
 # Might not be needed in the future, if we are lucky enough.
 # https://bugzilla.redhat.com/show_bug.cgi?id=888262
@@ -62,7 +64,7 @@ Group: Development/Languages
 # Public Domain for example for: include/ruby/st.h, strftime.c, ...
 License: (Ruby or BSD) and Public Domain
 URL: http://ruby-lang.org/
-Source0: ftp://ftp.ruby-lang.org/pub/%{name}/%{major_minor_version}/%{ruby_archive}.tar.bz2
+Source0: ftp://ftp.ruby-lang.org/pub/%{name}/%{major_minor_version}/%{ruby_archive}.tar.xz
 Source1: operating_system.rb
 # TODO: Try to push SystemTap support upstream.
 Source2: libruby.stp
@@ -79,6 +81,8 @@ Source7: config.h
 Source8: rubygems.attr
 Source9: rubygems.req
 Source10: rubygems.prov
+# SystemTap sanity test case.
+Source11: test_systemtap.rb
 
 # The load directive is supported since RPM 4.12, i.e. F21+. The build process
 # fails on older Fedoras.
@@ -94,11 +98,8 @@ Patch1: ruby-2.1.0-Enable-configuration-of-archlibdir.patch
 # Force multiarch directories for i.86 to be always named i386. This solves
 # some differencies in build between Fedora and RHEL.
 Patch2: ruby-2.1.0-always-use-i386.patch
-# Fixes random WEBRick test failures.
-# https://bugs.ruby-lang.org/issues/6573.
-Patch3: ruby-1.9.3.p195-fix-webrick-tests.patch
 # Allows to install RubyGems into custom directory, outside of Ruby's tree.
-# http://redmine.ruby-lang.org/issues/5617
+# http://bugs.ruby-lang.org/issues/5617
 Patch4: ruby-2.1.0-custom-rubygems-location.patch
 # Make mkmf verbose by default
 Patch5: ruby-1.9.3-mkmf-verbose.patch
@@ -106,12 +107,6 @@ Patch5: ruby-1.9.3-mkmf-verbose.patch
 # in support for ABRT.
 # http://bugs.ruby-lang.org/issues/8566
 Patch6: ruby-2.1.0-Allow-to-specify-additional-preludes-by-configuratio.patch
-# Test are broken due to SSLv3 disabled in Fedora.
-# https://bugs.ruby-lang.org/issues/10046
-Patch7: ruby-2.2.0-Don-t-use-obsolete-SSLv3-for-tests.patch
-# Disable sse2, already applied upstream
-# https://bugzilla.redhat.com/show_bug.cgi?id=1101811
-Patch8: ruby-nosse2.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Requires: ruby(rubygems) >= %{rubygems_version}
@@ -123,7 +118,6 @@ Requires: rubygem(bigdecimal) >= %{bigdecimal_version}
 
 BuildRequires: autoconf
 BuildRequires: gdbm-devel
-BuildRequires: libdb-devel
 BuildRequires: libffi-devel
 BuildRequires: openssl-devel
 BuildRequires: libyaml-devel
@@ -175,6 +169,8 @@ Group:      Development/Libraries
 License:    Ruby or MIT
 Requires:   ruby(release)
 Requires:   rubygem(rdoc) >= %{rdoc_version}
+# TODO: This seems to be optional now.
+# https://github.com/rubygems/rubygems/commit/68da16dd7508c5c4010bfe32f99422568d3d582f
 Requires:   rubygem(io-console) >= %{io_console_version}
 Requires:   rubygem(psych) >= %{psych_version}
 Provides:   gem = %{version}-%{release}
@@ -334,6 +330,22 @@ minitest/pride shows pride in testing and adds coloring to your test
 output.
 
 
+# The Summary/Description fields are rather poor.
+# https://github.com/k-tsj/power_assert/issues/3
+%package -n rubygem-power_assert
+Summary:    Power Assert for Ruby
+Version:    %{power_assert_version}
+Group:      Development/Libraries
+License:    Ruby or BSD
+Requires:   ruby(release)
+Requires:   ruby(rubygems) >= %{rubygems_version}
+Provides:   rubygem(power_assert) = %{version}-%{release}
+BuildArch:  noarch
+
+%description -n rubygem-power_assert
+Power Assert for Ruby.
+
+
 %package -n rubygem-psych
 Summary:    A libyaml wrapper for Ruby
 Version:    %{psych_version}
@@ -349,8 +361,25 @@ libyaml[http://pyyaml.org/wiki/LibYAML] for its YAML parsing and emitting
 capabilities. In addition to wrapping libyaml, Psych also knows how to
 serialize and de-serialize most Ruby objects to and from the YAML format.
 
-# TODO:
-# %%pacakge -n rubygem-test-unit
+
+# The Summary/Description fields are rather poor.
+# https://github.com/test-unit/test-unit/issues/73
+%package -n rubygem-test-unit
+Summary:    Improved version of Test::Unit bundled in Ruby 1.8.x
+Version:    %{test_unit_version}
+Group:      Development/Libraries
+# lib/test/unit/diff.rb is a double license of the Ruby license and PSF license.
+# lib/test-unit.rb is a dual license of the Ruby license and LGPLv2.1 or later.
+License:    (Ruby or BSD) and (Ruby or BSD or Python) and (Ruby or BSD or LGPLv2+)
+Requires:   ruby(release)
+Requires:   ruby(rubygems) >= %{rubygems_version}
+Provides:   rubygem(test-unit) = %{version}-%{release}
+BuildArch:  noarch
+
+%description -n rubygem-test-unit
+Ruby 1.9.x bundles minitest not Test::Unit. Test::Unit
+bundled in Ruby 1.8.x had not been improved but unbundled
+Test::Unit (test-unit) is improved actively.
 
 
 %package tcltk
@@ -365,15 +394,16 @@ Tcl/Tk interface for the object-oriented scripting language Ruby.
 %prep
 %setup -q -n %{ruby_archive}
 
+# Remove bundled libraries to be sure they are not used.
+rm -rf ext/psych/yaml
+rm -rf ext/fiddle/libffi*
+
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
-%patch3 -p1
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
-%patch7 -p1
-%patch8 -p1
 
 # Provide an example of usage of the tapset:
 cp -a %{SOURCE3} .
@@ -407,6 +437,10 @@ autoconf
         --enable-multiarch \
         --with-prelude=./abrt_prelude.rb \
 
+# Avoid regeneration of prelude.c due to patch6 applied to common.mk.
+# https://bugs.ruby-lang.org/issues/10554
+touch prelude.c
+
 # Q= makes the build output more verbose and allows to check Fedora
 # compiler options.
 make %{?_smp_mflags} COPY="cp -p" Q=
@@ -432,12 +466,14 @@ for cert in \
   Class3PublicPrimaryCertificationAuthority.pem \
   DigiCertHighAssuranceEVRootCA.pem \
   EntrustnetSecureServerCertificationAuthority.pem \
-  GeoTrustGlobalCA.pem
+  GeoTrustGlobalCA.pem \
+  AddTrustExternalCARoot.pem \
+  AddTrustExternalCARoot-2048.pem
 do
   rm %{buildroot}%{rubygems_dir}/rubygems/ssl_certs/$cert
 done
 
-# Move macros file insto proper place and replace the %%{name} macro, since it
+# Move macros file into proper place and replace the %%{name} macro, since it
 # would be wrongly evaluated during build of other packages.
 mkdir -p %{buildroot}%{_rpmconfigdir}/macros.d
 install -m 644 %{SOURCE4} %{buildroot}%{_rpmconfigdir}/macros.d/macros.ruby
@@ -496,22 +532,14 @@ mv %{buildroot}%{ruby_libdir}/json* %{buildroot}%{gem_dir}/gems/json-%{json_vers
 mv %{buildroot}%{ruby_libarchdir}/json/ %{buildroot}%{_libdir}/gems/%{name}/json-%{json_version}/
 mv %{buildroot}%{gem_dir}/specifications/default/json-%{json_version}.gemspec %{buildroot}%{gem_dir}/specifications
 
-mkdir -p %{buildroot}%{gem_dir}/gems/minitest-%{minitest_version}/lib
-mv %{buildroot}%{ruby_libdir}/minitest %{buildroot}%{gem_dir}/gems/minitest-%{minitest_version}/lib
-mv %{buildroot}%{gem_dir}/specifications/default/minitest-%{minitest_version}.gemspec %{buildroot}%{gem_dir}/specifications
-
 mkdir -p %{buildroot}%{gem_dir}/gems/psych-%{psych_version}/lib
 mkdir -p %{buildroot}%{_libdir}/gems/%{name}/psych-%{psych_version}
 mv %{buildroot}%{ruby_libdir}/psych* %{buildroot}%{gem_dir}/gems/psych-%{psych_version}/lib
 mv %{buildroot}%{ruby_libarchdir}/psych.so %{buildroot}%{_libdir}/gems/%{name}/psych-%{psych_version}/
 mv %{buildroot}%{gem_dir}/specifications/default/psych-%{psych_version}.gemspec %{buildroot}%{gem_dir}/specifications
-# The links should replace directory, which RPM cannot handle and it is causing
-# issues during upgrade from F18 to F19. As a workaround the links are placed
-# into vendor direcories. This could be changed back as soon as F18 is EOLed.
-# https://bugzilla.redhat.com/show_bug.cgi?id=988490
-ln -s %{gem_dir}/gems/psych-%{psych_version}/lib/psych %{buildroot}%{ruby_vendorlibdir}/psych
-ln -s %{gem_dir}/gems/psych-%{psych_version}/lib/psych.rb %{buildroot}%{ruby_vendorlibdir}/psych.rb
-ln -s %{_libdir}/gems/%{name}/psych-%{psych_version}/psych.so %{buildroot}%{ruby_vendorarchdir}/psych.so
+ln -s %{gem_dir}/gems/psych-%{psych_version}/lib/psych %{buildroot}%{ruby_libdir}/psych
+ln -s %{gem_dir}/gems/psych-%{psych_version}/lib/psych.rb %{buildroot}%{ruby_libdir}/psych.rb
+ln -s %{_libdir}/gems/%{name}/psych-%{psych_version}/psych.so %{buildroot}%{ruby_libarchdir}/psych.so
 
 # Adjust the gemspec files so that the gems will load properly
 sed -i '/^end$/ i\
@@ -532,9 +560,6 @@ sed -i '/^end$/ i\
   s.require_paths = ["lib"]\
   s.extensions = ["json/ext/parser.so", "json/ext/generator.so"]' %{buildroot}%{gem_dir}/specifications/json-%{json_version}.gemspec
 
-sed -i '/^end$/ i\
-  s.require_paths = ["lib"]' %{buildroot}%{gem_dir}/specifications/minitest-%{minitest_version}.gemspec
-
 # Install a tapset and fix up the path to the library.
 mkdir -p %{buildroot}%{tapset_dir}
 sed -e "s|@LIBRARY_PATH@|%{tapset_libdir}/libruby.so.%{ruby_version}|" \
@@ -543,30 +568,15 @@ sed -e "s|@LIBRARY_PATH@|%{tapset_libdir}/libruby.so.%{ruby_version}|" \
 sed -i -r "s|( \*.*\*)\/(.*)|\1\\\/\2|" %{buildroot}%{tapset_dir}/libruby.so.%{ruby_version}.stp
 
 %check
-DISABLE_TESTS=""
+# Sanity check that SystemTap (dtrace) was detected.
+make runruby TESTRUN_SCRIPT=%{SOURCE11}
 
-%ifarch armv7l armv7hl armv7hnl
-# test_call_double(DL::TestDL) fails on ARM HardFP
-# http://bugs.ruby-lang.org/issues/6592
-DISABLE_TESTS="-x test_dl2.rb $DISABLE_TESTS"
-%endif
+DISABLE_TESTS=""
 
 # test_debug(TestRubyOptions) fails due to LoadError reported in debug mode,
 # when abrt.rb cannot be required (seems to be easier way then customizing
 # the test suite).
 touch abrt.rb
-
-# TestSignal#test_hup_me hangs up the test suite.
-# http://bugs.ruby-lang.org/issues/8997
-sed -i '/def test_hup_me/,/end if Process.respond_to/ s/^/#/' test/ruby/test_signal.rb
-
-# Fix "Could not find 'minitest'" error.
-# http://bugs.ruby-lang.org/issues/9259
-sed -i "/^  gem 'minitest', '~> 4.0'/ s/^/#/" lib/rubygems/test_case.rb
-
-# Segmentation fault.
-# https://bugs.ruby-lang.org/issues/9198
-sed -i '/^  def test_machine_stackoverflow/,/^  end/ s/^/#/' test/ruby/test_exception.rb
 
 # Don't test wrap ciphers to prevent "OpenSSL::Cipher::CipherError: wrap mode
 # not allowed" error.
@@ -576,6 +586,7 @@ sed -i '/assert(OpenSSL::Cipher::Cipher.new(name).is_a?(OpenSSL::Cipher::Cipher)
 
 # Test is broken due to SSLv3 disabled in Fedora.
 # https://bugs.ruby-lang.org/issues/10046
+sed -i '/def test_ctx_client_session_cb$/,/^  end$/ s/^/#/' test/openssl/test_ssl_session.rb
 sed -i '/def test_ctx_server_session_cb$/,/^  end$/ s/^/#/' test/openssl/test_ssl_session.rb
 
 make check TESTS="-v $DISABLE_TESTS"
@@ -585,13 +596,13 @@ make check TESTS="-v $DISABLE_TESTS"
 %postun libs -p /sbin/ldconfig
 
 %files
+%doc BSDL
 %doc COPYING
 %lang(ja) %doc COPYING.ja
 %doc GPL
 %doc LEGAL
 %{_bindir}/erb
 %{_bindir}/%{name}%{?with_rubypick:-mri}
-%{_bindir}/testrb
 %{_mandir}/man1/erb*
 %{_mandir}/man1/ruby*
 
@@ -599,7 +610,9 @@ make check TESTS="-v $DISABLE_TESTS"
 %exclude %{_libdir}/libruby-static.a
 
 %files devel
-%doc COPYING*
+%doc BSDL
+%doc COPYING
+%lang(ja) %doc COPYING.ja
 %doc GPL
 %doc LEGAL
 %doc README.EXT
@@ -616,8 +629,8 @@ make check TESTS="-v $DISABLE_TESTS"
 %lang(ja) %doc COPYING.ja
 %doc GPL
 %doc LEGAL
-%doc README
-%lang(ja) %doc README.ja
+%doc README.md
+%lang(ja) %doc README.ja.md
 %doc NEWS
 %doc doc/NEWS-*
 # Exclude /usr/local directory since it is supposed to be managed by
@@ -635,10 +648,9 @@ make check TESTS="-v $DISABLE_TESTS"
 %exclude %{ruby_libdir}/irb.rb
 %exclude %{ruby_libdir}/tcltk.rb
 %exclude %{ruby_libdir}/tk*.rb
+%exclude %{ruby_libdir}/psych.rb
 %{ruby_libdir}/cgi
-%{ruby_libdir}/date
 %{ruby_libdir}/digest
-%{ruby_libdir}/dl
 %{ruby_libdir}/drb
 %{ruby_libdir}/fiddle
 %exclude %{ruby_libdir}/irb
@@ -654,9 +666,9 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/rss
 %{ruby_libdir}/shell
 %{ruby_libdir}/syslog
-%{ruby_libdir}/test
 %exclude %{ruby_libdir}/tk
 %exclude %{ruby_libdir}/tkextlib
+%{ruby_libdir}/unicode_normalize
 %{ruby_libdir}/uri
 %{ruby_libdir}/webrick
 %{ruby_libdir}/xmlrpc
@@ -676,9 +688,6 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libarchdir}/digest/rmd160.so
 %{ruby_libarchdir}/digest/sha1.so
 %{ruby_libarchdir}/digest/sha2.so
-%dir %{ruby_libarchdir}/dl
-%{ruby_libarchdir}/dl.so
-%{ruby_libarchdir}/dl/callback.so
 %dir %{ruby_libarchdir}/enc
 %{ruby_libarchdir}/enc/big5.so
 %{ruby_libarchdir}/enc/cp949.so
@@ -768,37 +777,24 @@ make check TESTS="-v $DISABLE_TESTS"
 
 %{tapset_root}
 
-# TODO rubygems 2.0.0 does not create test-unit gemspec
-# TODO for now put this in ruby-libs rpm
-# TODO check if the following can be removed after
-# TODO test-unit rebuild
-%dir %{gem_dir}
-%dir %{gem_dir}/specifications
-%dir %{gem_dir}/specifications/default
-%{gem_dir}/specifications/default/test-unit-*.gemspec
-
 %files -n rubygems
 %{_bindir}/gem
 %{rubygems_dir}
-%{gem_dir}
-%exclude %{gem_dir}/gems/*
-%{_exec_prefix}/lib*/gems
-%exclude %{_exec_prefix}/lib*/gems/%{name}/bigdecimal-%{bigdecimal_version}
-%exclude %{_exec_prefix}/lib*/gems/%{name}/io-console-%{io_console_version}
-%exclude %{_exec_prefix}/lib*/gems/%{name}/json-%{json_version}
-%exclude %{_exec_prefix}/lib*/gems/%{name}/psych-%{psych_version}
-%exclude %{gem_dir}/gems/rake-%{rake_version}
-%exclude %{gem_dir}/gems/rdoc-%{rdoc_version}
-%exclude %{gem_dir}/specifications/bigdecimal-%{bigdecimal_version}.gemspec
-%exclude %{gem_dir}/specifications/io-console-%{io_console_version}.gemspec
-%exclude %{gem_dir}/specifications/json-%{json_version}.gemspec
-%exclude %{gem_dir}/specifications/minitest-%{minitest_version}.gemspec
-%exclude %{gem_dir}/specifications/rake-%{rake_version}.gemspec
-%exclude %{gem_dir}/specifications/rdoc-%{rdoc_version}.gemspec
-%exclude %{gem_dir}/specifications/psych-%{psych_version}.gemspec
-# TODO rubygems 2.0.0 does not create test-unit gemspec
-# TODO where to put test-unit-*.gemspec??
-%exclude %{gem_dir}/specifications/default/test-unit-*.gemspec
+
+# Explicitly include only RubyGems directory strucure to avoid accidentally
+# packaged content.
+%dir %{gem_dir}
+%dir %{gem_dir}/build_info
+%dir %{gem_dir}/cache
+%dir %{gem_dir}/doc
+%dir %{gem_dir}/extensions
+%dir %{gem_dir}/gems
+%dir %{gem_dir}/specifications
+%dir %{gem_dir}/specifications/default
+%dir %{_exec_prefix}/lib*/gems
+%dir %{_exec_prefix}/lib*/gems/ruby
+
+%exclude %{gem_dir}/cache/*
 
 %files -n rubygems-devel
 %{_rpmconfigdir}/macros.d/macros.rubygems
@@ -826,8 +822,8 @@ make check TESTS="-v $DISABLE_TESTS"
 %{_mandir}/man1/ri*
 
 %files doc
-%doc README
-%lang(ja) %doc README.ja
+%doc README.md
+%lang(ja) %doc README.ja.md
 %doc ChangeLog
 %doc doc/ChangeLog-*
 %doc ruby-exercise.stp
@@ -854,15 +850,25 @@ make check TESTS="-v $DISABLE_TESTS"
 
 %files -n rubygem-minitest
 %{gem_dir}/gems/minitest-%{minitest_version}
+%exclude %{gem_dir}/gems/minitest-%{minitest_version}/.*
 %{gem_dir}/specifications/minitest-%{minitest_version}.gemspec
 
+%files -n rubygem-power_assert
+%{gem_dir}/gems/power_assert-%{power_assert_version}
+%exclude %{gem_dir}/gems/power_assert-%{power_assert_version}/.*
+%{gem_dir}/specifications/power_assert-%{power_assert_version}.gemspec
+
 %files -n rubygem-psych
-%{ruby_vendorlibdir}/psych
-%{ruby_vendorlibdir}/psych.rb
-%{ruby_vendorarchdir}/psych.so
+%{ruby_libdir}/psych
+%{ruby_libdir}/psych.rb
+%{ruby_libarchdir}/psych.so
 %{_libdir}/gems/%{name}/psych-%{psych_version}
 %{gem_dir}/gems/psych-%{psych_version}
 %{gem_dir}/specifications/psych-%{psych_version}.gemspec
+
+%files -n rubygem-test-unit
+%{gem_dir}/gems/test-unit-%{test_unit_version}
+%{gem_dir}/specifications/test-unit-%{test_unit_version}.gemspec
 
 %files tcltk
 %{ruby_libdir}/*-tk.rb
@@ -874,6 +880,12 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Fri Jan 02 2015 Vít Ondruch <vondruch@redhat.com> - 2.2.0-1
+- Upgrade to Ruby 2.2.0.
+- Explicitly list RubyGems directories to avoid accidentaly packaged content.
+- Split test-unit and power_assert gems into separate sub-packages.
+- Drop libdb dependency in favor of gdbm.
+
 * Fri Dec 26 2014 Orion Poplwski <orion@cora.nwra.com> - 2.1.5-26
 - Disbable sse2 on i668 (bug #1101811)
 

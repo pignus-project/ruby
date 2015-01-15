@@ -11,7 +11,7 @@ diff --git a/configure.in b/configure.in
 index 553d4d0..03a4152 100644
 --- a/configure.in
 +++ b/configure.in
-@@ -3830,6 +3830,8 @@ AC_SUBST(vendorarchdir)dnl
+@@ -4078,6 +4078,8 @@ AC_SUBST(vendorarchdir)dnl
  
  AC_SUBST(configure_args, "`echo "${ac_configure_args}" | sed 's/\\$/$$/g'`")dnl
  
@@ -19,7 +19,7 @@ index 553d4d0..03a4152 100644
 +
  if test "${universal_binary-no}" = yes ; then
      arch="universal-${target_os}"
-     AC_CACHE_CHECK(whether __ARCHITECTURE__ is available, rb_cv_architecture_available,
+     if test "${rb_cv_architecture_available}" = yes; then
 -- 
 1.8.3.1
 
