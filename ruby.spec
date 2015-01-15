@@ -21,7 +21,7 @@
 %endif
 
 
-%global release 1
+%global release 3
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 %global rubygems_version 2.4.5
@@ -880,6 +880,9 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Thu Jan 15 2015 Mamoru TASAKA <mtasaka@fedoraproject.org> - 2.2.0-3
+- Bump release to avoid EVR issue on rubygem-test-unit
+
 * Fri Jan 02 2015 Vít Ondruch <vondruch@redhat.com> - 2.2.0-1
 - Upgrade to Ruby 2.2.0.
 - Explicitly list RubyGems directories to avoid accidentaly packaged content.
