@@ -21,7 +21,7 @@
 %endif
 
 
-%global release 3
+%global release 4
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 %global rubygems_version 2.4.5
@@ -373,6 +373,7 @@ Group:      Development/Libraries
 License:    (Ruby or BSD) and (Ruby or BSD or Python) and (Ruby or BSD or LGPLv2+)
 Requires:   ruby(release)
 Requires:   ruby(rubygems) >= %{rubygems_version}
+Requires:   rubygem(power_assert)
 Provides:   rubygem(test-unit) = %{version}-%{release}
 BuildArch:  noarch
 
@@ -880,6 +881,9 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Thu Jan 29 2015 Vít Ondruch <vondruch@redhat.com> - 2.2.0-4
+- Add missing rubygem-test-unit dependency on rubygem-power_assert.
+
 * Thu Jan 15 2015 Mamoru TASAKA <mtasaka@fedoraproject.org> - 2.2.0-3
 - Bump release to avoid EVR issue on rubygem-test-unit
 
