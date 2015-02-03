@@ -561,6 +561,16 @@ sed -i '/^end$/ i\
   s.require_paths = ["lib"]\
   s.extensions = ["json/ext/parser.so", "json/ext/generator.so"]' %{buildroot}%{gem_dir}/specifications/json-%{json_version}.gemspec
 
+# Push the .gemspecs through the RubyGems to let them write the stub headers.
+# This speeds up loading of libraries and avoids warnings in Spring:
+# https://github.com/rubygems/rubygems/pull/694
+for s in rake-%{rake_version}.gemspec rdoc-%{rdoc_version}.gemspec json-%{json_version}.gemspec; do
+  s="%{buildroot}%{gem_dir}/specifications/$s"
+  make runruby TESTRUN_SCRIPT="-rubygems \
+   -e \"spec = Gem::Specification.load(%{$s})\" \
+   -e \"File.write %{$s}, spec.to_ruby\""
+done
+
 # Install a tapset and fix up the path to the library.
 mkdir -p %{buildroot}%{tapset_dir}
 sed -e "s|@LIBRARY_PATH@|%{tapset_libdir}/libruby.so.%{ruby_version}|" \
@@ -883,6 +893,7 @@ make check TESTS="-v $DISABLE_TESTS"
 %changelog
 * Tue Feb 03 2015 Vít Ondruch <vondruch@redhat.com> - 2.2.0-5
 - Make operating_system.rb more robust.
+- Add RubyGems stub headers for bundled gems.
 
 * Thu Jan 29 2015 Vít Ondruch <vondruch@redhat.com> - 2.2.0-4
 - Add missing rubygem-test-unit dependency on rubygem-power_assert.
