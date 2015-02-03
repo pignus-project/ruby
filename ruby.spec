@@ -21,7 +21,7 @@
 %endif
 
 
-%global release 4
+%global release 5
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 %global rubygems_version 2.4.5
@@ -881,6 +881,9 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Tue Feb 03 2015 Vít Ondruch <vondruch@redhat.com> - 2.2.0-5
+- Make operating_system.rb more robust.
+
 * Thu Jan 29 2015 Vít Ondruch <vondruch@redhat.com> - 2.2.0-4
 - Add missing rubygem-test-unit dependency on rubygem-power_assert.
 

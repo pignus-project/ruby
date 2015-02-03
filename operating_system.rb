@@ -6,6 +6,8 @@ module Gem
     # E.g. for '/usr/share/ruby', 'ruby', it returns '/usr'
 
     def previous_but_one_dir_to(path, dir)
+      return unless path
+
       split_path = path.split(File::SEPARATOR)
       File.join(split_path.take_while { |one_dir| one_dir !~ /^#{dir}$/ }[0..-2])
     end
@@ -44,13 +46,21 @@ module Gem
         RbConfig::CONFIG['libdir']
       end
 
-      @default_dirs ||= Hash[default_locations.collect do |destination, path|
-        [destination, {
-          :bin_dir => File.join(path, RbConfig::CONFIG['bindir'].split(File::SEPARATOR).last),
-          :gem_dir => File.join(path, RbConfig::CONFIG['datadir'].split(File::SEPARATOR).last, 'gems'),
-          :ext_dir => File.join(path, @libdir.split(File::SEPARATOR).last, 'gems')
-        }]
-      end]
+      @default_dirs ||= Hash.new do |hash, key|
+        hash[key] = if path = default_locations[key]
+          {
+            :bin_dir => File.join(path, RbConfig::CONFIG['bindir'].split(File::SEPARATOR).last),
+            :gem_dir => File.join(path, RbConfig::CONFIG['datadir'].split(File::SEPARATOR).last, 'gems'),
+            :ext_dir => File.join(path, @libdir.split(File::SEPARATOR).last, 'gems')
+          }
+        else
+          {
+            :bin_dir => '',
+            :gem_dir => '',
+            :ext_dir => ''
+          }
+        end
+      end
     end
 
     ##
