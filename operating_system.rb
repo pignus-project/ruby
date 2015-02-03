@@ -27,8 +27,8 @@ module Gem
 
     def default_locations
       @default_locations ||= {
-        :system => previous_but_one_dir_to(ConfigMap[:vendordir], ConfigMap[:RUBY_INSTALL_NAME]),
-        :local => previous_but_one_dir_to(ConfigMap[:sitedir], ConfigMap[:RUBY_INSTALL_NAME])
+        :system => previous_but_one_dir_to(RbConfig::CONFIG['vendordir'], RbConfig::CONFIG['RUBY_INSTALL_NAME']),
+        :local => previous_but_one_dir_to(RbConfig::CONFIG['sitedir'], RbConfig::CONFIG['RUBY_INSTALL_NAME'])
       }
     end
 
@@ -39,15 +39,15 @@ module Gem
     def default_dirs
       @libdir ||= case RUBY_PLATFORM
       when 'java'
-        ConfigMap[:datadir]
+        RbConfig::CONFIG['datadir']
       else
-        ConfigMap[:libdir]
+        RbConfig::CONFIG['libdir']
       end
 
       @default_dirs ||= Hash[default_locations.collect do |destination, path|
         [destination, {
-          :bin_dir => File.join(path, ConfigMap[:bindir].split(File::SEPARATOR).last),
-          :gem_dir => File.join(path, ConfigMap[:datadir].split(File::SEPARATOR).last, 'gems'),
+          :bin_dir => File.join(path, RbConfig::CONFIG['bindir'].split(File::SEPARATOR).last),
+          :gem_dir => File.join(path, RbConfig::CONFIG['datadir'].split(File::SEPARATOR).last, 'gems'),
           :ext_dir => File.join(path, @libdir.split(File::SEPARATOR).last, 'gems')
         }]
       end]
