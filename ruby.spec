@@ -21,7 +21,7 @@
 %endif
 
 
-%global release 5
+%global release 6
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 %global rubygems_version 2.4.5
@@ -891,6 +891,9 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Wed Feb 04 2015 Vít Ondruch <vondruch@redhat.com> - 2.2.0-6
+- Initialize all load paths in operating_system.rb.
+
 * Tue Feb 03 2015 Vít Ondruch <vondruch@redhat.com> - 2.2.0-5
 - Make operating_system.rb more robust.
 - Add RubyGems stub headers for bundled gems.

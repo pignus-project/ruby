@@ -46,8 +46,10 @@ module Gem
         RbConfig::CONFIG['libdir']
       end
 
-      @default_dirs ||= Hash.new do |hash, key|
-        hash[key] = if path = default_locations[key]
+      @default_dirs ||= default_locations.inject(Hash.new) do |hash, location|
+        destination, path = location
+
+        hash[destination] = if path
           {
             :bin_dir => File.join(path, RbConfig::CONFIG['bindir'].split(File::SEPARATOR).last),
             :gem_dir => File.join(path, RbConfig::CONFIG['datadir'].split(File::SEPARATOR).last, 'gems'),
@@ -60,6 +62,8 @@ module Gem
             :ext_dir => ''
           }
         end
+
+        hash
       end
     end
 
