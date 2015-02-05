@@ -21,7 +21,7 @@
 %endif
 
 
-%global release 6
+%global release 7
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 %global rubygems_version 2.4.5
@@ -772,6 +772,7 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libarchdir}/pty.so
 %dir %{ruby_libarchdir}/racc
 %{ruby_libarchdir}/racc/cparse.so
+%dir %{ruby_libarchdir}/rbconfig
 %{ruby_libarchdir}/rbconfig.rb
 %{ruby_libarchdir}/rbconfig/sizeof.so
 %{ruby_libarchdir}/readline.so
@@ -891,6 +892,9 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Thu Feb 05 2015 Vít Ondruch <vondruch@redhat.com> - 2.2.0-7
+- Fix directory ownership.
+
 * Wed Feb 04 2015 Vít Ondruch <vondruch@redhat.com> - 2.2.0-6
 - Initialize all load paths in operating_system.rb.
 
