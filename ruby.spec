@@ -589,12 +589,6 @@ DISABLE_TESTS=""
 # the test suite).
 touch abrt.rb
 
-# Don't test wrap ciphers to prevent "OpenSSL::Cipher::CipherError: wrap mode
-# not allowed" error.
-# https://bugs.ruby-lang.org/issues/10229
-sed -i '/assert(OpenSSL::Cipher::Cipher.new(name).is_a?(OpenSSL::Cipher::Cipher))/i \
-        next if /wrap/ =~ name' test/openssl/test_cipher.rb
-
 # Test is broken due to SSLv3 disabled in Fedora.
 # https://bugs.ruby-lang.org/issues/10046
 sed -i '/def test_ctx_client_session_cb$/,/^  end$/ s/^/#/' test/openssl/test_ssl_session.rb
