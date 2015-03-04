@@ -1,6 +1,6 @@
 %global major_version 2
 %global minor_version 2
-%global teeny_version 0
+%global teeny_version 1
 %global major_minor_version %{major_version}.%{minor_version}
 
 %global ruby_version %{major_minor_version}.%{teeny_version}
@@ -21,7 +21,7 @@
 %endif
 
 
-%global release 8
+%global release 9
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 %global rubygems_version 2.4.5
@@ -892,6 +892,9 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Wed Mar 04 2015 Vít Ondruch <vondruch@redhat.com> - 2.2.1-9
+- Update to Ruby 2.2.1.
+
 * Sat Feb 21 2015 Till Maas <opensource@till.name> - 2.2.0-8
 - Rebuilt for Fedora 23 Change
   https://fedoraproject.org/wiki/Changes/Harden_all_packages_with_position-independent_code
