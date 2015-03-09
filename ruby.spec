@@ -61,8 +61,11 @@ Name: ruby
 Version: %{ruby_version}
 Release: %{release_string}
 Group: Development/Languages
-# Public Domain for example for: include/ruby/st.h, strftime.c, ...
-License: (Ruby or BSD) and Public Domain
+# Public Domain for example for: include/ruby/st.h, strftime.c, missing/*, ...
+# MIT and CCO: ccan/*
+# zlib: ext/digest/md5/md5.*, ext/nkf/nkf-utf8/nkf.c
+# UCD: some of enc/trans/**/*.src
+License: (Ruby or BSD) and Public Domain and MIT and CC0 and zlib and UCD
 URL: http://ruby-lang.org/
 Source0: ftp://ftp.ruby-lang.org/pub/%{name}/%{major_minor_version}/%{ruby_archive}.tar.xz
 Source1: operating_system.rb
@@ -228,7 +231,8 @@ from the terminal.
 Summary:    A tool to generate HTML and command-line documentation for Ruby projects
 Version:    %{rdoc_version}
 Group:      Development/Libraries
-License:    GPLv2 and Ruby and MIT
+# SIL: lib/rdoc/generator/template/darkfish/css/fonts.css
+License:    GPLv2 and Ruby and MIT and SIL
 Requires:   ruby(release)
 Requires:   ruby(rubygems) >= %{rubygems_version}
 Requires:   ruby(irb) = %{irb_version}
@@ -293,7 +297,8 @@ provide higher layer features, such like curses and readline.
 Summary:    This is a JSON implementation as a Ruby extension in C
 Version:    %{json_version}
 Group:      Development/Libraries
-License:    Ruby or GPLv2
+# UCD: ext/json/generator/generator.c
+License:    (Ruby or GPLv2) and UCD
 Requires:   ruby(release)
 Requires:   ruby(rubygems) >= %{rubygems_version}
 Provides:   rubygem(json) = %{version}-%{release}
