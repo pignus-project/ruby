@@ -201,7 +201,7 @@ Macros and development tools for packaging RubyGems.
 Summary:    Ruby based make-like utility
 Version:    %{rake_version}
 Group:      Development/Libraries
-License:    Ruby or MIT
+License:    MIT
 Requires:   ruby(release)
 Requires:   ruby(rubygems) >= %{rubygems_version}
 Provides:   rake = %{version}-%{release}
