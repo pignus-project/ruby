@@ -21,7 +21,7 @@
 %endif
 
 
-%global release 9
+%global release 10
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 %global rubygems_version 2.4.5
@@ -578,10 +578,10 @@ done
 
 # Install a tapset and fix up the path to the library.
 mkdir -p %{buildroot}%{tapset_dir}
-sed -e "s|@LIBRARY_PATH@|%{tapset_libdir}/libruby.so.%{ruby_version}|" \
-  %{SOURCE2} > %{buildroot}%{tapset_dir}/libruby.so.%{ruby_version}.stp
+sed -e "s|@LIBRARY_PATH@|%{tapset_libdir}/libruby.so.%{major_minor_version}|" \
+  %{SOURCE2} > %{buildroot}%{tapset_dir}/libruby.so.%{major_minor_version}.stp
 # Escape '*/' in comment.
-sed -i -r "s|( \*.*\*)\/(.*)|\1\\\/\2|" %{buildroot}%{tapset_dir}/libruby.so.%{ruby_version}.stp
+sed -i -r "s|( \*.*\*)\/(.*)|\1\\\/\2|" %{buildroot}%{tapset_dir}/libruby.so.%{major_minor_version}.stp
 
 %check
 # Sanity check that SystemTap (dtrace) was detected.
@@ -891,6 +891,9 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Fri Mar 20 2015 Vít Ondruch <vondruch@redhat.com> - 2.2.1-10
+- Fix libruby.so versions in SystemTap scripts (rhbz#1202232).
+
 * Wed Mar 04 2015 Vít Ondruch <vondruch@redhat.com> - 2.2.1-9
 - Update to Ruby 2.2.1.
 
