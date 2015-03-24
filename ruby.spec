@@ -110,6 +110,9 @@ Patch5: ruby-1.9.3-mkmf-verbose.patch
 # in support for ABRT.
 # http://bugs.ruby-lang.org/issues/8566
 Patch6: ruby-2.1.0-Allow-to-specify-additional-preludes-by-configuratio.patch
+# can_seek_data does not work correctly in chroot for Kernel 3.19+.
+# https://bugs.ruby-lang.org/issues/10998
+Patch7: ruby-2.2.1-use-statfs.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Requires: ruby(rubygems) >= %{rubygems_version}
@@ -410,6 +413,7 @@ rm -rf ext/fiddle/libffi*
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
+%patch7 -p1
 
 # Provide an example of usage of the tapset:
 cp -a %{SOURCE3} .
@@ -598,10 +602,6 @@ touch abrt.rb
 # https://bugs.ruby-lang.org/issues/10046
 sed -i '/def test_ctx_client_session_cb$/,/^  end$/ s/^/#/' test/openssl/test_ssl_session.rb
 sed -i '/def test_ctx_server_session_cb$/,/^  end$/ s/^/#/' test/openssl/test_ssl_session.rb
-
-# can_seek_data does not work correctly in chroot for Kernel 3.19+.
-# https://bugs.ruby-lang.org/issues/10998
-sed -i '/break unless can_seek_data(f)/ s/^/#/' test/ruby/test_io.rb
 
 make check TESTS="-v $DISABLE_TESTS"
 
