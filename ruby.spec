@@ -599,6 +599,10 @@ touch abrt.rb
 sed -i '/def test_ctx_client_session_cb$/,/^  end$/ s/^/#/' test/openssl/test_ssl_session.rb
 sed -i '/def test_ctx_server_session_cb$/,/^  end$/ s/^/#/' test/openssl/test_ssl_session.rb
 
+# can_seek_data does not work correctly in chroot for Kernel 3.19+.
+# https://bugs.ruby-lang.org/issues/10998
+sed -i '/break unless can_seek_data(f)/ s/^/#/' test/ruby/test_io.rb
+
 make check TESTS="-v $DISABLE_TESTS"
 
 %post libs -p /sbin/ldconfig
