@@ -1,6 +1,6 @@
 %global major_version 2
 %global minor_version 2
-%global teeny_version 1
+%global teeny_version 2
 %global major_minor_version %{major_version}.%{minor_version}
 
 %global ruby_version %{major_minor_version}.%{teeny_version}
@@ -21,7 +21,7 @@
 %endif
 
 
-%global release 10
+%global release 1
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 %global rubygems_version 2.4.5
@@ -895,6 +895,9 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Tue Apr 14 2015 Josef Stribny <jstribny@redhat.com> - 2.2.2-1
+- Update to Ruby 2.2.2
+
 * Fri Mar 20 2015 Vít Ondruch <vondruch@redhat.com> - 2.2.1-10
 - Fix libruby.so versions in SystemTap scripts (rhbz#1202232).
 
