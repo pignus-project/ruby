@@ -21,7 +21,7 @@
 %endif
 
 
-%global release 1
+%global release 11
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 %global rubygems_version 2.4.5
@@ -895,6 +895,9 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Tue Apr 14 2015 Josef Stribny <jstribny@redhat.com> - 2.2.2-11
+- Bump release because of gems
+
 * Tue Apr 14 2015 Josef Stribny <jstribny@redhat.com> - 2.2.2-1
 - Update to Ruby 2.2.2
 
