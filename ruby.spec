@@ -21,7 +21,7 @@
 %endif
 
 
-%global release 11
+%global release 40
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 %global rubygems_version 2.4.5
@@ -895,6 +895,10 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Mon May 04 2015 Vít Ondruch <vondruch@redhat.com> - 2.2.2-40
+- Fix upgrade path (rubygem-io-console's version was recently bumped in F21
+  and makes the higher release to win).
+
 * Tue Apr 14 2015 Josef Stribny <jstribny@redhat.com> - 2.2.2-11
 - Bump release because of gems
 
