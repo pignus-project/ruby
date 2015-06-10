@@ -21,7 +21,7 @@
 %endif
 
 
-%global release 40
+%global release 41
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 %global rubygems_version 2.4.5
@@ -133,7 +133,7 @@ BuildRequires: tk-devel
 BuildRequires: procps
 BuildRequires: %{_bindir}/dtrace
 # RubyGems test suite optional dependencies.
-BuildRequires: %{_bindir}/git
+BuildRequires: git
 BuildRequires: %{_bindir}/cmake
 
 # This package provides %%{_bindir}/ruby-mri therefore it is marked by this
@@ -894,6 +894,9 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Wed Jun 10 2015 Vít Ondruch <vondruch@redhat.com> - 2.2.2-41
+- Fix the git BR following the git package split.
+
 * Mon May 04 2015 Vít Ondruch <vondruch@redhat.com> - 2.2.2-40
 - Fix upgrade path (rubygem-io-console's version was recently bumped in F21
   and makes the higher release to win).
