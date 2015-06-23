@@ -21,7 +21,7 @@
 %endif
 
 
-%global release 42
+%global release 43
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 %global rubygems_version 2.4.5
@@ -113,6 +113,10 @@ Patch6: ruby-2.1.0-Allow-to-specify-additional-preludes-by-configuratio.patch
 # can_seek_data does not work correctly in chroot for Kernel 3.19+.
 # https://bugs.ruby-lang.org/issues/10998
 Patch7: ruby-2.2.1-use-statfs.patch
+# Fix "dh key too small" error of OpenSSL 1.0.2c+.
+# https://github.com/rubygems/rubygems/issues/1289
+# https://github.com/ruby/ruby/commit/6398515adfc86813686605019a3e22d49cd95517
+Patch8: ruby-2.3.0-test_gem_remote_fetcher.rb-get-rid-of-errors.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Requires: ruby(rubygems) >= %{rubygems_version}
@@ -414,6 +418,7 @@ rm -rf ext/fiddle/libffi*
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
+%patch8 -p1
 
 # Provide an example of usage of the tapset:
 cp -a %{SOURCE3} .
@@ -894,6 +899,9 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Tue Jun 23 2015 Vít Ondruch <vondruch@redhat.com> - 2.2.2-43
+- Fix for "dh key too small" error of OpenSSL 1.0.2+.
+
 * Thu Jun 18 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.2.2-42
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
 
