@@ -117,6 +117,11 @@ Patch7: ruby-2.2.1-use-statfs.patch
 # https://github.com/rubygems/rubygems/issues/1289
 # https://github.com/ruby/ruby/commit/6398515adfc86813686605019a3e22d49cd95517
 Patch8: ruby-2.3.0-test_gem_remote_fetcher.rb-get-rid-of-errors.patch
+# Don't use SSLv3 for tests.
+# https://bugs.ruby-lang.org/issues/10046
+Patch9: ruby-2.3.0-fix-test-ctx-client-session-cb.patch
+Patch10: ruby-2.3.0-Don-t-force-SSLv3-in-test-as-it-is-insecure-and-may-.patch
+Patch11: ruby-2.3.0-Use-OP_NO_TICKET-when-testing-SSL-session-cache-call.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Requires: ruby(rubygems) >= %{rubygems_version}
@@ -419,6 +424,9 @@ rm -rf ext/fiddle/libffi*
 %patch6 -p1
 %patch7 -p1
 %patch8 -p1
+%patch9
+%patch10
+%patch11
 
 # Provide an example of usage of the tapset:
 cp -a %{SOURCE3} .
@@ -601,11 +609,6 @@ DISABLE_TESTS=""
 # when abrt.rb cannot be required (seems to be easier way then customizing
 # the test suite).
 touch abrt.rb
-
-# Test is broken due to SSLv3 disabled in Fedora.
-# https://bugs.ruby-lang.org/issues/10046
-sed -i '/def test_ctx_client_session_cb$/,/^  end$/ s/^/#/' test/openssl/test_ssl_session.rb
-sed -i '/def test_ctx_server_session_cb$/,/^  end$/ s/^/#/' test/openssl/test_ssl_session.rb
 
 make check TESTS="-v $DISABLE_TESTS"
 
