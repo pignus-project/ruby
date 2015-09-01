@@ -1,6 +1,6 @@
 %global major_version 2
 %global minor_version 2
-%global teeny_version 2
+%global teeny_version 3
 %global major_minor_version %{major_version}.%{minor_version}
 
 %global ruby_version %{major_minor_version}.%{teeny_version}
@@ -21,7 +21,7 @@
 %endif
 
 
-%global release 43
+%global release 44
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 %global rubygems_version 2.4.5
@@ -110,13 +110,6 @@ Patch5: ruby-1.9.3-mkmf-verbose.patch
 # in support for ABRT.
 # http://bugs.ruby-lang.org/issues/8566
 Patch6: ruby-2.1.0-Allow-to-specify-additional-preludes-by-configuratio.patch
-# can_seek_data does not work correctly in chroot for Kernel 3.19+.
-# https://bugs.ruby-lang.org/issues/10998
-Patch7: ruby-2.2.1-use-statfs.patch
-# Fix "dh key too small" error of OpenSSL 1.0.2c+.
-# https://github.com/rubygems/rubygems/issues/1289
-# https://github.com/ruby/ruby/commit/6398515adfc86813686605019a3e22d49cd95517
-Patch8: ruby-2.3.0-test_gem_remote_fetcher.rb-get-rid-of-errors.patch
 # Don't use SSLv3 for tests.
 # https://bugs.ruby-lang.org/issues/10046
 Patch9: ruby-2.3.0-fix-test-ctx-client-session-cb.patch
@@ -422,8 +415,6 @@ rm -rf ext/fiddle/libffi*
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
-%patch7 -p1
-%patch8 -p1
 %patch9
 %patch10
 %patch11
@@ -902,6 +893,9 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Tue Sep 01 2015 Vít Ondruch <vondruch@redhat.com> - 2.2.3-44
+- Update to Ruby 2.2.3.
+
 * Tue Jun 23 2015 Vít Ondruch <vondruch@redhat.com> - 2.2.2-43
 - Fix for "dh key too small" error of OpenSSL 1.0.2+.
 

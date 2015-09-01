@@ -26,7 +26,7 @@ diff --git a/common.mk b/common.mk
 index 5cfbc3d..3f0a82e 100644
 --- a/common.mk
 +++ b/common.mk
-@@ -115,7 +115,7 @@ ALLOBJS       = $(NORMALMAINOBJ) $(MINIOBJS) $(COMMONOBJS) $(INITOBJS)
+@@ -117,7 +117,7 @@ ALLOBJS       = $(NORMALMAINOBJ) $(MINIOBJS) $(COMMONOBJS) $(INITOBJS)
  GOLFOBJS      = goruby.$(OBJEXT) golf_prelude.$(OBJEXT)
  
  DEFAULT_PRELUDES = $(GEM_PRELUDE)
@@ -39,7 +39,7 @@ diff --git a/configure.in b/configure.in
 index 0e371e2..d4f1dcb 100644
 --- a/configure.in
 +++ b/configure.in
-@@ -4160,6 +4160,13 @@ AC_SUBST(rubyarchhdrdir)dnl
+@@ -4169,6 +4169,13 @@ AC_SUBST(rubyarchhdrdir)dnl
  AC_SUBST(sitearchhdrdir)dnl
  AC_SUBST(vendorarchhdrdir)dnl
  
