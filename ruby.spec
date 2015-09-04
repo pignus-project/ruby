@@ -21,7 +21,7 @@
 %endif
 
 
-%global release 44
+%global release 45
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 %global rubygems_version 2.4.5.1
@@ -893,6 +893,9 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Fri Sep 04 2015 Michal Toman <mtoman@fedoraproject.org> - 2.2.3-45
+- Add support for MIPS architecture to config.h
+
 * Tue Sep 01 2015 Vít Ondruch <vondruch@redhat.com> - 2.2.3-44
 - Update to Ruby 2.2.3.
 
