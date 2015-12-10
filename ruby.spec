@@ -21,7 +21,7 @@
 %endif
 
 
-%global release 45
+%global release 46
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 %global rubygems_version 2.4.5.1
@@ -110,6 +110,9 @@ Patch5: ruby-1.9.3-mkmf-verbose.patch
 # in support for ABRT.
 # http://bugs.ruby-lang.org/issues/8566
 Patch6: ruby-2.1.0-Allow-to-specify-additional-preludes-by-configuratio.patch
+# Use miniruby to regenerate prelude.c.
+# https://bugs.ruby-lang.org/issues/10554
+Patch7: ruby-2.2.3-Generate-preludes-using-miniruby.patch
 # Don't use SSLv3 for tests.
 # https://bugs.ruby-lang.org/issues/10046
 Patch9: ruby-2.3.0-fix-test-ctx-client-session-cb.patch
@@ -415,6 +418,7 @@ rm -rf ext/fiddle/libffi*
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
+%patch7 -p1
 %patch9
 %patch10
 %patch11
@@ -449,10 +453,6 @@ autoconf
         --with-ruby-version='' \
         --enable-multiarch \
         --with-prelude=./abrt_prelude.rb \
-
-# Avoid regeneration of prelude.c due to patch6 applied to common.mk.
-# https://bugs.ruby-lang.org/issues/10554
-touch prelude.c
 
 # Q= makes the build output more verbose and allows to check Fedora
 # compiler options.
@@ -893,6 +893,9 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Thu Dec 10 2015 Vít Ondruch <vondruch@redhat.com> - 2.2.3-46
+- Fix ABRT hook autoloading.
+
 * Fri Sep 04 2015 Michal Toman <mtoman@fedoraproject.org> - 2.2.3-45
 - Add support for MIPS architecture to config.h
 
