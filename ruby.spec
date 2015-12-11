@@ -594,6 +594,9 @@ sed -i -r "s|( \*.*\*)\/(.*)|\1\\\/\2|" %{buildroot}%{tapset_dir}/libruby.so.%{m
 # Sanity check that SystemTap (dtrace) was detected.
 make runruby TESTRUN_SCRIPT=%{SOURCE11}
 
+# Check if abrt hook is required.
+LD_LIBRARY_PATH=. RUBYOPT=-I.:lib:.ext/x86_64-linux/ ./ruby -d -e '' |& grep abrt
+
 DISABLE_TESTS=""
 
 # test_debug(TestRubyOptions) fails due to LoadError reported in debug mode,
