@@ -86,6 +86,8 @@ Source9: rubygems.req
 Source10: rubygems.prov
 # SystemTap sanity test case.
 Source11: test_systemtap.rb
+# ABRT hoook test case.
+Source12: test_abrt.rb
 
 # The load directive is supported since RPM 4.12, i.e. F21+. The build process
 # fails on older Fedoras.
@@ -591,18 +593,18 @@ sed -e "s|@LIBRARY_PATH@|%{tapset_libdir}/libruby.so.%{major_minor_version}|" \
 sed -i -r "s|( \*.*\*)\/(.*)|\1\\\/\2|" %{buildroot}%{tapset_dir}/libruby.so.%{major_minor_version}.stp
 
 %check
-# Sanity check that SystemTap (dtrace) was detected.
-make runruby TESTRUN_SCRIPT=%{SOURCE11}
-
-# Check if abrt hook is required.
-LD_LIBRARY_PATH=. RUBYOPT=-I.:lib:.ext/x86_64-linux/ ./ruby -d -e '' |& grep abrt
-
-DISABLE_TESTS=""
-
 # test_debug(TestRubyOptions) fails due to LoadError reported in debug mode,
 # when abrt.rb cannot be required (seems to be easier way then customizing
 # the test suite).
 touch abrt.rb
+
+# Sanity check that SystemTap (dtrace) was detected.
+make runruby TESTRUN_SCRIPT=%{SOURCE11}
+
+# Check if abrt hook is required.
+make runruby TESTRUN_SCRIPT=%{SOURCE12}
+
+DISABLE_TESTS=""
 
 make check TESTS="-v $DISABLE_TESTS"
 
