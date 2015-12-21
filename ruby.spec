@@ -1,6 +1,6 @@
 %global major_version 2
 %global minor_version 2
-%global teeny_version 3
+%global teeny_version 4
 %global major_minor_version %{major_version}.%{minor_version}
 
 %global ruby_version %{major_minor_version}.%{teeny_version}
@@ -21,7 +21,7 @@
 %endif
 
 
-%global release 46
+%global release 47
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 %global rubygems_version 2.4.5.1
@@ -115,11 +115,6 @@ Patch6: ruby-2.1.0-Allow-to-specify-additional-preludes-by-configuratio.patch
 # Use miniruby to regenerate prelude.c.
 # https://bugs.ruby-lang.org/issues/10554
 Patch7: ruby-2.2.3-Generate-preludes-using-miniruby.patch
-# Don't use SSLv3 for tests.
-# https://bugs.ruby-lang.org/issues/10046
-Patch9: ruby-2.3.0-fix-test-ctx-client-session-cb.patch
-Patch10: ruby-2.3.0-Don-t-force-SSLv3-in-test-as-it-is-insecure-and-may-.patch
-Patch11: ruby-2.3.0-Use-OP_NO_TICKET-when-testing-SSL-session-cache-call.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Requires: ruby(rubygems) >= %{rubygems_version}
@@ -421,9 +416,6 @@ rm -rf ext/fiddle/libffi*
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
-%patch9
-%patch10
-%patch11
 
 # Provide an example of usage of the tapset:
 cp -a %{SOURCE3} .
@@ -898,6 +890,9 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Mon Dec 21 2015 Vít Ondruch <vondruch@redhat.com> - 2.2.4-47
+- Update to Ruby 2.2.4.
+
 * Thu Dec 10 2015 Vít Ondruch <vondruch@redhat.com> - 2.2.3-46
 - Fix ABRT hook autoloading.
 
