@@ -20,8 +20,7 @@ CONFIGURE_ARGS="--with-cflags='%{optflags}' $CONFIGURE_ARGS" \\\
 gem install \\\
         -V \\\
         --local \\\
-        --install-dir %{-d*}%{!?-d:.%{gem_dir}} \\\
-        --bindir .%{_bindir} \\\
+        --build-root %{-d*}%{!?-d:.} \\\
         --force \\\
         --document=ri,rdoc \\\
         %{-n*}%{!?-n:%{gem_name}-%{version}.gem} \

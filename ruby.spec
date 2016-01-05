@@ -1,16 +1,16 @@
 %global major_version 2
-%global minor_version 2
-%global teeny_version 4
+%global minor_version 3
+%global teeny_version 0
 %global major_minor_version %{major_version}.%{minor_version}
 
 %global ruby_version %{major_minor_version}.%{teeny_version}
 %global ruby_release %{ruby_version}
 
 # Specify the named version. It has precedense to revision.
-#%%global milestone rc1
+#%%global milestone preview2
 
 # Keep the revision enabled for pre-releases from SVN.
-#%%global revision 48936
+#%%global revision 53264
 
 %global ruby_archive %{name}-%{ruby_version}
 
@@ -21,28 +21,32 @@
 %endif
 
 
-%global release 47
+%global release 50
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
-
-%global rubygems_version 2.4.5.1
 
 # The RubyGems library has to stay out of Ruby directory three, since the
 # RubyGems should be share by all Ruby implementations.
 %global rubygems_dir %{_datadir}/rubygems
 
+# Bundled libraries versions
+%global rubygems_version 2.5.1
+%global molinillo_version 0.4.0
+
 # TODO: The IRB has strange versioning. Keep the Ruby's versioning ATM.
 # http://redmine.ruby-lang.org/issues/5313
 %global irb_version %{ruby_version}
 
-%global bigdecimal_version 1.2.6
-%global io_console_version 0.4.3
-%global json_version 1.8.1
-%global minitest_version 5.4.3
-%global power_assert_version 0.2.2
-%global psych_version 2.0.8
+%global bigdecimal_version 1.2.8
+%global did_you_mean_version 1.0.0
+%global io_console_version 0.4.5
+%global json_version 1.8.3
+%global minitest_version 5.8.3
+%global power_assert_version 0.2.6
+%global psych_version 2.0.17
 %global rake_version 10.4.2
-%global rdoc_version 4.2.0
-%global test_unit_version 3.0.8
+%global rdoc_version 4.2.1
+%global net_telnet_version 0.1.1
+%global test_unit_version 3.1.5
 
 # Might not be needed in the future, if we are lucky enough.
 # https://bugzilla.redhat.com/show_bug.cgi?id=888262
@@ -84,25 +88,28 @@ Source7: config.h
 Source8: rubygems.attr
 Source9: rubygems.req
 Source10: rubygems.prov
-# SystemTap sanity test case.
-Source11: test_systemtap.rb
 # ABRT hoook test case.
 Source12: test_abrt.rb
+# SystemTap tests.
+Source13: test_systemtap.rb
 
 # The load directive is supported since RPM 4.12, i.e. F21+. The build process
 # fails on older Fedoras.
 %{?load:%{SOURCE4}}
 %{?load:%{SOURCE5}}
 
+# Fix ruby_version abuse.
+# https://bugs.ruby-lang.org/issues/11002
+Patch0: ruby-2.3.0-ruby_version.patch
 # http://bugs.ruby-lang.org/issues/7807
-Patch0: ruby-2.1.0-Prevent-duplicated-paths-when-empty-version-string-i.patch
+Patch1: ruby-2.1.0-Prevent-duplicated-paths-when-empty-version-string-i.patch
 # Allows to override libruby.so placement. Hopefully we will be able to return
 # to plain --with-rubyarchprefix.
 # http://bugs.ruby-lang.org/issues/8973
-Patch1: ruby-2.1.0-Enable-configuration-of-archlibdir.patch
+Patch2: ruby-2.1.0-Enable-configuration-of-archlibdir.patch
 # Force multiarch directories for i.86 to be always named i386. This solves
 # some differencies in build between Fedora and RHEL.
-Patch2: ruby-2.1.0-always-use-i386.patch
+Patch3: ruby-2.1.0-always-use-i386.patch
 # Allows to install RubyGems into custom directory, outside of Ruby's tree.
 # http://bugs.ruby-lang.org/issues/5617
 Patch4: ruby-2.1.0-custom-rubygems-location.patch
@@ -117,12 +124,10 @@ Patch6: ruby-2.1.0-Allow-to-specify-additional-preludes-by-configuratio.patch
 Patch7: ruby-2.2.3-Generate-preludes-using-miniruby.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
-Requires: ruby(rubygems) >= %{rubygems_version}
-# Make the bigdecimal gem a runtime dependency of Ruby to avoid problems
-# with user-installed gems, that don't require it in gemspec/Gemfile
-# See https://bugzilla.redhat.com/show_bug.cgi?id=829209
-# and http://bugs.ruby-lang.org/issues/6123
-Requires: rubygem(bigdecimal) >= %{bigdecimal_version}
+Suggests: rubypick
+Recommends: ruby(rubygems) >= %{rubygems_version}
+Recommends: rubygem(bigdecimal) >= %{bigdecimal_version}
+Recommends: rubygem(did_you_mean) >= %{did_you_mean_version}
 
 BuildRequires: autoconf
 BuildRequires: gdbm-devel
@@ -141,8 +146,6 @@ BuildRequires: %{_bindir}/cmake
 # This package provides %%{_bindir}/ruby-mri therefore it is marked by this
 # virtual provide. It can be installed as dependency of rubypick.
 Provides: ruby(runtime_executable) = %{ruby_release}
-
-%global __provides_exclude_from ^(%{ruby_libarchdir}|%{gem_archdir})/.*\\.so$
 
 %description
 Ruby is the interpreted scripting language for quick and easy
@@ -166,8 +169,16 @@ Group:      Development/Libraries
 License:    Ruby or BSD
 Provides:   ruby(release) = %{ruby_release}
 
+# Virtual provides for CCAN copylibs.
+# https://fedorahosted.org/fpc/ticket/364
+Provides: bundled(ccan-build_assert)
+Provides: bundled(ccan-check_type)
+Provides: bundled(ccan-container_of)
+Provides: bundled(ccan-list)
+
 %description libs
 This package includes the libruby, necessary to run Ruby.
+
 
 # TODO: Rename or not rename to ruby-rubygems?
 %package -n rubygems
@@ -176,13 +187,14 @@ Version:    %{rubygems_version}
 Group:      Development/Libraries
 License:    Ruby or MIT
 Requires:   ruby(release)
-Requires:   rubygem(rdoc) >= %{rdoc_version}
-# TODO: This seems to be optional now.
-# https://github.com/rubygems/rubygems/commit/68da16dd7508c5c4010bfe32f99422568d3d582f
-Requires:   rubygem(io-console) >= %{io_console_version}
+Recommends: rubygem(rdoc) >= %{rdoc_version}
+Recommends: rubygem(io-console) >= %{io_console_version}
 Requires:   rubygem(psych) >= %{psych_version}
 Provides:   gem = %{version}-%{release}
 Provides:   ruby(rubygems) = %{version}-%{release}
+# https://github.com/rubygems/rubygems/pull/1189#issuecomment-121600910
+Provides:   bundled(rubygem(molinillo)) = %{molinillo_version}
+Provides:   bundled(rubygem-molinillo) = %{molinillo_version}
 BuildArch:  noarch
 
 %description -n rubygems
@@ -196,6 +208,8 @@ Version:    %{rubygems_version}
 Group:      Development/Libraries
 License:    Ruby or MIT
 Requires:   ruby(rubygems) = %{version}-%{release}
+# Needed for RDoc documentation format generation.
+Requires:   rubygem(json) >= %{json_version}
 BuildArch:  noarch
 
 %description -n rubygems-devel
@@ -241,7 +255,7 @@ License:    GPLv2 and Ruby and MIT and SIL
 Requires:   ruby(release)
 Requires:   ruby(rubygems) >= %{rubygems_version}
 Requires:   ruby(irb) = %{irb_version}
-Requires:   rubygem(json) >= %{json_version}
+Recommends: rubygem(json) >= %{json_version}
 Provides:   rdoc = %{version}-%{release}
 Provides:   ri = %{version}-%{release}
 Provides:   rubygem(rdoc) = %{version}-%{release}
@@ -283,6 +297,20 @@ point numbers. Decimal arithmetic is also useful for general calculation,
 because it provides the correct answers people expect–whereas normal binary
 floating point arithmetic often introduces subtle errors because of the
 conversion between base 10 and base 2.
+
+
+%package -n rubygem-did_you_mean
+Summary:    "Did you mean?" experience in Ruby
+Version:    %{did_you_mean_version}
+Group:      Development/Libraries
+License:    MIT
+Requires:   ruby(release)
+Requires:   ruby(rubygems) >= %{rubygems_version}
+Provides:   rubygem(did_you_mean) = %{version}-%{release}
+
+%description -n rubygem-did_you_mean
+"did you mean?" experience in Ruby: the error message will tell you the right
+one when you misspelled something.
 
 
 %package -n rubygem-io-console
@@ -340,8 +368,6 @@ minitest/pride shows pride in testing and adds coloring to your test
 output.
 
 
-# The Summary/Description fields are rather poor.
-# https://github.com/k-tsj/power_assert/issues/3
 %package -n rubygem-power_assert
 Summary:    Power Assert for Ruby
 Version:    %{power_assert_version}
@@ -353,7 +379,9 @@ Provides:   rubygem(power_assert) = %{version}-%{release}
 BuildArch:  noarch
 
 %description -n rubygem-power_assert
-Power Assert for Ruby.
+Power Assert shows each value of variables and method calls in the expression.
+It is useful for testing, providing which value wasn't correct when the
+condition is not satisfied.
 
 
 %package -n rubygem-psych
@@ -370,6 +398,25 @@ Psych is a YAML parser and emitter. Psych leverages
 libyaml[http://pyyaml.org/wiki/LibYAML] for its YAML parsing and emitting
 capabilities. In addition to wrapping libyaml, Psych also knows how to
 serialize and de-serialize most Ruby objects to and from the YAML format.
+
+
+%package -n rubygem-net-telnet
+Summary:    Provides telnet client functionality
+Version:    %{net_telnet_version}
+Group:      Development/Libraries
+Requires:   ruby(release)
+Requires:   ruby(rubygems) >= %{rubygems_version}
+Provides:   rubygem(net-telnet) = %{version}-%{release}
+
+%description -n rubygem-net-telnet
+Provides telnet client functionality.
+
+This class also has, through delegation, all the methods of a socket object
+(by default, a TCPSocket, but can be set by the Proxy option to new()). This
+provides methods such as close() to end the session and sysread() to read data
+directly from the host, instead of via the waitfor() mechanism. Note that if
+you do use sysread() directly when in telnet mode, you should probably pass
+the output through preprocess() to extract telnet command sequences.
 
 
 # The Summary/Description fields are rather poor.
@@ -412,6 +459,7 @@ rm -rf ext/fiddle/libffi*
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
@@ -509,10 +557,6 @@ mkdir -p %{buildroot}%{_exec_prefix}/lib{,64}/gems/%{name}
 
 # Move bundled rubygems to %%gem_dir and %%gem_extdir_mri
 # make symlinks for io-console and bigdecimal, which are considered to be part of stdlib by other Gems
-mkdir -p %{buildroot}%{gem_dir}/gems/rake-%{rake_version}/lib
-mv %{buildroot}%{ruby_libdir}/rake* %{buildroot}%{gem_dir}/gems/rake-%{rake_version}/lib
-mv %{buildroot}%{gem_dir}/specifications/default/rake-%{rake_version}.gemspec %{buildroot}%{gem_dir}/specifications
-
 mkdir -p %{buildroot}%{gem_dir}/gems/rdoc-%{rdoc_version}/lib
 mv %{buildroot}%{ruby_libdir}/rdoc* %{buildroot}%{gem_dir}/gems/rdoc-%{rdoc_version}/lib
 mv %{buildroot}%{gem_dir}/specifications/default/rdoc-%{rdoc_version}.gemspec %{buildroot}%{gem_dir}/specifications
@@ -550,32 +594,10 @@ ln -s %{_libdir}/gems/%{name}/psych-%{psych_version}/psych.so %{buildroot}%{ruby
 
 # Adjust the gemspec files so that the gems will load properly
 sed -i '/^end$/ i\
-  s.require_paths = ["lib"]' %{buildroot}%{gem_dir}/specifications/rake-%{rake_version}.gemspec
-
-sed -i '/^end$/ i\
-  s.require_paths = ["lib"]' %{buildroot}%{gem_dir}/specifications/rdoc-%{rdoc_version}.gemspec
-
-sed -i '/^end$/ i\
-  s.require_paths = ["lib"]\
-  s.extensions = ["bigdecimal.so"]' %{buildroot}%{gem_dir}/specifications/bigdecimal-%{bigdecimal_version}.gemspec
-
-sed -i '/^end$/ i\
-  s.require_paths = ["lib"]\
-  s.extensions = ["io/console.so"]' %{buildroot}%{gem_dir}/specifications/io-console-%{io_console_version}.gemspec
-
-sed -i '/^end$/ i\
-  s.require_paths = ["lib"]\
   s.extensions = ["json/ext/parser.so", "json/ext/generator.so"]' %{buildroot}%{gem_dir}/specifications/json-%{json_version}.gemspec
 
-# Push the .gemspecs through the RubyGems to let them write the stub headers.
-# This speeds up loading of libraries and avoids warnings in Spring:
-# https://github.com/rubygems/rubygems/pull/694
-for s in rake-%{rake_version}.gemspec rdoc-%{rdoc_version}.gemspec json-%{json_version}.gemspec; do
-  s="%{buildroot}%{gem_dir}/specifications/$s"
-  make runruby TESTRUN_SCRIPT="-rubygems \
-   -e \"spec = Gem::Specification.load(%{$s})\" \
-   -e \"File.write %{$s}, spec.to_ruby\""
-done
+# Move man pages into proper location
+mv %{buildroot}%{gem_dir}/gems/rake-%{rake_version}/doc/rake.1 %{buildroot}%{_mandir}/man1
 
 # Install a tapset and fix up the path to the library.
 mkdir -p %{buildroot}%{tapset_dir}
@@ -584,17 +606,35 @@ sed -e "s|@LIBRARY_PATH@|%{tapset_libdir}/libruby.so.%{major_minor_version}|" \
 # Escape '*/' in comment.
 sed -i -r "s|( \*.*\*)\/(.*)|\1\\\/\2|" %{buildroot}%{tapset_dir}/libruby.so.%{major_minor_version}.stp
 
+# Prepare -doc subpackage file lists.
+find doc -maxdepth 1 -type f ! -name '.*' ! -name '*.ja*' > .ruby-doc.en
+echo 'doc/images' >> .ruby-doc.en
+echo 'doc/syntax' >> .ruby-doc.en
+
+find doc -maxdepth 1 -type f -name '*.ja*' > .ruby-doc.ja
+echo 'doc/irb' >> .ruby-doc.ja
+echo 'doc/pty' >> .ruby-doc.ja
+
+sed -i 's/^/%doc /' .ruby-doc.*
+sed -i 's/^/%lang(ja) /' .ruby-doc.ja
+
 %check
+# Check RubyGems version correctness.
+[ "`make runruby TESTRUN_SCRIPT='bin/gem -v' | tail -1`" == '%{rubygems_version}' ]
+# Check Molinillo version correctness.
+[ "`make runruby TESTRUN_SCRIPT=\"-e \\\"module Gem; module Resolver; end; end; require 'rubygems/resolver/molinillo/lib/molinillo/gem_metadata'; puts Gem::Resolver::Molinillo::VERSION\\\"\" | tail -1`" \
+  == '%{molinillo_version}' ]
+
 # test_debug(TestRubyOptions) fails due to LoadError reported in debug mode,
 # when abrt.rb cannot be required (seems to be easier way then customizing
 # the test suite).
 touch abrt.rb
 
-# Sanity check that SystemTap (dtrace) was detected.
-make runruby TESTRUN_SCRIPT=%{SOURCE11}
-
 # Check if abrt hook is required.
 make runruby TESTRUN_SCRIPT=%{SOURCE12}
+
+# Check if systemtap is supported.
+make runruby TESTRUN_SCRIPT=%{SOURCE13}
 
 DISABLE_TESTS=""
 
@@ -624,8 +664,6 @@ make check TESTS="-v $DISABLE_TESTS"
 %lang(ja) %doc COPYING.ja
 %doc GPL
 %doc LEGAL
-%doc README.EXT
-%lang(ja) %doc README.EXT.ja
 
 %{_rpmconfigdir}/macros.d/macros.ruby
 
@@ -639,9 +677,7 @@ make check TESTS="-v $DISABLE_TESTS"
 %doc GPL
 %doc LEGAL
 %doc README.md
-%lang(ja) %doc README.ja.md
 %doc NEWS
-%doc doc/NEWS-*
 # Exclude /usr/local directory since it is supposed to be managed by
 # local system administrator.
 %exclude %{ruby_sitelibdir}
@@ -686,6 +722,8 @@ make check TESTS="-v $DISABLE_TESTS"
 # Platform specific libraries.
 %{_libdir}/libruby.so.*
 %dir %{ruby_libarchdir}
+%dir %{ruby_libarchdir}/cgi
+%{ruby_libarchdir}/cgi/escape.so
 %{ruby_libarchdir}/continuation.so
 %{ruby_libarchdir}/coverage.so
 %{ruby_libarchdir}/date_core.so
@@ -729,6 +767,7 @@ make check TESTS="-v $DISABLE_TESTS"
 %dir %{ruby_libarchdir}/enc/trans
 %{ruby_libarchdir}/enc/trans/big5.so
 %{ruby_libarchdir}/enc/trans/chinese.so
+%{ruby_libarchdir}/enc/trans/ebcdic.so
 %{ruby_libarchdir}/enc/trans/emoji.so
 %{ruby_libarchdir}/enc/trans/emoji_iso2022_kddi.so
 %{ruby_libarchdir}/enc/trans/emoji_sjis_docomo.so
@@ -750,7 +789,9 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libarchdir}/enc/utf_16le.so
 %{ruby_libarchdir}/enc/utf_32be.so
 %{ruby_libarchdir}/enc/utf_32le.so
+%{ruby_libarchdir}/enc/windows_1250.so
 %{ruby_libarchdir}/enc/windows_1251.so
+%{ruby_libarchdir}/enc/windows_1252.so
 %{ruby_libarchdir}/enc/windows_31j.so
 %{ruby_libarchdir}/etc.so
 %{ruby_libarchdir}/fcntl.so
@@ -831,11 +872,9 @@ make check TESTS="-v $DISABLE_TESTS"
 %{gem_dir}/specifications/rdoc-%{rdoc_version}.gemspec
 %{_mandir}/man1/ri*
 
-%files doc
+%files doc -f .ruby-doc.en -f .ruby-doc.ja
 %doc README.md
-%lang(ja) %doc README.ja.md
 %doc ChangeLog
-%doc doc/ChangeLog-*
 %doc ruby-exercise.stp
 %{_datadir}/ri
 
@@ -845,6 +884,11 @@ make check TESTS="-v $DISABLE_TESTS"
 %{_libdir}/gems/%{name}/bigdecimal-%{bigdecimal_version}
 %{gem_dir}/gems/bigdecimal-%{bigdecimal_version}
 %{gem_dir}/specifications/bigdecimal-%{bigdecimal_version}.gemspec
+
+%files -n rubygem-did_you_mean
+%{gem_dir}/gems/did_you_mean-%{did_you_mean_version}
+%exclude %{gem_dir}/gems/did_you_mean-%{did_you_mean_version}/.*
+%{gem_dir}/specifications/did_you_mean-%{did_you_mean_version}.gemspec
 
 %files -n rubygem-io-console
 %{ruby_libdir}/io
@@ -876,6 +920,11 @@ make check TESTS="-v $DISABLE_TESTS"
 %{gem_dir}/gems/psych-%{psych_version}
 %{gem_dir}/specifications/psych-%{psych_version}.gemspec
 
+%files -n rubygem-net-telnet
+%{gem_dir}/gems/net-telnet-%{net_telnet_version}
+%exclude %{gem_dir}/gems/net-telnet-%{net_telnet_version}/.*
+%{gem_dir}/specifications/net-telnet-%{net_telnet_version}.gemspec
+
 %files -n rubygem-test-unit
 %{gem_dir}/gems/test-unit-%{test_unit_version}
 %{gem_dir}/specifications/test-unit-%{test_unit_version}.gemspec
@@ -890,6 +939,16 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Mon Jan 04 2016 Vít Ondruch <vondruch@redhat.com> - 2.3.0-50
+- Upgrade to Ruby 2.3.0.
+- Move gemified net-telnet into subpackage.
+- Add did_you_mean subpackage.
+- Add virtual provides for CCAN copylibs.
+- Use weak dependencies.
+
+* Tue Dec 22 2015 Pavel Valena <pvalena@redhat.com> - 2.3.0-0.7.preview2
+- Add systemtap tests.
+
 * Mon Dec 21 2015 Vít Ondruch <vondruch@redhat.com> - 2.2.4-47
 - Update to Ruby 2.2.4.
 

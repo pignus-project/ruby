@@ -1,6 +1,4 @@
+/*/
 /ruby-2.*.tar.bz2
-/ruby-2.2.0.tar.xz
-/ruby-2.2.1.tar.xz
-/ruby-2.2.2.tar.xz
-/ruby-2.2.3.tar.xz
-/ruby-2.2.4.tar.xz
+/ruby-2.*.tar.xz
+/*.rpm
