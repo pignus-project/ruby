@@ -21,7 +21,7 @@
 %endif
 
 
-%global release 51
+%global release 52
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 # The RubyGems library has to stay out of Ruby directory three, since the
@@ -210,6 +210,7 @@ License:    Ruby or MIT
 Requires:   ruby(rubygems) = %{version}-%{release}
 # Needed for RDoc documentation format generation.
 Requires:   rubygem(json) >= %{json_version}
+Requires:   rubygem(rdoc) >= %{rdoc_version}
 BuildArch:  noarch
 
 %description -n rubygems-devel
@@ -940,6 +941,9 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Wed Jan 06 2016 Vít Ondruch <vondruch@redhat.com> - 2.3.0-52
+- Explicitly require RDoc, since weak dependencies are ignored by default.
+
 * Wed Jan 06 2016 Vít Ondruch <vondruch@redhat.com> - 2.3.0-51
 - Load RubyGems prior ABRT hook to properly rescue RubyGems exceptions.
 
