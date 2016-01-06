@@ -1,4 +1,8 @@
-begin
-  require 'abrt'
-rescue LoadError
+if defined?(Gem)
+  require 'rubygems.rb'
+
+  begin
+    require 'abrt'
+  rescue LoadError
+  end
 end

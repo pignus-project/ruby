@@ -21,7 +21,7 @@
 %endif
 
 
-%global release 50
+%global release 51
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 # The RubyGems library has to stay out of Ruby directory three, since the
@@ -630,8 +630,9 @@ sed -i 's/^/%lang(ja) /' .ruby-doc.ja
 # the test suite).
 touch abrt.rb
 
-# Check if abrt hook is required.
-make runruby TESTRUN_SCRIPT=%{SOURCE12}
+# Check if abrt hook is required (RubyGems are disabled by default when using
+# runruby, so re-enable them).
+make runruby TESTRUN_SCRIPT="--enable-gems %{SOURCE12}"
 
 # Check if systemtap is supported.
 make runruby TESTRUN_SCRIPT=%{SOURCE13}
@@ -939,6 +940,9 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Wed Jan 06 2016 Vít Ondruch <vondruch@redhat.com> - 2.3.0-51
+- Load RubyGems prior ABRT hook to properly rescue RubyGems exceptions.
+
 * Mon Jan 04 2016 Vít Ondruch <vondruch@redhat.com> - 2.3.0-50
 - Upgrade to Ruby 2.3.0.
 - Move gemified net-telnet into subpackage.
