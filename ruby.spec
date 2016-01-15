@@ -21,7 +21,7 @@
 %endif
 
 
-%global release 52
+%global release 53
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 # The RubyGems library has to stay out of Ruby directory three, since the
@@ -122,6 +122,10 @@ Patch6: ruby-2.1.0-Allow-to-specify-additional-preludes-by-configuratio.patch
 # Use miniruby to regenerate prelude.c.
 # https://bugs.ruby-lang.org/issues/10554
 Patch7: ruby-2.2.3-Generate-preludes-using-miniruby.patch
+# 98e565ec78cb4a07ffde8589ac4581fca31e9c17
+# https://bugs.ruby-lang.org/issues/11962
+# https://bugs.ruby-lang.org/projects/ruby-trunk/repository/revisions/53455
+Patch8: ruby-2.3.0-undef-BUILTIN_CHOOSE_EXPR_CONSTANT_P.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Suggests: rubypick
@@ -465,6 +469,7 @@ rm -rf ext/fiddle/libffi*
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
+%patch8 -p1
 
 # Provide an example of usage of the tapset:
 cp -a %{SOURCE3} .
@@ -941,6 +946,9 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Fri Jan 15 2016 Mamoru TASAKA <mtasaka@fedoraproject.org> - 2.3.0-53
+- Backport trunk@53455 to make ruby-qt build
+
 * Wed Jan 06 2016 Vít Ondruch <vondruch@redhat.com> - 2.3.0-52
 - Explicitly require RDoc, since weak dependencies are ignored by default.
 
