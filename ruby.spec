@@ -645,6 +645,10 @@ make runruby TESTRUN_SCRIPT=%{SOURCE13}
 
 DISABLE_TESTS=""
 
+# https://bugs.ruby-lang.org/issues/11480
+# Once seen: http://koji.fedoraproject.org/koji/taskinfo?taskID=12556650
+DISABLE_TESTS="$DISABLE_TESTS -x test_fork.rb"
+
 make check TESTS="-v $DISABLE_TESTS"
 
 %post libs -p /sbin/ldconfig
