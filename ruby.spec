@@ -21,7 +21,7 @@
 %endif
 
 
-%global release 53
+%global release 54
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 # The RubyGems library has to stay out of Ruby directory three, since the
@@ -162,6 +162,8 @@ straight-forward, and extensible.
 Summary:    A Ruby development environment
 Group:      Development/Languages
 Requires:   %{name}%{?_isa} = %{version}-%{release}
+Requires:   rubypick
+Requires:   rubygems
 
 %description devel
 Header files and libraries for building an extension library for the
@@ -950,6 +952,9 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Wed Feb  3 2016 Peter Robinson <pbrobinson@fedoraproject.org> 2.3.0-54
+- Add rubypick and rubygems requires to ruby-devel to deal with BuildRequires
+
 * Fri Jan 15 2016 Mamoru TASAKA <mtasaka@fedoraproject.org> - 2.3.0-53
 - Backport trunk@53455 to make ruby-qt build
 
