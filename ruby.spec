@@ -1,6 +1,6 @@
 %global major_version 2
 %global minor_version 3
-%global teeny_version 0
+%global teeny_version 1
 %global major_minor_version %{major_version}.%{minor_version}
 
 %global ruby_version %{major_minor_version}.%{teeny_version}
@@ -21,7 +21,7 @@
 %endif
 
 
-%global release 54
+%global release 55
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 # The RubyGems library has to stay out of Ruby directory three, since the
@@ -122,10 +122,9 @@ Patch6: ruby-2.1.0-Allow-to-specify-additional-preludes-by-configuratio.patch
 # Use miniruby to regenerate prelude.c.
 # https://bugs.ruby-lang.org/issues/10554
 Patch7: ruby-2.2.3-Generate-preludes-using-miniruby.patch
-# 98e565ec78cb4a07ffde8589ac4581fca31e9c17
-# https://bugs.ruby-lang.org/issues/11962
-# https://bugs.ruby-lang.org/projects/ruby-trunk/repository/revisions/53455
-Patch8: ruby-2.3.0-undef-BUILTIN_CHOOSE_EXPR_CONSTANT_P.patch
+# Prevent test failures on ARM.
+# https://bugs.ruby-lang.org/issues/12331
+Patch8: ruby-2.4.0-increase-timeout-for-ARMv7.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Suggests: rubypick
@@ -952,6 +951,9 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Fri Apr 29 2016 Vít Ondruch <vondruch@redhat.com> - 2.3.1-55
+- Update to Ruby 2.3.1.
+
 * Wed Feb  3 2016 Peter Robinson <pbrobinson@fedoraproject.org> 2.3.0-54
 - Add rubypick and rubygems requires to ruby-devel to deal with BuildRequires
 
