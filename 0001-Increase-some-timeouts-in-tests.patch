@@ -1,0 +1,60 @@
+From 26b1864b1ce22d76ce0b90cfe8f22a96eb5ce15a Mon Sep 17 00:00:00 2001
+From: Lubomir Rintel <lkundrak@v3.sk>
+Date: Sun, 22 May 2016 00:29:12 +0200
+Subject: [PATCH] Increase some timeouts in tests
+
+When targetting armv6hl-linux 10 seconds is not sufficient for
+assert_separately() (took 25 on novena laptop) and 20 seconds is not enough for
+test_parent_iseq_mark (took over 30).
+
+Finished tests in 2744.125478s, 5.7749 tests/s, 812.4264 assertions/s.
+
+  1) Failure:
+TestArray#test_permutation
+[/builddir/build/BUILD/ruby-2.3.1/test/ruby/test_array.rb:1824]:
+pid 6358 killed by SIGABRT (signal 6) (core dumped)
+
+  2) Failure:
+TestISeq#test_parent_iseq_mark
+[/builddir/build/BUILD/ruby-2.3.1/test/ruby/test_iseq.rb:190]:
+pid 9784 killed by SIGTERM (signal 15)
+
+15847 tests, 2229400 assertions, 2 failures, 0 errors, 38 skips
+
+ruby -v: ruby 2.3.1p112 (2016-04-26 revision 54768) [armv6hl-linux]
+uncommon.mk:612: recipe for target 'yes-test-almost' failed
+make: *** [yes-test-almost] Error 2
+---
+ test/lib/envutil.rb    | 2 +-
+ test/ruby/test_iseq.rb | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/test/lib/envutil.rb b/test/lib/envutil.rb
+index a0b907c..96a5be9 100644
+--- a/test/lib/envutil.rb
++++ b/test/lib/envutil.rb
+@@ -35,7 +35,7 @@ def rubybin
+   DEFAULT_SIGNALS.delete("TERM") if /mswin|mingw/ =~ RUBY_PLATFORM
+ 
+   def invoke_ruby(args, stdin_data = "", capture_stdout = false, capture_stderr = false,
+-                  encoding: nil, timeout: 10, reprieve: 1, timeout_error: Timeout::Error,
++                  encoding: nil, timeout: 40, reprieve: 1, timeout_error: Timeout::Error,
+                   stdout_filter: nil, stderr_filter: nil,
+                   signal: :TERM,
+                   rubybin: EnvUtil.rubybin,
+diff --git a/test/ruby/test_iseq.rb b/test/ruby/test_iseq.rb
+index 4561eeb..527c294 100644
+--- a/test/ruby/test_iseq.rb
++++ b/test/ruby/test_iseq.rb
+@@ -187,7 +187,7 @@ def test_safe_call_chain
+   end
+ 
+   def test_parent_iseq_mark
+-    assert_separately([], <<-'end;', timeout: 20)
++    assert_separately([], <<-'end;', timeout: 60)
+       ->{
+         ->{
+           ->{
+-- 
+2.7.4
+

@@ -63,7 +63,7 @@
 Summary: An interpreter of object-oriented scripting language
 Name: ruby
 Version: %{ruby_version}
-Release: %{release_string}
+Release: %{release_string}.pi1
 Group: Development/Languages
 # Public Domain for example for: include/ruby/st.h, strftime.c, missing/*, ...
 # MIT and CCO: ccan/*
@@ -125,6 +125,8 @@ Patch7: ruby-2.2.3-Generate-preludes-using-miniruby.patch
 # Prevent test failures on ARM.
 # https://bugs.ruby-lang.org/issues/12331
 Patch8: ruby-2.4.0-increase-timeout-for-ARMv7.patch
+
+Patch666: 0001-Increase-some-timeouts-in-tests.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Suggests: rubypick
@@ -471,6 +473,8 @@ rm -rf ext/fiddle/libffi*
 %patch6 -p1
 %patch7 -p1
 %patch8 -p1
+
+%patch666 -p1
 
 # Provide an example of usage of the tapset:
 cp -a %{SOURCE3} .
@@ -951,6 +955,9 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/tkextlib
 
 %changelog
+* Sun May 22 2016 Lubomir Rintel <lkundrak@v3.sk> - 2.3.1-55.pi1
+- Increase test timeouts
+
 * Fri Apr 29 2016 Vít Ondruch <vondruch@redhat.com> - 2.3.1-55
 - Update to Ruby 2.3.1.
 
